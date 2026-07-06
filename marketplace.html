@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Noesis - Market Place</title>
+  <link rel="icon" type="image/png" href="IMG/favicon.png"/>
+  <link rel="stylesheet" href="marketplace.css" />
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+    <!-- =============================================
+       CURSOR PERSONALIZADO (punto que sigue al mouse)
+  ============================================= -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- NAVBAR -->
+<header class="navbar">
+    <div class="nav-inner">
+
+        <div class="nav-logo">
+            NOESIS
+        </div>
+
+        <nav class="nav-links" id="navLinks">
+           <a href="index.html" class="nav-link" data-i18n="nav_menu">MENU</a>
+            <a href="#" class="nav-link active" data-i18n="nav_market">MARKETPLACE</a>
+            <a href="#" class="nav-link" data-i18n="nav_study">STUDY MATERIAL</a>
+            <a href="#" class="nav-link" data-i18n="nav_books">BOOKS</a>
+        </nav>
+
+        <div class="nav-icons">
+            <!-- Selector de idioma -->
+            <div class="lang-switcher" id="langSwitcher">
+                <button aria-expanded="false" aria-label="Seleccionar idioma" class="nav-icon-btn lang-btn" id="langBtn">
+                    <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" x2="22" y1="12" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span id="langCurrent">ES</span>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-option active" data-lang="es" type="button">🇪🇸 Español</button>
+                    <button class="lang-option" data-lang="en" type="button">🇬🇧 English</button>
+                </div>
+            </div>
+
+            <!-- Carrito -->
+            <div class="cart-switcher" id="cartSwitcher">
+                <button aria-label="Cart" aria-expanded="false" class="nav-icon-btn cart-btn" id="cartBtn">
+                    <svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="22"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </button>
+
+                <div class="cart-dropdown" id="cartDropdown">
+                    <div class="cart-header">
+                        <h3 data-i18n="cart_title">Tu carrito</h3>
+                        <button aria-label="Cerrar carrito" class="cart-close" id="cartClose" type="button">&times;</button>
+                    </div>
+
+                    <div class="cart-items" id="cartItems">
+                        <!-- Ítems del carrito inyectados por JS -->
+                    </div>
+
+                    <div class="cart-empty" id="cartEmpty">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <p data-i18n="cart_empty_msg">Tu carrito está vacío</p>
+                    </div>
+
+                    <div class="cart-footer" id="cartFooter">
+                        <div class="cart-total-row">
+                            <span data-i18n="cart_total">Total</span>
+                            <span id="cartTotalAmount">B/. 0.00</span>
+                        </div>
+                        <button class="cart-checkout-btn" id="cartCheckoutBtn" type="button" data-i18n="cart_checkout">Finalizar compra</button>
+                        <button class="cart-clear-btn" id="cartClearBtn" type="button" data-i18n="cart_clear">Vaciar carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <a aria-label="User" class="nav-icon-btn" href="login.html" id="userNavBtn">
+                <svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </a>
+
+            <!-- Botón hamburguesa (menú móvil) -->
+            <button class="hamburger" id="hamburger" aria-label="Menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+    </div>
+</header>
+
+<!-- SEARCH BAR + NOTIFICATION -->
+<div class="toolbar">
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Buscar productos...">
+    </div>
+
+    <div class="notification-bar">
+        <button class="bell-btn">
+            <i class="fa-solid fa-bell"></i>
+        </button>
+
+        <div class="notif-msg" data-i18n="notif_msg">
+            Remember to use this section correctly!
+        </div>
+    </div>
+</div>
+
+<!-- PRODUCT GRID -->
+<main class="grid" id="product-grid">
+    <!-- Cards injected by JS -->
+</main>
+
+<!-- MENSAJE "SIN RESULTADOS" -->
+<div class="no-results" id="noResults">
+    <i class="fa-solid fa-magnifying-glass-minus"></i>
+    <p data-i18n="no_results_msg">No encontramos productos con ese nombre.</p>
+</div>
+
+<!-- ===========================
+     MODAL DE DETALLES
+     Estructura pensada para que cada producto muestre:
+     ícono + nombre, condición (nuevo/segunda mano), precio,
+     descripción, categorías que lo usan y una mini-galería.
+     Todo el contenido dinámico lo llena script.js a partir
+     del arreglo `products`.
+=========================== -->
+<div class="modal" id="productModal">
+
+    <div class="modal-content">
+
+        <span class="close" id="closeModal">&times;</span>
+
+        <!-- Encabezado: ícono del producto + nombre -->
+        <div class="modal-header">
+            <div class="modal-icon" id="modalIcon">
+                <i class="fa-solid fa-box"></i>
+            </div>
+            <h2 class="modal-title" id="modalTitle" data-i18n="modal_default_title">
+                Nombre del producto
+            </h2>
+        </div>
+
+        <!-- Condición del producto (Nuevo / Segunda mano) -->
+        <span class="modal-condition" id="modalCondition">Segunda mano</span>
+
+        <!-- Precio destacado -->
+        <div class="modal-price" id="modalPrice">B/. 0.00</div>
+
+        <div class="modal-body">
+
+            <!-- Columna izquierda: imagen principal + galería -->
+            <div class="modal-image-col">
+
+                <div class="modal-image">
+                    <img id="modalMainImage" src="" alt="">
+                </div>
+
+                <!--
+                  GALERÍA DE MINIATURAS
+                  Se genera dinámicamente en script.js a partir de
+                  product.gallery (4 imágenes por producto).
+                  Para agregar fotos reales, solo reemplaza las rutas
+                  del arreglo `gallery` de cada producto en script.js
+                  (busca el comentario "AGREGAR IMÁGENES AQUÍ").
+                  Si una imagen no existe todavía, se muestra la
+                  imagen principal como respaldo automático.
+                -->
+                <div class="modal-gallery" id="modalGallery">
+                    <!-- Miniaturas inyectadas por JS -->
+                </div>
+
+            </div>
+
+            <!-- Columna derecha: descripción, categorías y acciones -->
+            <div class="modal-info">
+
+                <h3 class="modal-section-title" data-i18n="modal_desc_title">Descripción</h3>
+                <p class="modal-description" id="modalDescription" data-i18n="modal_default_desc">
+                    Descripción del producto.
+                </p>
+
+                <!-- Información del vendedor: nombre, universidad y ubicación -->
+                <div class="modal-seller-box" id="modalSellerBox"></div>
+
+                <h3 class="modal-section-title" data-i18n="modal_tags_title">¿Quiénes lo usan?</h3>
+                <div class="modal-tags" id="modalTags">
+                    <!-- Chips de categorías inyectados por JS -->
+                </div>
+
+                <div class="modal-actions">
+                    <button class="modal-btn-outline" id="addToCartBtn" type="button">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span data-i18n="modal_add_cart">Añadir al carrito</span>
+                    </button>
+                    <button class="modal-btn" id="buyNowBtn" type="button" data-i18n="modal_buy_now">
+                        Comprar ahora
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Aviso flotante (toast) para confirmar acciones del carrito -->
+    <div class="toast" id="cartToast"></div>
+
+</div>
+
+<!-- Toast global para notificaciones del carrito (fuera del modal) -->
+<div class="toast toast-global" id="globalToast"></div>
+
+<script src="marketplace.js"></script>
+</body>
+</html>

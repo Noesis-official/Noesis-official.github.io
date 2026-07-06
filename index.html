@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Noesis — Educational Resources</title>
+<link rel="icon" type="image/png" href="IMG/favicon.png"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&amp;family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="index.css" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<!-- =============================================
+CURSOR PERSONALIZADO (punto que sigue al mouse)
+============================================= -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+<nav class="navbar" id="navbar">
+<div class="nav-inner">
+<div class="nav-logo">NOESIS</div>
+<div class="nav-links" id="navLinks">
+<a class="nav-link active" data-i18n="nav_menu" href="#">MENU</a>
+<a class="nav-link" data-i18n="nav_market" href="marketplace.html">MARKETPLACE</a>
+<a class="nav-link" data-i18n="nav_study" href="#">STUDY MATERIAL</a>
+<a class="nav-link" data-i18n="nav_books" href="#">BOOKS</a>
+</div>
+<div class="nav-icons">
+<!-- Selector de idioma -->
+<div class="lang-switcher" id="langSwitcher">
+<button aria-expanded="false" aria-label="Seleccionar idioma" class="nav-icon-btn lang-btn" id="langBtn">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="2" x2="22" y1="12" y2="12"></line>
+<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+</svg>
+<span id="langCurrent">ES</span>
+</button>
+<div class="lang-dropdown" id="langDropdown">
+<button class="lang-option active" data-lang="es" type="button">🇪🇸 Español</button>
+<button class="lang-option" data-lang="en" type="button">🇬🇧 English</button>
+</div>
+</div>
+<div class="cart-switcher" id="cartSwitcher">
+<button aria-expanded="false" aria-label="Cart" class="nav-icon-btn cart-btn" id="cartBtn">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>
+<span class="cart-badge" id="cartBadge">0</span>
+</button>
+<div class="cart-dropdown" id="cartDropdown">
+<div class="cart-header">
+<h3 data-i18n="cart_title">Tu carrito</h3>
+<button aria-label="Cerrar carrito" class="cart-close" id="cartClose" type="button">&times;</button>
+</div>
+<div class="cart-items" id="cartItems">
+<!-- Ítems del carrito inyectados por JS -->
+</div>
+<div class="cart-empty" id="cartEmpty">
+<i class="fa-solid fa-cart-shopping"></i>
+<p data-i18n="cart_empty_msg">Tu carrito está vacío</p>
+</div>
+<div class="cart-footer" id="cartFooter">
+<div class="cart-total-row">
+<span data-i18n="cart_total">Total</span>
+<span id="cartTotalAmount">B/. 0.00</span>
+</div>
+<button class="cart-checkout-btn" id="cartCheckoutBtn" type="button" data-i18n="cart_checkout">Finalizar compra</button>
+<button class="cart-clear-btn" id="cartClearBtn" type="button" data-i18n="cart_clear">Vaciar carrito</button>
+</div>
+</div>
+</div>
+<a aria-label="User" class="nav-icon-btn" href="login.html" id="userNavBtn">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+</a>
+<button aria-label="Menu" class="hamburger" id="hamburger">
+<span></span>
+<span></span>
+<span></span>
+</button>
+</div>
+</div>
+</nav>
+<section class="hero">
+<div class="hero-image-wrap">
+<video autoplay="" class="hero.img" loop="" muted="" playsinline="">
+<source src="VID/Noesis- intro interfaz.mp4" type="video/mp4"/>
+</video>
+<div class="hero-overlay"></div>
+</div>
+</section>
+<section class="about fade-in-section">
+<div class="about-inner">
+<div class="about-left">
+<h2 class="about-title" data-i18n="about_title">ABOUT US</h2>
+<p class="about-text" data-i18n="about_text">
+          At Noesis, we believe everyone deserves access to tools that support their learning journey.
+          Our goal is to help students from elementary, middle school, high school, and university by
+          providing study materials, educational resources, and affordable school supplies. We are
+          building a modern space where learning, sharing, and growing become easier and more
+          accessible for everyone.
+        </p>
+</div>
+<div class="about-right">
+<div class="about-badge">
+<span class="badge-logo">NOESIS</span>
+<span class="badge-sub" data-i18n="about_badge_sub">Educational resources</span>
+</div>
+</div>
+</div>
+</section>
+<section class="offer fade-in-section">
+<div class="offer-card">
+<img alt="FocoIndexPrincipal" class="offer-deco offer-deco--left" src="img/img1.png"/>
+<img alt="LibroIndexPrincipal" class="offer-deco offer-deco--right" src="img/img2.png"/>
+<h2 class="offer-title" data-i18n="offer_title">WHAT WE OFFER</h2>
+<p class="offer-text" data-i18n="offer_text">
+        We offer study materials, notes, guides, summaries, and educational resources for students
+        from elementary school to university. We also provide affordable school supplies and
+        second-hand academic items to make learning more accessible for everyone. Our platform is
+        designed to help students study, stay organized, and explore knowledge in a modern, creative,
+        and supportive environment.
+      </p>
+</div>
+</section>
+<section class="services fade-in-section">
+<img alt="" class="puzzle puzzle--left" src="icons/puzzle-left.png"/>
+<img alt="" class="puzzle puzzle--right" src="icons/puzzle-right.png"/>
+<h2 class="services-title" data-i18n="services_title">OUR SERVICES</h2>
+<div class="services-grid">
+<div class="service-card service-card--1">
+<div class="service-body">
+<p data-i18n="service1_text">Access useful books and reading resources for different academic levels and subjects.</p>
+</div>
+<div class="service-label" data-i18n="service1_label">BOOKS</div>
+<div class="service-arrow">
+<svg fill="none" viewbox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 10 Q20 2 38 10" fill="none" stroke="#355B4C" stroke-linecap="round" stroke-width="2"></path>
+<path d="M33 6 L38 10 L33 14" fill="none" stroke="#355B4C" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="service-card service-card--2">
+<div class="service-body">
+<p data-i18n="service2_text">Buy, sell, or exchange affordable school supplies and second-hand study items.</p>
+</div>
+<div class="service-label" data-i18n="service2_label">MARKET PLACE</div>
+<div class="service-arrow">
+<svg fill="none" viewbox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 10 Q20 2 38 10" fill="none" stroke="#355B4C" stroke-linecap="round" stroke-width="2"></path>
+<path d="M33 6 L38 10 L33 14" fill="none" stroke="#355B4C" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="service-card service-card--3">
+<div class="service-body">
+<p data-i18n="service3_text">Find notes, guides, summaries, and educational resources designed to support students at every level.</p>
+</div>
+<div class="service-label" data-i18n="service3_label">STUDY</div>
+<div class="service-arrow">
+<svg fill="none" viewbox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 10 Q20 2 38 10" fill="none" stroke="#355B4C" stroke-linecap="round" stroke-width="2"></path>
+<path d="M33 6 L38 10 L33 14" fill="none" stroke="#355B4C" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="service-card service-card--4">
+<div class="service-body">
+<p data-i18n="service4_text">Discover study kits, productivity tools, and helpful tips to improve learning habits.</p>
+</div>
+<div class="service-label" data-i18n="service4_label">KITS and TIPS</div>
+<div class="service-arrow">
+<svg fill="none" viewbox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 10 Q20 2 38 10" fill="none" stroke="#355B4C" stroke-linecap="round" stroke-width="2"></path>
+<path d="M33 6 L38 10 L33 14" fill="none" stroke="#355B4C" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<section class="vision fade-in-section">
+<div class="vision-collage">
+<div class="vision-vid-left">
+<video autoplay="" class="video-card" loop="" muted="" playsinline="">
+<source src="VID/video1.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="vision-center-col">
+<div class="vision-label-box">
+<span data-i18n="vision_label">VISION</span>
+</div>
+<div class="vision-img-center">
+<img alt="Kids studying with a globe" src="IMG/img3.png"/>
+</div>
+</div>
+<div class="vision-right-col">
+<div class="vision-img-right">
+<video autoplay="" loop="" muted="" playsinline="">
+<source src="VID/video2.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="vision-text-box">
+<p data-i18n="vision_text">
+            To create learning opportunities for students of all levels by providing accessible
+            study materials, affordable resources, and a community where financial limitations
+            never become a barrier to education.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<!-- =============================================
+     VIDEOS + FAQ
+============================================= -->
+<section class="faq-section" id="ayuda">
+<div class="faq-videos-wrapper">
+<!-- Video izquierdo -->
+<div class="faq-video">
+<video autoplay="" loop="" muted="" playsinline="" src="VID/video izq.mp4"></video>
+</div>
+<!-- FAQ -->
+<div class="container">
+<div class="faq-inner">
+<div class="section-header">
+<span class="section-tag" data-i18n="faq_tag">Ayuda</span>
+<h2 class="section-title" data-i18n="faq_title">Preguntas frecuentes</h2>
+</div>
+<div class="faq-list">
+<div class="faq-item">
+<button aria-expanded="false" class="faq-q">
+<span data-i18n="faq_q1">¿Noesis cobra comisión por las ventas?</span> <i class="ph ph-caret-down"></i>
+</button>
+<div class="faq-a">
+<p data-i18n="faq_a1">No. Noesis es completamente gratuito para los estudiantes de David, Chiriquí. No cobramos ninguna comisión por ventas ni intercambios.</p>
+</div>
+</div>
+<div class="faq-item">
+<button aria-expanded="false" class="faq-q">
+<span data-i18n="faq_q2">¿Cómo me registro?</span> <i class="ph ph-caret-down"></i>
+</button>
+<div class="faq-a">
+<p data-i18n="faq_a2">Solo necesitas tu correo universitario o cédula para verificar que eres estudiante en David. El proceso toma menos de 2 minutos.</p>
+</div>
+</div>
+<div class="faq-item">
+<button aria-expanded="false" class="faq-q">
+<span data-i18n="faq_q3">¿Cómo se hacen los pagos?</span> <i class="ph ph-caret-down"></i>
+</button>
+<div class="faq-a">
+<p data-i18n="faq_a3">Los pagos se acuerdan directamente entre compradores y vendedores. Puedes pagar en efectivo al recoger el artículo en campus o usar Yappy/transferencia bancaria.</p>
+</div>
+</div>
+<div class="faq-item">
+<button aria-expanded="false" class="faq-q">
+<span data-i18n="faq_q4">¿Puedo publicar desde cualquier universidad de David?</span> <i class="ph ph-caret-down"></i>
+</button>
+<div class="faq-a">
+<p data-i18n="faq_a4">Sí. Noesis está abierto a estudiantes de la UTP, UNACHI, USMA, ISAE y demás universidades con sede en David, Chiriquí.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Video derecho -->
+<div class="faq-video">
+<video autoplay="" loop="" muted="" playsinline="" src="VID/video der.mp4"></video>
+</div>
+</div>
+</section>
+<!-- =============================================
+       CONTACTO — formulario de contacto
+  ============================================= -->
+<section class="contact-section" id="contacto">
+<div class="container contact-inner">
+<!-- Información de contacto -->
+<div class="contact-info">
+<span class="section-tag" data-i18n="contact_tag">Contáctanos</span>
+<h2 class="section-title" data-i18n="contact_title">Estamos en David</h2>
+<p data-i18n="contact_text">¿Tienes dudas, sugerencias o quieres unirte como colaborador?
+           Escríbenos y te respondemos rápido.</p>
+<ul class="contact-list">
+<li><i class="ph ph-envelope"></i> hola@noesis.pa</li>
+<li><i class="ph ph-whatsapp-logo"></i> +507 6000-0000</li>
+<li><i class="ph ph-map-pin"></i> <span data-i18n="contact_location">David, Chiriquí, Panamá</span></li>
+</ul>
+</div>
+<!-- Formulario de contacto -->
+<form class="contact-form" id="contactForm" novalidate="">
+<div class="form-group">
+<label data-i18n="form_name" for="nombre">Nombre</label>
+<input id="nombre" name="nombre" placeholder="Tu nombre completo" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-i18n="form_email" for="email">Correo electrónico</label>
+<input id="email" name="email" placeholder="tucorreo@universidad.edu" required="" type="email"/>
+</div>
+<div class="form-group">
+<label data-i18n="form_message" for="mensaje">Mensaje</label>
+<textarea id="mensaje" name="mensaje" placeholder="Cuéntanos en qué podemos ayudarte..." required="" rows="4"></textarea>
+</div>
+<!-- Mensaje de éxito tras envío -->
+<div class="form-success" id="formSuccess">
+<i class="ph ph-check-circle"></i> <span data-i18n="form_success">¡Mensaje enviado! Te contactamos pronto.</span>
+        </div>
+<button class="btn btn-primary btn-full" type="submit">
+<i class="ph ph-paper-plane-tilt"></i> <span data-i18n="form_btn">Enviar mensaje</span>
+        </button>
+</form>
+</div>
+</section>
+<footer class="footer">
+<div class="footer-inner">
+<!-- Logo y descripción breve -->
+<div class="footer-brand">
+<a class="nav-logo footer-logo" href="#">
+<span class="logo-text">NOESIS</span>
+</a>
+<p data-i18n="footer_desc">El marketplace universitario de<br/>David, Chiriquí.</p>
+</div>
+<!-- Links rápidos del footer -->
+<div class="footer-links">
+<h4 data-i18n="footer_platform">Plataforma</h4>
+<ul>
+<li><a data-i18n="footer_marketplace" href="marketplace.html">Marketplace</a></li>
+<li><a data-i18n="footer_exchanges" href="#intercambios">Intercambios</a></li>
+<li><a data-i18n="footer_kits" href="#kits">Kits de Inicio</a></li>
+</ul>
+</div>
+<div class="footer-links">
+<h4 data-i18n="footer_support">Soporte</h4>
+<ul>
+<li><a data-i18n="footer_faq" href="#ayuda">Ayuda / FAQ</a></li>
+<li><a data-i18n="footer_contact" href="#contacto">Contáctanos</a></li>
+<li><a data-i18n="footer_terms" href="#">Términos de uso</a></li>
+</ul>
+</div>
+<!-- Redes sociales -->
+<div class="footer-social">
+<h4 data-i18n="footer_follow">Síguenos</h4>
+<div class="social-icons">
+<a href="https://instagram.com">
+<img alt="Instagram" src="img/instagram.webp"/>
+</a>
+<a href="https://facebook.com">
+<img alt="Facebook" src="img/Facebook.png"/>
+</a>
+<a href="https://wa.me/50760000000">
+<img alt="WhatsApp" src="img/WhatsApp.png"/>
+</a>
+</div>
+</div>
+</div>
+<!-- Línea de copyright -->
+<div class="footer-bottom">
+<p data-i18n="footer_copyright">© 2026 Noesis · Todos los derechos reservados · David, Chiriquí, Panamá</p>
+</div>
+</footer>
+<!-- Toast global para notificaciones del carrito -->
+<div class="toast toast-global" id="globalToast"></div>
+
+<!-- Script de interactividad externo -->
+<script src="index.js"></script>
+</body>
+</html>

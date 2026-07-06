@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Noesis — Iniciar sesión</title>
+<link rel="icon" type="image/png" href="IMG/favicon.png"/>
+<link rel="stylesheet" href="login.css" />
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<!-- Video de fondo -->
+<div class="video-background">
+    <video autoplay muted loop playsinline>
+        <source src="VID/Video de fondo login.mp4" type="video/mp4">
+        Tu navegador no soporta videos HTML5.
+    </video>
+</div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+
+<!-- NAVBAR simple: logo + volver al menú + idioma -->
+<header class="auth-navbar">
+  <div class="auth-nav-inner">
+    <a href="index.html" class="nav-logo">NOESIS</a>
+
+    <div class="auth-nav-right">
+      <div class="lang-switcher" id="langSwitcher">
+        <button aria-expanded="false" aria-label="Seleccionar idioma" class="nav-icon-btn lang-btn" id="langBtn">
+          <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" x2="22" y1="12" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span id="langCurrent">ES</span>
+        </button>
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-option active" data-lang="es" type="button">🇪🇸 Español</button>
+          <button class="lang-option" data-lang="en" type="button">🇬🇧 English</button>
+        </div>
+      </div>
+
+      <a href="index.html" class="auth-back-link">
+        <i class="fa-solid fa-arrow-left"></i> <span data-i18n="back_menu">Volver al menú</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="auth-page">
+
+  <div class="auth-panel">
+
+    <div class="auth-panel-pill">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      <span data-i18n="login_pill">¿Ya tienes cuenta? Inicia sesión</span>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <span class="auth-logo-mini">NOESIS</span>
+        <span class="auth-logo-sub" data-i18n="auth_logo_sub">Recursos educativos</span>
+      </div>
+
+      <form class="auth-form" id="loginForm" novalidate>
+
+        <div class="auth-error" id="loginError"></div>
+
+        <div class="auth-field">
+          <label for="loginEmail" data-i18n="field_email">Correo electrónico</label>
+          <div class="auth-input-wrap">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="loginEmail" name="loginEmail" placeholder="tucorreo@universidad.edu" required>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label for="loginPassword" data-i18n="field_password">Contraseña</label>
+          <div class="auth-input-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="loginPassword" name="loginPassword" placeholder="••••••••" required>
+            <button type="button" class="auth-toggle-pass" data-target="loginPassword" aria-label="Mostrar contraseña">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-btn auth-btn-primary">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span data-i18n="login_btn">Iniciar sesión</span>
+        </button>
+
+        <p class="auth-switch">
+          <span data-i18n="no_account_yet">¿No tienes cuenta todavía?</span>
+          <a href="registro.html" data-i18n="go_register">Regístrate aquí</a>
+        </p>
+
+        <p class="auth-hint" data-i18n="login_hint">Simulado con localStorage — no se envía a ningún servidor.</p>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="authToast"></div>
+<script src="login.js"></script>
+</body>
+</html>

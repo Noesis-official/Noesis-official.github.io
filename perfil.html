@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Noesis — Mi perfil</title>
+<link rel="icon" type="image/png" href="IMG/favicon.png"/>
+<link rel="stylesheet" href="perfil.css" />
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+
+<header class="auth-navbar">
+  <div class="auth-nav-inner">
+    <a href="index.html" class="nav-logo">NOESIS</a>
+    <div class="auth-nav-right">
+      <a href="marketplace.html" class="auth-back-link">
+        <i class="fa-solid fa-store"></i> <span data-i18n="go_market">Ir al marketplace</span>
+      </a>
+      <a href="index.html" class="auth-back-link">
+        <i class="fa-solid fa-arrow-left"></i> <span data-i18n="back_menu">Volver al menú</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="profile-page">
+
+  <!-- Se muestra solo si NO hay sesión activa -->
+  <div class="no-session" id="noSession">
+    <i class="fa-solid fa-user-lock"></i>
+    <h2 data-i18n="no_session_title">No has iniciado sesión</h2>
+    <p data-i18n="no_session_text">Inicia sesión o crea una cuenta para ver tu perfil de estudiante.</p>
+    <a href="login.html" class="auth-btn auth-btn-primary">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      <span data-i18n="go_login">Ir a inicio de sesión</span>
+    </a>
+  </div>
+
+  <!-- Se muestra solo si SÍ hay sesión activa -->
+  <div class="profile-card" id="profileCard">
+
+    <div class="profile-banner">
+      <span class="profile-tag" data-i18n="profile_tag">Cuenta simulada · localStorage</span>
+      <div class="profile-avatar" id="profileAvatar">N</div>
+      <h1 class="profile-name" id="profileName">—</h1>
+      <span class="profile-email" id="profileEmail">—</span>
+    </div>
+
+    <div class="profile-details">
+      <div class="profile-detail">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <div>
+          <span class="detail-label" data-i18n="detail_university">Universidad</span>
+          <span class="detail-value" id="profileUniversity">—</span>
+        </div>
+      </div>
+
+      <div class="profile-detail">
+        <i class="fa-solid fa-location-dot"></i>
+        <div>
+          <span class="detail-label" data-i18n="detail_location">Ubicación</span>
+          <span class="detail-value" id="profileLocation">—</span>
+        </div>
+      </div>
+
+      <div class="profile-detail">
+        <i class="fa-solid fa-calendar-days"></i>
+        <div>
+          <span class="detail-label" data-i18n="detail_member_since">Miembro desde</span>
+          <span class="detail-value" id="profileSince">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <a href="marketplace.html" class="auth-btn auth-btn-primary">
+        <i class="fa-solid fa-store"></i>
+        <span data-i18n="profile_go_market">Explorar el marketplace</span>
+      </a>
+      <button class="auth-btn auth-btn-outline" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span data-i18n="logout_btn">Cerrar sesión</span>
+      </button>
+    </div>
+
+    <p class="profile-note" data-i18n="profile_note">
+      Esta cuenta es solo una simulación con localStorage para fines de prototipo — no hay servidor real detrás.
+    </p>
+  </div>
+
+</main>
+
+<div class="toast" id="profileToast"></div>
+
+<script src="perfil.js"></script>
+</body>
+</html>
