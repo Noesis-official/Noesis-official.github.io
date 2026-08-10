@@ -265,6 +265,88 @@ a{ text-decoration:none; transition:.3s; }
     line-height:1.6;
 }
 
+/* ---- Mis publicaciones ---- */
+.my-listings{
+    padding:6px 34px 10px;
+}
+
+.my-listings-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:var(--font-title);
+    color:var(--green-dark);
+    font-size:1.25rem;
+    margin-bottom:16px;
+}
+
+.my-listings-title i{ color:var(--green-mid); font-size:1rem; }
+
+.my-listings-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
+    gap:14px;
+}
+
+.my-listing-card{
+    position:relative;
+    background:white;
+    border:2px solid var(--green-pastel);
+    border-radius:16px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    text-align:center;
+}
+
+.my-listing-card img{
+    width:100%;
+    height:80px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+.my-listing-name{
+    font-size:.8rem;
+    font-weight:600;
+    color:var(--text);
+}
+
+.my-listing-price{
+    font-size:.78rem;
+    color:var(--green-dark);
+    font-weight:700;
+}
+
+.my-listing-delete{
+    border:none;
+    background:rgba(180,83,75,.12);
+    color:#B4534B;
+    border-radius:50px;
+    padding:6px 14px;
+    font-size:.72rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.my-listing-delete:hover{
+    background:#B4534B;
+    color:white;
+}
+
+.my-listings-empty{
+    display:none;
+    font-size:.82rem;
+    color:rgba(53,91,76,.6);
+    text-align:center;
+    padding:20px 0;
+}
+
+.my-listings-empty.show{ display:block; }
+
 /* Toast */
 .toast{
     position:fixed;
@@ -285,10 +367,134 @@ a{ text-decoration:none; transition:.3s; }
 }
 .toast.show{ opacity:1; transform:translate(-50%, 0); }
 
+/* ---- Insignia de rol (Estudiante / Tutor) ---- */
+.profile-role-badge{
+    display:inline-block;
+    margin-bottom:14px;
+    padding:5px 16px;
+    border-radius:50px;
+    font-size:.7rem;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    background:var(--yellow);
+    color:var(--green-dark);
+}
+
+/* ---- Sección de perfil de tutor ---- */
+.tutor-profile-section{
+    display:none;
+    padding:6px 34px 10px;
+}
+
+.tutor-profile-section.show{ display:block; }
+
+.tutor-profile-card{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    background:white;
+    border:2px solid var(--green-pastel);
+    border-radius:16px;
+    padding:20px;
+}
+
+.tutor-profile-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+}
+
+.tutor-profile-row.tutor-profile-bio{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:6px;
+}
+
+.tutor-profile-row.tutor-profile-bio p{
+    font-size:.88rem;
+    line-height:1.6;
+    color:var(--text);
+}
+
+.tutor-profile-actions{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.tutor-profile-actions .auth-btn{
+    flex:1;
+    min-width:140px;
+    padding:11px 18px;
+    font-size:.82rem;
+}
+
+/* Formulario de edición del perfil de tutor (oculto por defecto) */
+.tutor-profile-form{
+    display:none;
+    flex-direction:column;
+    gap:16px;
+    background:white;
+    border:2px dashed var(--green-mid);
+    border-radius:16px;
+    padding:20px;
+}
+
+.tutor-profile-form.show{ display:flex; }
+
+.tutor-profile-form .auth-field-row{ display:flex; gap:14px; }
+.tutor-profile-form .auth-field{ display:flex; flex-direction:column; gap:7px; flex:1; }
+.tutor-profile-form .auth-field label{ font-weight:600; font-size:.82rem; color:var(--green-dark); }
+
+.tutor-profile-form .auth-input-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+    background:rgba(255,255,255,.75);
+    border:1px solid rgba(53,91,76,.25);
+    border-radius:12px;
+    padding:0 14px;
+}
+
+.tutor-profile-form .auth-input-wrap i{
+    color:var(--green-mid);
+    font-size:.9rem;
+    margin-right:10px;
+}
+
+.tutor-profile-form .auth-input-wrap input,
+.tutor-profile-form .auth-input-wrap select{
+    flex:1;
+    border:none;
+    background:none;
+    outline:none;
+    padding:13px 0;
+    font-family:var(--font-body);
+    font-size:.88rem;
+    color:var(--text);
+}
+
+/* ---- Atajo de estudiante: buscar tutores ---- */
+.student-shortcut{
+    display:none;
+    padding:6px 34px 10px;
+}
+
+.student-shortcut.show{ display:block; }
+
+.student-shortcut .auth-btn{
+    width:100%;
+}
+
 @media(max-width:600px){
     .profile-banner{ padding:36px 22px 28px; }
     .profile-details{ padding:26px 22px; }
     .profile-actions{ padding:0 22px 10px; flex-direction:column; }
     .profile-note{ padding:18px 22px 28px; }
     .auth-back-link span{ display:none; }
+    .tutor-profile-section,
+    .student-shortcut{ padding:6px 22px 10px; }
+    .tutor-profile-form .auth-field-row{ flex-direction:column; }
 }

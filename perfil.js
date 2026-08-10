@@ -22,7 +22,25 @@ const translations = {
     profile_go_market: "Explorar el marketplace",
     logout_btn: "Cerrar sesión",
     profile_note: "Esta cuenta es solo una simulación con localStorage para fines de prototipo — no hay servidor real detrás.",
-    toast_logout: "Sesión cerrada."
+    toast_logout: "Sesión cerrada.",
+    my_listings_title: "Mis publicaciones",
+    my_listings_empty: "Todavía no has publicado ningún producto. ¡Ve al marketplace y vende algo!",
+    delete_confirm: "¿Seguro que quieres eliminar esta publicación?",
+    delete_success: "Publicación eliminada.",
+    role_student: "Estudiante",
+    role_tutor: "Tutor",
+    tutor_profile_title: "Mi perfil de tutor",
+    field_tutor_subject: "Materia principal",
+    field_tutor_price: "Precio por hora (B/.)",
+    field_tutor_bio: "Cuéntanos de ti como tutor",
+    edit_tutor_profile: "Editar",
+    view_in_community: "Ver en la comunidad",
+    save_changes: "Guardar cambios",
+    cancel: "Cancelar",
+    find_tutors: "Buscar tutores",
+    cat_physics: "Física", cat_chemistry: "Química", cat_economics: "Economía",
+    cat_biology: "Biología", cat_math: "Matemáticas", cat_english: "Inglés", cat_systems: "Sistemas",
+    toast_tutor_updated: "¡Perfil de tutor actualizado!"
   },
   en: {
     back_menu: "Back to menu",
@@ -37,7 +55,25 @@ const translations = {
     profile_go_market: "Explore the marketplace",
     logout_btn: "Log out",
     profile_note: "This account is only a localStorage simulation for prototyping — there's no real server behind it.",
-    toast_logout: "Signed out."
+    toast_logout: "Signed out.",
+    my_listings_title: "My listings",
+    my_listings_empty: "You haven't published any products yet. Go to the marketplace and sell something!",
+    delete_confirm: "Are you sure you want to delete this listing?",
+    delete_success: "Listing deleted.",
+    role_student: "Student",
+    role_tutor: "Tutor",
+    tutor_profile_title: "My Tutor Profile",
+    field_tutor_subject: "Main subject",
+    field_tutor_price: "Price per hour (B/.)",
+    field_tutor_bio: "Tell us about yourself as a tutor",
+    edit_tutor_profile: "Edit",
+    view_in_community: "View in community",
+    save_changes: "Save changes",
+    cancel: "Cancel",
+    find_tutors: "Find tutors",
+    cat_physics: "Physics", cat_chemistry: "Chemistry", cat_economics: "Economics",
+    cat_biology: "Biology", cat_math: "Mathematics", cat_english: "English", cat_systems: "Systems",
+    toast_tutor_updated: "Tutor profile updated!"
   }
 };
 
@@ -83,9 +119,156 @@ function formatDate(isoString, lang) {
 const noSession = document.getElementById('noSession');
 const profileCard = document.getElementById('profileCard');
 const lang = localStorage.getItem('noesis_lang') || 'es';
+const profileToast = document.getElementById('profileToast');
 
 const session = getSession();
 const user = session ? getUsers().find(u => u.email === session.email) : null;
+
+// Etiquetas de materia (mismas categorías que usa comunidad.html)
+const CATEGORY_LABELS = {
+  physics: { es: "Física", en: "Physics" },
+  chemistry: { es: "Química", en: "Chemistry" },
+  economics: { es: "Economía", en: "Economics" },
+  biology: { es: "Biología", en: "Biology" },
+  math: { es: "Matemáticas", en: "Mathematics" },
+  english: { es: "Inglés", en: "English" },
+  systems: { es: "Sistemas", en: "Systems" }
+};
+
+function showProfileToast(message) {
+  profileToast.textContent = message;
+  profileToast.classList.remove('show');
+  void profileToast.offsetWidth;
+  profileToast.classList.add('show');
+  setTimeout(() => profileToast.classList.remove('show'), 2200);
+}
+
+// -----------------------------------------------
+// PERFIL DE TUTOR (solo si user.role === "tutor")
+// Muestra su materia/precio/bio y permite editarlos;
+// comunidad.js lee estos mismos campos para mostrarlo
+// como tutor real en el listado.
+// -----------------------------------------------
+function populateTutorProfileView() {
+  if (!user || user.role !== 'tutor') return;
+  const subjectLabel = CATEGORY_LABELS[user.tutorSubject] ? CATEGORY_LABELS[user.tutorSubject][lang] : (user.tutorSubject || '—');
+  document.getElementById('tutorProfileSubject').textContent = subjectLabel;
+  document.getElementById('tutorProfilePrice').textContent = `B/. ${Number(user.tutorPrice || 0).toFixed(2)}`;
+  document.getElementById('tutorProfileBio').textContent = user.tutorBio || '—';
+}
+
+function initTutorProfile() {
+  const section = document.getElementById('tutorProfileSection');
+  if (!section) return;
+
+  if (!user || user.role !== 'tutor') {
+    section.classList.remove('show');
+    return;
+  }
+
+  section.classList.add('show');
+  populateTutorProfileView();
+
+  const viewBox = document.getElementById('tutorProfileView');
+  const form = document.getElementById('tutorProfileForm');
+  const editBtn = document.getElementById('editTutorProfileBtn');
+  const cancelBtn = document.getElementById('cancelEditTutorBtn');
+
+  // Estos listeners se adjuntan UNA sola vez (initTutorProfile solo
+  // se llama una vez al cargar la página).
+  editBtn.addEventListener('click', () => {
+    document.getElementById('editTutorSubject').value = user.tutorSubject || 'physics';
+    document.getElementById('editTutorPrice').value = user.tutorPrice || '';
+    document.getElementById('editTutorBio').value = user.tutorBio || '';
+    viewBox.style.display = 'none';
+    form.classList.add('show');
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    form.classList.remove('show');
+    viewBox.style.display = 'flex';
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newSubject = document.getElementById('editTutorSubject').value;
+    const newPrice = parseFloat(document.getElementById('editTutorPrice').value);
+    const newBio = document.getElementById('editTutorBio').value.trim();
+
+    if (!newSubject || isNaN(newPrice) || newPrice <= 0 || !newBio) return;
+
+    const users = getUsers();
+    const idx = users.findIndex(u => u.email === user.email);
+    if (idx !== -1) {
+      users[idx].tutorSubject = newSubject;
+      users[idx].tutorPrice = newPrice;
+      users[idx].tutorBio = newBio;
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      user.tutorSubject = newSubject;
+      user.tutorPrice = newPrice;
+      user.tutorBio = newBio;
+    }
+
+    form.classList.remove('show');
+    viewBox.style.display = 'flex';
+    showProfileToast(translations[lang].toast_tutor_updated);
+    populateTutorProfileView();
+  });
+}
+
+// -----------------------------------------------
+// MIS PUBLICACIONES (productos guardados en
+// "noesis_user_products" cuyo ownerEmail coincide
+// con el usuario de la sesión activa)
+// -----------------------------------------------
+const USER_PRODUCTS_KEY = "noesis_user_products";
+
+function loadUserProducts() {
+  try {
+    return JSON.parse(localStorage.getItem(USER_PRODUCTS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveUserProducts(list) {
+  localStorage.setItem(USER_PRODUCTS_KEY, JSON.stringify(list));
+}
+
+function renderMyListings() {
+  const myListingsGrid = document.getElementById('myListingsGrid');
+  const myListingsEmpty = document.getElementById('myListingsEmpty');
+  if (!myListingsGrid) return;
+
+  const mine = loadUserProducts().filter(p => p.ownerEmail === user.email);
+
+  myListingsGrid.innerHTML = '';
+  myListingsEmpty.classList.toggle('show', mine.length === 0);
+
+  mine.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'my-listing-card';
+    card.innerHTML = `
+      <img src="${product.image}" alt="${product.name}">
+      <span class="my-listing-name">${product.name}</span>
+      <span class="my-listing-price">B/. ${Number(product.price).toFixed(2)}</span>
+      <button class="my-listing-delete" type="button">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    `;
+    const deleteBtn = card.querySelector('.my-listing-delete');
+    deleteBtn.addEventListener('click', () => {
+      if (!window.confirm(translations[lang].delete_confirm)) return;
+      const remaining = loadUserProducts().filter(p => p.id !== product.id);
+      saveUserProducts(remaining);
+      profileToast.textContent = translations[lang].delete_success;
+      profileToast.classList.add('show');
+      setTimeout(() => profileToast.classList.remove('show'), 2200);
+      renderMyListings();
+    });
+    myListingsGrid.appendChild(card);
+  });
+}
 
 if (!user) {
   noSession.classList.add('show');
@@ -98,13 +281,27 @@ if (!user) {
   document.getElementById('profileUniversity').textContent = user.university;
   document.getElementById('profileLocation').textContent = user.location;
   document.getElementById('profileSince').textContent = formatDate(user.createdAt, lang);
+
+  // Insignia de rol (Estudiante / Tutor). Las cuentas creadas antes
+  // de este cambio no tienen "role" guardado — las tratamos como
+  // estudiante por defecto.
+  const role = user.role === 'tutor' ? 'tutor' : 'student';
+  const roleBadge = document.getElementById('profileRoleBadge');
+  if (roleBadge) {
+    roleBadge.textContent = role === 'tutor' ? translations[lang].role_tutor : translations[lang].role_student;
+  }
+
+  const studentShortcut = document.getElementById('studentShortcut');
+  if (studentShortcut) studentShortcut.classList.toggle('show', role === 'student');
+
+  initTutorProfile();
+  renderMyListings();
 }
 
 // -----------------------------------------------
 // CERRAR SESIÓN
 // -----------------------------------------------
 const logoutBtn = document.getElementById('logoutBtn');
-const profileToast = document.getElementById('profileToast');
 
 if (logoutBtn) {
   logoutBtn.addEventListener('click', () => {

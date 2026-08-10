@@ -50,6 +50,16 @@ const translations = {
     field_location: "Ubicación",
     field_password: "Contraseña",
     field_password_confirm: "Confirmar contraseña",
+    field_role: "¿Cómo quieres usar Noesis?",
+    role_student: "Soy estudiante",
+    role_student_desc: "Quiero comprar, publicar y encontrar tutores",
+    role_tutor: "Soy tutor",
+    role_tutor_desc: "Quiero ofrecer clases en la comunidad",
+    field_tutor_subject: "Materia principal",
+    field_tutor_price: "Precio por hora (B/.)",
+    field_tutor_bio: "Cuéntanos de ti como tutor",
+    cat_physics: "Física", cat_chemistry: "Química", cat_economics: "Economía",
+    cat_biology: "Biología", cat_math: "Matemáticas", cat_english: "Inglés", cat_systems: "Sistemas",
     uni_placeholder: "Selecciona tu universidad",
     uni_other: "Otra",
     register_btn: "Crear cuenta",
@@ -74,6 +84,16 @@ const translations = {
     field_location: "Location",
     field_password: "Password",
     field_password_confirm: "Confirm password",
+    field_role: "How do you want to use Noesis?",
+    role_student: "I'm a student",
+    role_student_desc: "I want to buy, sell, and find tutors",
+    role_tutor: "I'm a tutor",
+    role_tutor_desc: "I want to offer classes in the community",
+    field_tutor_subject: "Main subject",
+    field_tutor_price: "Price per hour (B/.)",
+    field_tutor_bio: "Tell us about yourself as a tutor",
+    cat_physics: "Physics", cat_chemistry: "Chemistry", cat_economics: "Economics",
+    cat_biology: "Biology", cat_math: "Mathematics", cat_english: "English", cat_systems: "Systems",
     uni_placeholder: "Select your university",
     uni_other: "Other",
     register_btn: "Create account",
@@ -174,6 +194,40 @@ document.querySelectorAll('.auth-toggle-pass').forEach(btn => {
 });
 
 // -----------------------------------------------
+// SELECTOR DE ROL (estudiante / tutor)
+// Muestra/oculta los campos exclusivos de tutor según
+// la opción elegida, y resalta la tarjeta seleccionada.
+// -----------------------------------------------
+const roleSelector = document.getElementById('roleSelector');
+const tutorFields = document.getElementById('tutorFields');
+
+function updateRoleUI() {
+  if (!roleSelector) return;
+  const checked = roleSelector.querySelector('input[name="registerRole"]:checked');
+  const role = checked ? checked.value : 'student';
+
+  roleSelector.querySelectorAll('.role-card').forEach(card => {
+    card.classList.toggle('selected', card.dataset.role === role);
+  });
+
+  if (tutorFields) {
+    tutorFields.classList.toggle('show', role === 'tutor');
+    // Los campos de tutor solo son "required" cuando son visibles
+    const subjectSelect = document.getElementById('registerSubject');
+    const priceInput = document.getElementById('registerPrice');
+    if (subjectSelect) subjectSelect.required = (role === 'tutor');
+    if (priceInput) priceInput.required = (role === 'tutor');
+  }
+}
+
+if (roleSelector) {
+  roleSelector.querySelectorAll('input[name="registerRole"]').forEach(input => {
+    input.addEventListener('change', updateRoleUI);
+  });
+  updateRoleUI();
+}
+
+// -----------------------------------------------
 // UTILIDAD: mostrar error + sacudir formulario
 // -----------------------------------------------
 function showFormError(form, errorBox, message) {
@@ -207,9 +261,25 @@ if (registerForm) {
     const password = registerForm.registerPassword.value;
     const password2 = registerForm.registerPassword2.value;
 
+    const roleChecked = registerForm.querySelector('input[name="registerRole"]:checked');
+    const role = roleChecked ? roleChecked.value : 'student';
+
     if (!name || !email || !university || !location || !password || !password2) {
       showFormError(registerForm, registerError, t('err_required'));
       return;
+    }
+
+    // Campos exclusivos de tutor: solo se validan si el rol elegido es "tutor"
+    let tutorSubject = null, tutorPrice = null, tutorBio = '';
+    if (role === 'tutor') {
+      tutorSubject = registerForm.registerSubject.value;
+      tutorPrice = parseFloat(registerForm.registerPrice.value);
+      tutorBio = registerForm.registerBio.value.trim();
+
+      if (!tutorSubject || isNaN(tutorPrice) || tutorPrice <= 0 || !tutorBio) {
+        showFormError(registerForm, registerError, t('err_required'));
+        return;
+      }
     }
 
     if (password.length < 4) {
@@ -235,8 +305,18 @@ if (registerForm) {
       password, // ⚠️ Solo simulado — nunca guardar contraseñas en texto plano en un sistema real
       university,
       location,
+      role, // "student" o "tutor"
       createdAt: new Date().toISOString()
     };
+
+    // Si es tutor, guardamos también su información de tutoría —
+    // comunidad.js la lee para mostrarlo como tutor real en el listado.
+    if (role === 'tutor') {
+      newUser.tutorSubject = tutorSubject;
+      newUser.tutorPrice = tutorPrice;
+      newUser.tutorBio = tutorBio;
+    }
+
     users.push(newUser);
     saveUsers(users);
     setSession(newUser.email);
@@ -286,4 +366,3 @@ if (cursor && cursorFollower) {
   }
   animateFollower();
 }
-localStorage.clear();

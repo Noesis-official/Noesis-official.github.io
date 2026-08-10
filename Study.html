@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Noesis - Market Place</title>
+  <title>Noesis - Study Material</title>
   <link rel="stylesheet" href="marketplace.css" />
+  <link rel="stylesheet" href="Study.css" />
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -26,11 +27,11 @@
         </div>
 
         <nav class="nav-links" id="navLinks">
-         <a href="index.html" class="nav-link" data-i18n="nav_menu">MENU</a>
-         <a href="#" class="nav-link active" data-i18n="nav_market">MARKETPLACE</a>
-        <a href="comunidad.html" class="nav-link" data-i18n="nav_community">COMUNIDAD</a>
-        <a class="nav-link" data-i18n="nav_Material" href="Study.html">STUDY MATERIAL</a>
-        <a href="books.html" class="nav-link" data-i18n="nav_books">BOOKS</a>
+           <a href="index.html" class="nav-link" data-i18n="nav_menu">MENU</a>
+            <a href="marketplace.html" class="nav-link" data-i18n="nav_market">MARKETPLACE</a>
+            <a href="comunidad.html" class="nav-link" data-i18n="nav_community">COMUNIDAD</a>
+            <a class="nav-link" data-i18n="nav_Material" href="Study.html">STUDY MATERIAL</a>
+            <a href="books.html" class="nav-link" data-i18n="nav_books">BOOKS</a>
         </nav>
 
         <div class="nav-icons">
@@ -50,7 +51,7 @@
                 </div>
             </div>
 
-            <!-- Botón para publicar un producto -->
+            <!-- Botón para publicar un kit -->
             <button class="sell-btn" id="sellBtn" type="button">
                 <i class="fa-solid fa-plus"></i>
                 <span data-i18n="sell_btn">Vender</span>
@@ -70,7 +71,7 @@
                         <!-- Ítems del carrito inyectados por JS -->
                     </div>
                     <div class="cart-empty" id="cartEmpty">
-                        <img src="IMG/mascot-thinking.png" alt=""/>
+                        <i class="fa-solid fa-cart-shopping"></i>
                         <p data-i18n="cart_empty_msg">Tu carrito está vacío</p>
                     </div>
                     <div class="cart-footer" id="cartFooter">
@@ -103,7 +104,7 @@
 <div class="toolbar">
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Buscar productos...">
+        <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder_study" placeholder="Buscar kits de estudio...">
     </div>
 
     <div class="notification-bar" id="notificationBar">
@@ -112,8 +113,8 @@
             <span class="bell-badge" id="bellBadge" style="display:none">0</span>
         </button>
 
-        <div class="notif-msg" id="notifMsg" data-i18n="notif_msg">
-            Remember to use this section correctly!
+        <div class="notif-msg" id="notifMsg" data-i18n="notif_msg_study">
+            Here we'll let you know if we add new study kits.
         </div>
 
         <!-- Panel desplegable con el detalle de publicaciones nuevas -->
@@ -130,10 +131,9 @@
 <!-- BARRA DE FILTROS -->
 <div class="filters-bar" id="filtersBar">
 
-    <div class="filter-group filter-condition" id="conditionFilterGroup" role="group" aria-label="Condición">
-        <button type="button" class="filter-chip active" data-condition="all" data-i18n="filter_all">Todos</button>
-        <button type="button" class="filter-chip" data-condition="new" data-i18n="condition_new">Nuevo</button>
-        <button type="button" class="filter-chip" data-condition="used" data-i18n="condition_used">Segunda mano</button>
+    <div class="filter-group filter-condition" id="categoryFilterGroup" role="group" aria-label="Categoría">
+        <button type="button" class="filter-chip active" data-category="all" data-i18n="filter_all">Todos</button>
+        <!-- Chips de categoría inyectados por JS -->
     </div>
 
     <div class="filter-group filter-price">
@@ -163,102 +163,106 @@
 
 <!-- MENSAJE "SIN RESULTADOS" -->
 <div class="no-results" id="noResults">
-    <img src="IMG/mascot-thinking.png" alt=""/>
-    <h3 data-i18n="no_results_title">¿Nada por aquí?</h3>
-    <p data-i18n="no_results_msg">No encontramos productos con ese nombre.</p>
+    <i class="fa-solid fa-magnifying-glass-minus"></i>
+    <p data-i18n="no_results_msg">No encontramos kits con ese nombre.</p>
 </div>
 
 <!-- ===========================
-     MODAL DE DETALLES
-     Estructura pensada para que cada producto muestre:
-     ícono + nombre, condición (nuevo/segunda mano), precio,
-     descripción, categorías que lo usan y una mini-galería.
-     Todo el contenido dinámico lo llena script.js a partir
-     del arreglo `products`.
+     MODAL DE DETALLES DE UN KIT
 =========================== -->
 <div class="modal" id="productModal">
 
-    <div class="modal-content">
+    <div class="modal-content kit-modal-content">
 
         <span class="close" id="closeModal">&times;</span>
 
-        <!-- Encabezado: ícono del producto + nombre -->
+        <!-- Encabezado: ícono del kit + nombre + universidad del vendedor -->
         <div class="modal-header">
-            <div class="modal-icon" id="modalIcon">
-                <i class="fa-solid fa-box"></i>
+            <div class="modal-image kit-modal-image">
+                <img id="modalMainImage" src="" alt="">
             </div>
-            <h2 class="modal-title" id="modalTitle" data-i18n="modal_default_title">
-                Nombre del producto
-            </h2>
         </div>
 
-        <!-- Condición del producto (Nuevo / Segunda mano) -->
-        <span class="modal-condition" id="modalCondition">Segunda mano</span>
+        <h2 class="modal-title" id="modalTitle" data-i18n="modal_default_title">
+            Nombre del kit
+        </h2>
 
-        <!-- Precio destacado -->
-        <div class="modal-price" id="modalPrice">B/. 0.00</div>
+        <div class="modal-seller-line" id="modalSellerLine">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span id="modalSellerUniLine"></span>
+        </div>
 
-        <div class="modal-body">
+        <!-- Precio destacado + condición -->
+        <div class="kit-price-row">
+            <div class="modal-price" id="modalPrice">B/. 0.00</div>
+            <span class="modal-condition" id="modalCondition">Excelente estado</span>
+        </div>
 
-            <!-- Columna izquierda: imagen principal + galería -->
-            <div class="modal-image-col">
+        <!-- Galería de miniaturas -->
+        <div class="modal-gallery" id="modalGallery">
+            <!-- Miniaturas inyectadas por JS -->
+        </div>
 
-                <div class="modal-image">
-                    <img id="modalMainImage" src="" alt="">
-                </div>
+        <div class="modal-body kit-modal-body">
 
-                <!--
-                  GALERÍA DE MINIATURAS
-                  Se genera dinámicamente en script.js a partir de
-                  product.gallery (4 imágenes por producto).
-                  Para agregar fotos reales, solo reemplaza las rutas
-                  del arreglo `gallery` de cada producto en script.js
-                  (busca el comentario "AGREGAR IMÁGENES AQUÍ").
-                  Si una imagen no existe todavía, se muestra la
-                  imagen principal como respaldo automático.
-                -->
-                <div class="modal-gallery" id="modalGallery">
-                    <!-- Miniaturas inyectadas por JS -->
-                </div>
-
-            </div>
-
-            <!-- Columna derecha: descripción, categorías y acciones -->
+            <!-- Columna izquierda: qué incluye el kit -->
             <div class="modal-info">
-
-                <h3 class="modal-section-title" data-i18n="modal_desc_title">Descripción</h3>
-                <p class="modal-description" id="modalDescription" data-i18n="modal_default_desc">
-                    Descripción del producto.
-                </p>
-
-                <!-- Información del vendedor: nombre, universidad y ubicación -->
-                <div class="modal-seller-box" id="modalSellerBox"></div>
-
-                <h3 class="modal-section-title" data-i18n="modal_tags_title">¿Quiénes lo usan?</h3>
-                <div class="modal-tags" id="modalTags">
-                    <!-- Chips de categorías inyectados por JS -->
-                </div>
-
-                <div class="modal-actions" id="modalActions">
-                    <button class="modal-btn-outline" id="addToCartBtn" type="button">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span data-i18n="modal_add_cart">Añadir al carrito</span>
-                    </button>
-                    <button class="modal-btn" id="buyNowBtn" type="button" data-i18n="modal_buy_now">
-                        Comprar ahora
-                    </button>
-                    <button class="modal-btn-outline" id="contactSellerBtn" type="button">
-                        <i class="fa-brands fa-whatsapp"></i>
-                        <span data-i18n="modal_contact">Contactar vendedor</span>
-                    </button>
-                    <button class="modal-btn-danger" id="deleteListingBtn" type="button" style="display:none">
-                        <i class="fa-solid fa-trash"></i>
-                        <span data-i18n="delete_listing_btn">Eliminar publicación</span>
-                    </button>
-                </div>
-
+                <h3 class="modal-section-title" data-i18n="modal_includes_title">Incluye</h3>
+                <ul class="includes-list" id="modalIncludes">
+                    <!-- Ítems inyectados por JS -->
+                </ul>
             </div>
 
+            <!-- Columna derecha: datos del kit (categoría, condición, publicado, vendedor) -->
+            <div class="modal-info kit-info-col">
+                <div class="kit-info-row">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <span class="kit-info-label" data-i18n="modal_category_label">Categoría</span>
+                        <span class="kit-info-value" id="modalCategory">—</span>
+                    </div>
+                </div>
+                <div class="kit-info-row">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <span class="kit-info-label" data-i18n="modal_condition_label">Condición</span>
+                        <span class="kit-info-value" id="modalConditionValue">—</span>
+                    </div>
+                </div>
+                <div class="kit-info-row">
+                    <i class="fa-regular fa-calendar"></i>
+                    <div>
+                        <span class="kit-info-label" data-i18n="modal_posted_label">Publicado</span>
+                        <span class="kit-info-value" id="modalPosted">—</span>
+                    </div>
+                </div>
+                <div class="kit-info-row">
+                    <i class="fa-solid fa-user"></i>
+                    <div>
+                        <span class="kit-info-label" data-i18n="modal_seller_student_label">Vendedor estudiante</span>
+                        <span class="kit-info-value" id="modalSellerName">—</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal-actions" id="modalActions">
+            <button class="modal-btn-outline" id="contactSellerBtn" type="button">
+                <i class="fa-brands fa-whatsapp"></i>
+                <span data-i18n="modal_message_seller">Contactar vendedor</span>
+            </button>
+            <button class="modal-btn-outline" id="addToCartBtn" type="button">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span data-i18n="modal_add_cart">Añadir al carrito</span>
+            </button>
+            <button class="modal-btn" id="buyNowBtn" type="button" data-i18n="modal_buy_now">
+                Comprar ahora
+            </button>
+            <button class="modal-btn-danger" id="deleteListingBtn" type="button" style="display:none">
+                <i class="fa-solid fa-trash"></i>
+                <span data-i18n="delete_listing_btn">Eliminar publicación</span>
+            </button>
         </div>
 
     </div>
@@ -269,11 +273,7 @@
 </div>
 
 <!-- ===========================
-     MODAL PARA PUBLICAR UN PRODUCTO
-     Requiere sesión activa (localStorage). Los productos
-     publicados se guardan en localStorage bajo la clave
-     "noesis_user_products" y se combinan con el catálogo
-     de ejemplo al renderizar el grid.
+     MODAL PARA PUBLICAR UN KIT
 =========================== -->
 <div class="modal" id="publishModal">
     <div class="modal-content publish-content">
@@ -281,8 +281,8 @@
         <span class="close" id="closePublishModal">&times;</span>
 
         <div class="modal-header">
-            <div class="modal-icon"><i class="fa-solid fa-store"></i></div>
-            <h2 class="modal-title" data-i18n="publish_title">Publicar un producto</h2>
+            <div class="modal-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+            <h2 class="modal-title" data-i18n="publish_title_study">Publicar un kit de estudio</h2>
         </div>
 
         <form class="publish-form" id="publishForm" novalidate>
@@ -290,46 +290,47 @@
             <div class="publish-error" id="publishError"></div>
 
             <div class="publish-field">
-                <label for="publishName" data-i18n="publish_name_label">Nombre del producto</label>
-                <input type="text" id="publishName" name="publishName" placeholder="Ej. Calculadora científica" required>
+                <label for="publishName" data-i18n="publish_name_label_study">Nombre del kit</label>
+                <input type="text" id="publishName" name="publishName" placeholder="Ej. Kit de enfermería" required>
             </div>
 
             <div class="publish-field-row">
                 <div class="publish-field">
                     <label for="publishPrice" data-i18n="publish_price_label">Precio (B/.)</label>
-                    <input type="number" id="publishPrice" name="publishPrice" min="0" step="0.01" placeholder="20.00" required>
+                    <input type="number" id="publishPrice" name="publishPrice" min="0" step="0.01" placeholder="120.00" required>
                 </div>
 
                 <div class="publish-field">
                     <label for="publishCondition" data-i18n="publish_condition_label">Condición</label>
                     <select id="publishCondition" name="publishCondition" required>
                         <option value="new" data-i18n="condition_new">Nuevo</option>
+                        <option value="excellent" data-i18n="condition_excellent">Excelente estado</option>
                         <option value="used" data-i18n="condition_used">Segunda mano</option>
                     </select>
                 </div>
             </div>
 
             <div class="publish-field">
-                <label data-i18n="publish_tags_label">¿Quiénes lo usan? (elige una o más)</label>
+                <label data-i18n="publish_category_label">Categoría (elige una)</label>
                 <div class="publish-tags" id="publishTagsContainer">
                     <!-- Chips de categorías inyectados por JS -->
                 </div>
             </div>
 
             <div class="publish-field">
-                <label for="publishDescription" data-i18n="publish_desc_label">Descripción</label>
-                <textarea id="publishDescription" name="publishDescription" rows="3" placeholder="Cuéntale a los compradores el estado del artículo..." required></textarea>
+                <label for="publishIncludes" data-i18n="publish_includes_label">¿Qué incluye? (una por línea)</label>
+                <textarea id="publishIncludes" name="publishIncludes" rows="4" placeholder="Calculadora científica&#10;Gafas de seguridad&#10;Libreta de laboratorio" required></textarea>
             </div>
 
             <div class="publish-field">
-                <label for="publishImage" data-i18n="publish_image_label">Foto del producto</label>
+                <label for="publishImage" data-i18n="publish_image_label">Foto del kit</label>
                 <input type="file" id="publishImage" name="publishImage" accept="image/*" required>
                 <img id="publishImagePreview" class="publish-image-preview" alt="">
             </div>
 
             <button type="submit" class="modal-btn publish-submit-btn">
-                <i class="fa-solid fa-store"></i>
-                <span data-i18n="publish_submit_btn">Publicar producto</span>
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span data-i18n="publish_submit_btn_study">Publicar kit</span>
             </button>
 
             <p class="publish-hint" data-i18n="publish_hint">Simulado con localStorage — tu publicación solo se guarda en este navegador.</p>
@@ -339,7 +340,7 @@
 </div>
 
 <!-- =============================================
-     FOOTER — mismo diseño que index.html/Books.html
+     FOOTER — mismo diseño que index.html/marketplace.html
 ============================================= -->
 <footer class="footer">
 <div class="footer-inner">
@@ -353,8 +354,9 @@
 <h4 data-i18n="footer_platform">Plataforma</h4>
 <ul>
 <li><a data-i18n="footer_marketplace" href="marketplace.html">Marketplace</a></li>
+<li><a data-i18n="nav_Study" href="Study.html">Study Material</a></li>
 <li><a data-i18n="nav_books" href="books.html">Books</a></li>
-<li><a data-i18n="footer_kits" href="#">Kits de Inicio</a></li>
+<li><a data-i18n="footer_kits" href="Study.html">Kits de Inicio</a></li>
 </ul>
 </div>
 <div class="footer-links">
@@ -388,7 +390,7 @@
 <!-- Toast global (fuera de los modales) para confirmar acciones del carrito -->
 <div class="toast-global" id="globalToast"></div>
 
-<script src="marketplace.js"></script>
+<script src="Study.js"></script>
 <script src="mascot-widget.js"></script>
 </body>
 </html>

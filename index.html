@@ -23,8 +23,9 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 <div class="nav-links" id="navLinks">
 <a class="nav-link active" data-i18n="nav_menu" href="#">MENU</a>
 <a class="nav-link" data-i18n="nav_market" href="marketplace.html">MARKETPLACE</a>
-<a class="nav-link" data-i18n="nav_study" href="#">STUDY MATERIAL</a>
-<a class="nav-link" data-i18n="nav_books" href="#">BOOKS</a>
+<a class="nav-link" data-i18n="nav_community" href="comunidad.html">COMUNIDAD</a>
+<a class="nav-link" data-i18n="nav_Material" href="Study.html">STUDY MATERIAL</a>
+<a class="nav-link" data-i18n="nav_books" href="books.html">BOOKS</a>
 </div>
 <div class="nav-icons">
 <!-- Selector de idioma -->
@@ -37,6 +38,7 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 </svg>
 <span id="langCurrent">ES</span>
 </button>
+
 <div class="lang-dropdown" id="langDropdown">
 <button class="lang-option active" data-lang="es" type="button">🇪🇸 Español</button>
 <button class="lang-option" data-lang="en" type="button">🇬🇧 English</button>
@@ -56,7 +58,7 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 <!-- Ítems del carrito inyectados por JS -->
 </div>
 <div class="cart-empty" id="cartEmpty">
-<i class="fa-solid fa-cart-shopping"></i>
+<img src="IMG/mascot-thinking.png" alt=""/>
 <p data-i18n="cart_empty_msg">Tu carrito está vacío</p>
 </div>
 <div class="cart-footer" id="cartFooter">
@@ -110,9 +112,9 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 </section>
 <section class="offer fade-in-section">
 <div class="offer-card">
-<img alt="FocoIndexPrincipal" class="offer-deco offer-deco--left" src="img/img1.png"/>
-<img alt="LibroIndexPrincipal" class="offer-deco offer-deco--right" src="img/img2.png"/>
-<h2 class="offer-title" data-i18n="offer_title">WHAT WE OFFER</h2>
+<img alt="FocoIndexPrincipal" class="offer-deco offer-deco--left" src="img/foco.png"/>
+<img alt="LibroIndexPrincipal" class="offer-deco offer-deco--right" src="img/clips.png"/>
+<h2 class="offer-title" data-i18n="offer_title">WHAT WE OFFER?</h2>
 <p class="offer-text" data-i18n="offer_text">
         We offer study materials, notes, guides, summaries, and educational resources for students
         from elementary school to university. We also provide affordable school supplies and
@@ -212,11 +214,9 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
      VIDEOS + FAQ
 ============================================= -->
 <section class="faq-section" id="ayuda">
-<div class="faq-videos-wrapper">
-<!-- Video izquierdo -->
-<div class="faq-video">
-<video autoplay="" loop="" muted="" playsinline="" src="VID/video izq.mp4"></video>
-</div>
+         <video class="faq-bg-video" autoplay muted loop playsinline>
+        <source src="VID/Preguntas.mp4" type="video/mp4">
+    </video>
 <!-- FAQ -->
 <div class="container">
 <div class="faq-inner">
@@ -260,10 +260,6 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 </div>
 </div>
 </div>
-<!-- Video derecho -->
-<div class="faq-video">
-<video autoplay="" loop="" muted="" playsinline="" src="VID/video der.mp4"></video>
-</div>
 </div>
 </section>
 <!-- =============================================
@@ -285,6 +281,10 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 </div>
 <!-- Formulario de contacto -->
 <form class="contact-form" id="contactForm" novalidate="">
+<!-- Web3Forms: clave de acceso y configuración -->
+<input type="hidden" name="access_key" value="94c3a369-fe78-42fd-87ef-f0db7d37bf80"/>
+<input type="hidden" name="subject" value="Nuevo mensaje de contacto — Noesis"/>
+<input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off"/>
 <div class="form-group">
 <label data-i18n="form_name" for="nombre">Nombre</label>
 <input id="nombre" name="nombre" placeholder="Tu nombre completo" required="" type="text"/>
@@ -300,6 +300,10 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 <!-- Mensaje de éxito tras envío -->
 <div class="form-success" id="formSuccess">
 <i class="ph ph-check-circle"></i> <span data-i18n="form_success">¡Mensaje enviado! Te contactamos pronto.</span>
+        </div>
+<!-- Mensaje de error si el envío falla -->
+<div class="form-error-msg" id="formErrorMsg">
+<i class="ph ph-warning-circle"></i> <span data-i18n="form_error">No se pudo enviar el mensaje. Inténtalo de nuevo o escríbenos directamente a esauc.montenegro2027@fegrjdavid.superate.org</span>
         </div>
 <button class="btn btn-primary btn-full" type="submit">
 <i class="ph ph-paper-plane-tilt"></i> <span data-i18n="form_btn">Enviar mensaje</span>
@@ -359,5 +363,6 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 
 <!-- Script de interactividad externo -->
 <script src="index.js"></script>
+<script src="mascot-widget.js"></script>
 </body>
 </html>

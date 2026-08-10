@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Noesis — Mi perfil</title>
-<link rel="icon" type="image/png" href="IMG/favicon.png"/>
 <link rel="stylesheet" href="perfil.css" />
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -48,6 +47,7 @@
 
     <div class="profile-banner">
       <span class="profile-tag" data-i18n="profile_tag">Cuenta simulada · localStorage</span>
+      <span class="profile-role-badge" id="profileRoleBadge"></span>
       <div class="profile-avatar" id="profileAvatar">N</div>
       <h1 class="profile-name" id="profileName">—</h1>
       <span class="profile-email" id="profileEmail">—</span>
@@ -79,6 +79,88 @@
       </div>
     </div>
 
+    <!-- Sección exclusiva de tutores: su información de tutoría en comunidad -->
+    <div class="tutor-profile-section" id="tutorProfileSection">
+      <h3 class="my-listings-title">
+        <i class="fa-solid fa-chalkboard-user"></i>
+        <span data-i18n="tutor_profile_title">Mi perfil de tutor</span>
+      </h3>
+
+      <div class="tutor-profile-card" id="tutorProfileView">
+        <div class="tutor-profile-row">
+          <span class="detail-label" data-i18n="field_tutor_subject">Materia principal</span>
+          <span class="detail-value" id="tutorProfileSubject">—</span>
+        </div>
+        <div class="tutor-profile-row">
+          <span class="detail-label" data-i18n="field_tutor_price">Precio por hora (B/.)</span>
+          <span class="detail-value" id="tutorProfilePrice">—</span>
+        </div>
+        <div class="tutor-profile-row tutor-profile-bio">
+          <span class="detail-label" data-i18n="field_tutor_bio">Cuéntanos de ti como tutor</span>
+          <p id="tutorProfileBio">—</p>
+        </div>
+        <div class="tutor-profile-actions">
+          <button class="auth-btn auth-btn-outline" id="editTutorProfileBtn" type="button">
+            <i class="fa-solid fa-pen"></i> <span data-i18n="edit_tutor_profile">Editar</span>
+          </button>
+          <a href="comunidad.html" class="auth-btn auth-btn-primary">
+            <i class="fa-solid fa-users"></i> <span data-i18n="view_in_community">Ver en la comunidad</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Formulario de edición (oculto hasta que se pulse "Editar") -->
+      <form class="tutor-profile-form" id="tutorProfileForm">
+        <div class="auth-field-row">
+          <div class="auth-field">
+            <label for="editTutorSubject" data-i18n="field_tutor_subject">Materia principal</label>
+            <div class="auth-input-wrap">
+              <i class="fa-solid fa-book-open"></i>
+              <select id="editTutorSubject" name="editTutorSubject">
+                <option value="physics" data-i18n="cat_physics">Física</option>
+                <option value="chemistry" data-i18n="cat_chemistry">Química</option>
+                <option value="economics" data-i18n="cat_economics">Economía</option>
+                <option value="biology" data-i18n="cat_biology">Biología</option>
+                <option value="math" data-i18n="cat_math">Matemáticas</option>
+                <option value="english" data-i18n="cat_english">Inglés</option>
+                <option value="systems" data-i18n="cat_systems">Sistemas</option>
+              </select>
+            </div>
+          </div>
+          <div class="auth-field">
+            <label for="editTutorPrice" data-i18n="field_tutor_price">Precio por hora (B/.)</label>
+            <div class="auth-input-wrap">
+              <i class="fa-solid fa-sack-dollar"></i>
+              <input type="number" id="editTutorPrice" name="editTutorPrice" min="5" step="1">
+            </div>
+          </div>
+        </div>
+        <div class="auth-field">
+          <label for="editTutorBio" data-i18n="field_tutor_bio">Cuéntanos de ti como tutor</label>
+          <div class="auth-input-wrap">
+            <i class="fa-solid fa-comment"></i>
+            <input type="text" id="editTutorBio" name="editTutorBio">
+          </div>
+        </div>
+        <div class="tutor-profile-actions">
+          <button type="submit" class="auth-btn auth-btn-primary">
+            <i class="fa-solid fa-check"></i> <span data-i18n="save_changes">Guardar cambios</span>
+          </button>
+          <button type="button" class="auth-btn auth-btn-outline" id="cancelEditTutorBtn">
+            <span data-i18n="cancel">Cancelar</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Atajo exclusivo de estudiantes: buscar tutores en la comunidad -->
+    <div class="student-shortcut" id="studentShortcut">
+      <a href="comunidad.html" class="auth-btn auth-btn-outline">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span data-i18n="find_tutors">Buscar tutores</span>
+      </a>
+    </div>
+
     <div class="profile-actions">
       <a href="marketplace.html" class="auth-btn auth-btn-primary">
         <i class="fa-solid fa-store"></i>
@@ -88,6 +170,18 @@
         <i class="fa-solid fa-right-from-bracket"></i>
         <span data-i18n="logout_btn">Cerrar sesión</span>
       </button>
+    </div>
+
+    <!-- Mis publicaciones (productos que este usuario ha publicado) -->
+    <div class="my-listings">
+      <h3 class="my-listings-title">
+        <i class="fa-solid fa-tags"></i>
+        <span data-i18n="my_listings_title">Mis publicaciones</span>
+      </h3>
+      <div class="my-listings-grid" id="myListingsGrid"></div>
+      <p class="my-listings-empty" id="myListingsEmpty" data-i18n="my_listings_empty">
+        Todavía no has publicado ningún producto. ¡Ve al marketplace y vende algo!
+      </p>
     </div>
 
     <p class="profile-note" data-i18n="profile_note">

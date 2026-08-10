@@ -1,0 +1,1865 @@
+/* =====================================================
+   NOESIS — books.css
+   Estilos propios de la página Books.
+   Usa las mismas variables definidas en index.css
+   (--green-dark, --green-mid, --green-pastel, --yellow,
+   --cream, --font-title, --font-body, --radius-*, --shadow*)
+   para mantener el mismo lenguaje visual del sitio.
+===================================================== */
+
+/* ==========================
+   ENCABEZADO
+========================== */
+body{
+    font-family:var(--font-body);
+    color:var(--text);
+    background:var(--cream);
+    min-height:100vh;
+}
+
+/* ==========================
+   NAVBAR
+========================== */
+
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    padding:14px 36px;
+    backdrop-filter:blur(14px);
+    background:rgba(53,91,76,.72);
+    border-bottom:1px solid rgba(200,233,215,.18);
+    transition:all .35s cubic-bezier(.4,0,.2,1);
+}
+
+.navbar.scrolled{
+    background:rgba(53,91,76,.94);
+    padding:10px 36px;
+    box-shadow:0 4px 24px rgba(53,91,76,.22);
+}
+
+.nav-inner{
+    max-width:1280px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+}
+
+.nav-logo{
+    font-family:"Cormorant Garamond", serif;
+    font-size:2rem;
+    color:#F5EDB7;
+    font-weight:700;
+    letter-spacing:.05em;
+}
+
+.nav-links{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.nav-link{
+    display:inline-block;
+    text-decoration:none;
+    color:white;
+    padding:9px 22px;
+    border-radius:50px;
+    border:1px solid rgba(255,255,255,.2);
+    background:transparent;
+    font-size:.8rem;
+    font-weight:500;
+    letter-spacing:.05em;
+    transition:.3s ease;
+}
+
+.nav-link:hover{
+    background:rgba(255,255,255,.12);
+    border-color:rgba(255,255,255,.4);
+    color:#F5EDB7;
+    transform:translateY(-2px);
+}
+
+.nav-link.active{
+    background:rgba(255,255,255,.16);
+    border-color:rgba(255,255,255,.45);
+    color:#F5EDB7;
+    font-weight:600;
+}
+
+.nav-icons{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.nav-icon-btn{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    background:rgba(255,255,255,.15);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.3s;
+}
+
+.nav-icon-btn:hover{
+    transform:translateY(-3px);
+    background:rgba(255,255,255,.28);
+}
+
+/* ==========================
+   HAMBURGUESA (menú móvil)
+========================== */
+
+.hamburger{
+    display:none;
+    flex-direction:column;
+    gap:5px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:6px;
+}
+
+.hamburger span{
+    display:block;
+    width:24px;
+    height:2px;
+    background:#fff;
+    border-radius:2px;
+    transition:.35s ease;
+}
+
+.hamburger.active span:nth-child(1){
+    transform:translateY(7px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2){
+    opacity:0;
+}
+
+.hamburger.active span:nth-child(3){
+    transform:translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width:768px){
+    .nav-links{
+        display:none;
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        background:rgba(53,91,76,.97);
+        flex-direction:column;
+        align-items:stretch;
+        padding:25px;
+        gap:8px;
+    }
+
+    .nav-links.open{
+        display:flex;
+    }
+
+    .hamburger{
+        display:flex;
+    }
+
+    .lang-dropdown{
+        right:0;
+        left:auto;
+    }
+}
+
+/* ==========================
+   SELECTOR DE IDIOMA (ES / EN)
+   (igual que marketplace.css — antes faltaba por completo,
+   por eso el dropdown se veía "abierto" en línea)
+========================== */
+
+.lang-switcher{
+    position:relative;
+}
+
+.lang-btn{
+    width:auto;
+    padding:0 14px;
+    gap:6px;
+    font-family:var(--font-body);
+    font-size:.78rem;
+    font-weight:600;
+    letter-spacing:.03em;
+    border-radius:50px;
+}
+
+.lang-btn svg{
+    flex-shrink:0;
+}
+
+.lang-dropdown{
+    position:absolute;
+    top:calc(100% + 12px);
+    right:0;
+    min-width:160px;
+    background:var(--cream);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(53,91,76,.18);
+    border:1px solid rgba(53,91,76,.10);
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-8px);
+    transition:opacity .25s ease, transform .25s ease, visibility .25s ease;
+    z-index:1200;
+}
+
+.lang-dropdown.open{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+
+.lang-option{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:12px 18px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-family:var(--font-body);
+    font-size:.85rem;
+    color:var(--text);
+    transition:background .2s ease, color .2s ease;
+}
+
+.lang-option:hover{
+    background:var(--green-pastel);
+}
+
+.lang-option.active{
+    font-weight:600;
+    color:var(--green-dark);
+    background:var(--green-pastel);
+}
+:root{
+    /* Mismos valores exactos que marketplace.css para que ambas
+       páginas compartan idéntica paleta (antes el amarillo y el
+       crema de Books eran más dorados/cálidos y se notaba el salto). */
+    --green-dark:#355B4C;
+    --green-mid:#7DAF9C;
+    --green-pastel:#C8E9D7;
+    --blue-pastel:#B8DDEB;
+    --yellow:#F5EDB7;
+    --cream:#FFFBEA;
+    --white:#ffffff;
+    --text:#1E1E1E;
+
+    --font-title:"Cormorant Garamond", serif;
+    --font-body:"Poppins", sans-serif;
+
+    --radius-md:24px;
+
+    --shadow-soft:0 8px 20px rgba(0,0,0,.08);
+    --shadow:0 12px 32px rgba(0,0,0,.12);
+}
+.books-hero{
+    background:var(--green-dark);
+    padding:60px 40px 80px;
+    text-align:center;
+}
+
+.books-hero h1{
+    font-family:var(--font-title);
+    font-size:clamp(2.2rem,5vw,3.4rem);
+    color:var(--yellow);
+    margin-bottom:14px;
+}
+
+.books-hero p{
+    color:rgba(255,255,255,.82);
+    font-size:.95rem;
+    max-width:520px;
+    margin:0 auto;
+    line-height:1.7;
+}
+
+/* ==========================
+   LAYOUT PRINCIPAL
+========================== */
+
+.books-page{
+    background:var(--cream);
+    padding:0 40px 100px;
+}
+
+.books-shell{
+    max-width:1400px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:260px minmax(0,1fr);
+    gap:36px;
+    align-items:flex-start;
+    /* Antes todo el bloque subía con translateY(-46px) y por eso el
+       sidebar de categorías quedaba encima del hero verde.
+       Ahora solo el buscador sube (ver .books-main), y el sidebar
+       arranca ya dentro del área crema. */
+    padding-top:34px;
+}
+
+/* Solo la columna de resultados sube para que el buscador siga
+   "flotando" sobre el borde del hero. */
+.books-main{
+    margin-top:-80px;
+    /* Clave para el scroll horizontal: sin esto, la columna del grid
+       crece hasta caber todas las tarjetas y el que se desplaza es
+       toda la página (por eso la fila se salía de la pantalla y la
+       flecha quedaba fuera de vista). */
+    min-width:0;
+}
+
+/* ==========================
+   SIDEBAR DE CATEGORÍAS
+========================== */
+
+.books-sidebar{
+    position:sticky;
+    top:110px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    background:rgba(125,175,156,.35);
+    padding:26px 20px 40px;
+    border-radius:40px 40px 90px 40px;
+    box-shadow:var(--shadow-soft);
+    border:1px solid rgba(53,91,76,.10);
+}
+
+.cat-btn{
+    display:block;
+    width:100%;
+    padding:14px 18px;
+    border:none;
+    border-radius:50px;
+    background:var(--green-dark);
+    color:var(--yellow);
+    font-family:var(--font-body);
+    font-size:.85rem;
+    font-weight:500;
+    letter-spacing:.02em;
+    text-align:center;
+    cursor:pointer;
+    transition:.3s ease;
+}
+
+.cat-btn:hover{
+    background:#2a4a3c;
+    transform:translateY(-2px);
+}
+
+.cat-btn.active{
+    background:var(--yellow);
+    color:var(--green-dark);
+    font-weight:700;
+    box-shadow:0 10px 24px rgba(53,91,76,.25);
+}
+
+/* ==========================
+   BUSCADOR
+========================== */
+
+.books-search-wrap{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--white);
+    border:1px solid rgba(53,91,76,.18);
+    border-radius:50px;
+    padding:16px 26px;
+    margin-bottom:34px;
+    box-shadow:var(--shadow-soft);
+    transition:.3s ease;
+}
+
+.books-search-wrap:focus-within{
+    border-color:var(--green-mid);
+    box-shadow:0 0 0 4px rgba(125,175,156,.20);
+}
+
+.books-search-wrap i{
+    color:var(--green-mid);
+    font-size:1.1rem;
+}
+
+.books-search-wrap input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:none;
+    font-family:var(--font-body);
+    font-size:1rem;
+    color:var(--text);
+}
+
+/* ==========================
+   GRUPOS POR SUBCATEGORÍA (tags)
+========================== */
+
+.books-group{
+    margin-bottom:44px;
+}
+
+/* Encabezado de cada fila: etiqueta del tema + cantidad de libros */
+.books-group-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:14px;
+}
+
+.books-group-count{
+    font-family:var(--font-body);
+    font-size:.8rem;
+    color:var(--green-mid);
+    opacity:.8;
+    white-space:nowrap;
+}
+
+.books-group-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    padding:10px 26px;
+    background:var(--green-pastel);
+    color:var(--green-dark);
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:.85rem;
+    letter-spacing:.03em;
+    border-radius:50px;
+}
+
+/* ==========================
+   GRID DE LIBROS
+========================== */
+
+/* Fila horizontal tipo Netflix: las tarjetas se corren hacia la
+   derecha en lugar de bajar de línea. */
+.books-row-wrap{
+    position:relative;
+    min-width:0;
+    max-width:100%;
+}
+
+/* Degradados que insinúan que la fila continúa hacia ese lado */
+.books-row-wrap::before,
+.books-row-wrap::after{
+    content:'';
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:70px;
+    z-index:3;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s ease;
+}
+
+.books-row-wrap::before{
+    left:0;
+    background:linear-gradient(90deg,var(--cream) 20%,rgba(255,255,255,0));
+}
+
+.books-row-wrap::after{
+    right:0;
+    background:linear-gradient(270deg,var(--cream) 20%,rgba(255,255,255,0));
+}
+
+.books-row-wrap.fade-left::before,
+.books-row-wrap.fade-right::after{
+    opacity:1;
+}
+
+.books-grid{
+    display:flex;
+    gap:22px;
+    min-width:0;
+    max-width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-behavior:smooth;
+    scroll-snap-type:x proximity;
+    /* Espacio para que el hover (translateY -8px) no se recorte */
+    padding:12px 4px 22px;
+    /* Ocultar la barra de scroll (Firefox / IE / WebKit) */
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+}
+
+.books-grid::-webkit-scrollbar{
+    display:none;
+}
+
+.books-grid .book-card{
+    flex:0 0 190px;
+    width:190px;
+    scroll-snap-align:start;
+}
+
+/* Flechas de navegación (aparecen al pasar el mouse por la fila) */
+.row-arrow{
+    position:absolute;
+    top:calc(50% - 12px);
+    transform:translateY(-50%);
+    z-index:5;
+    width:44px;
+    height:44px;
+    border:none;
+    border-radius:50%;
+    background:var(--green-dark);
+    color:var(--yellow);
+    font-size:1rem;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 20px rgba(53,91,76,.28);
+    /* Visibles siempre que la fila se pueda desplazar (no solo al
+       pasar el mouse), para que se note que hay más libros al lado. */
+    opacity:.75;
+    transition:opacity .25s ease, background .25s ease, transform .2s ease;
+}
+
+.row-arrow.left{  left:-16px; }
+.row-arrow.right{ right:-16px; }
+
+.books-row-wrap:hover .row-arrow{
+    opacity:1;
+}
+
+.row-arrow:hover{
+    background:#2a4a3c;
+    transform:translateY(-50%) scale(1.08);
+}
+
+/* Se ocultan cuando ya no hay nada más hacia ese lado */
+.row-arrow.hidden{
+    opacity:0 !important;
+    pointer-events:none !important;
+}
+
+/* Fila que cabe completa: no hace falta ninguna flecha */
+.books-row-wrap.no-scroll .row-arrow{
+    display:none;
+}
+
+@media (hover:none){
+    /* En táctil se desliza con el dedo, no hacen falta flechas */
+    .row-arrow{ display:none; }
+}
+
+.book-card{
+    cursor:pointer;
+    border-radius:22px;
+    border:3px solid var(--green-pastel);
+    background:var(--white);
+    overflow:hidden;
+    box-shadow:var(--shadow-soft);
+    transition:.3s ease;
+    display:flex;
+    flex-direction:column;
+}
+
+.book-card:hover{
+    transform:translateY(-8px);
+    border-color:var(--green-mid);
+    box-shadow:var(--shadow);
+}
+
+.book-cover{
+    position:relative;
+    width:100%;
+    aspect-ratio:3/4;
+    background:linear-gradient(160deg,var(--green-pastel),var(--blue-pastel));
+    overflow:hidden;
+}
+
+.book-cover img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+/* Placeholder mostrado mientras no exista la imagen real.
+   Solo hay que colocar el archivo en la ruta indicada en
+   cada objeto de "books" dentro de books.js y esto
+   desaparece automáticamente. */
+.book-cover.img-missing img{
+    display:none;
+}
+
+.book-cover .img-placeholder{
+    display:none;
+    position:absolute;
+    inset:0;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:14px;
+    text-align:center;
+    color:var(--green-dark);
+}
+
+.book-cover.img-missing .img-placeholder{
+    display:flex;
+}
+
+.img-placeholder i{
+    font-size:1.6rem;
+    opacity:.55;
+}
+
+.img-placeholder span{
+    font-size:.68rem;
+    font-weight:600;
+    line-height:1.4;
+    opacity:.75;
+}
+
+.book-cover-overlay{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(53,91,76,.68);
+    color:var(--yellow);
+    font-family:var(--font-body);
+    font-size:.8rem;
+    font-weight:600;
+    opacity:0;
+    transition:.3s ease;
+}
+
+.book-card:hover .book-cover-overlay{
+    opacity:1;
+}
+
+.book-card-info{
+    padding:14px 14px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.book-card-title{
+    font-size:.82rem;
+    font-weight:600;
+    color:var(--text);
+    line-height:1.35;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+.book-card-price{
+    font-family:var(--font-title);
+    font-size:1.1rem;
+    font-weight:700;
+    color:var(--green-dark);
+}
+
+/* ==========================
+   SIN RESULTADOS
+========================== */
+
+.books-no-results{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    padding:30px 20px 50px;
+    text-align:center;
+    background:linear-gradient(180deg, var(--green-pastel) 0%, rgba(200,233,215,0) 100%);
+    border-radius:32px;
+}
+
+.books-no-results.show{
+    display:flex;
+}
+
+.books-no-results img{
+    width:170px;
+    height:auto;
+    margin-bottom:-6px;
+    filter:drop-shadow(0 10px 18px rgba(53,91,76,.18));
+    animation:emptyFloat 3.4s ease-in-out infinite;
+}
+
+.books-no-results h3{
+    font-family:var(--font-title);
+    font-size:1.3rem;
+    font-weight:700;
+    color:var(--green-dark);
+    margin-top:6px;
+}
+
+.books-no-results p{
+    max-width:340px;
+    font-size:.88rem;
+    color:var(--green-dark);
+    opacity:.75;
+    line-height:1.6;
+}
+
+@keyframes emptyFloat{
+    0%,100%{ transform:translateY(0) rotate(-2deg); }
+    50%{ transform:translateY(-10px) rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .books-no-results img{ animation:none; }
+}
+
+/* ==========================================
+   MODAL DE DETALLES
+   Estructura y estilos tomados de marketplace.css para que
+   la ventana de detalles de Books se vea igual que la del
+   marketplace (encabezado con ícono + título, condición,
+   precio, imagen, vendedor y botones de acción).
+========================================== */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    justify-content:center;
+    align-items:center;
+    background:rgba(53,91,76,.45);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    z-index:9999;
+    padding:24px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-content{
+    width:720px;
+    max-width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    background:var(--cream);
+    border:3px solid var(--green-mid);
+    border-radius:24px;
+    padding:35px;
+    position:relative;
+    text-align:left;
+    animation:modalShow .3s cubic-bezier(.22,1,.36,1);
+    box-shadow:0 20px 45px rgba(53,91,76,.25);
+}
+
+@keyframes modalShow{
+    from{ opacity:0; transform:translateY(-20px) scale(.95); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+@keyframes fadeInUp{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+}
+
+.close{
+    position:absolute;
+    top:15px;
+    right:20px;
+    font-size:30px;
+    font-weight:bold;
+    color:var(--green-dark);
+    cursor:pointer;
+    transition:.25s;
+    z-index:2;
+    line-height:1;
+    background:none;
+    border:none;
+}
+
+.close:hover{
+    color:var(--green-mid);
+    transform:rotate(90deg);
+}
+
+/* ---- Encabezado: ícono + nombre ---- */
+.modal-header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:14px;
+    padding-right:40px;
+    animation: fadeInUp .35s ease both;
+}
+
+.modal-icon{
+    flex-shrink:0;
+    width:54px;
+    height:54px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:var(--green-dark);
+    color:var(--yellow);
+    font-size:1.3rem;
+}
+
+.modal-title{
+    color:var(--green-dark);
+    font-family:var(--font-title);
+    font-size:1.9rem;
+    font-weight:700;
+    line-height:1.2;
+}
+
+/* ---- Condición (Buen estado / Como nuevo) ---- */
+.modal-condition{
+    display:inline-block;
+    background:var(--green-pastel);
+    color:var(--green-dark);
+    font-size:.8rem;
+    font-weight:600;
+    padding:6px 16px;
+    border-radius:50px;
+    margin-bottom:14px;
+    animation: fadeInUp .35s ease .05s both;
+}
+
+/* ---- Precio ---- */
+.modal-price{
+    display:inline-block;
+    background:var(--green-pastel);
+    color:var(--green-dark);
+    font-family:var(--font-title);
+    font-size:2rem;
+    font-weight:700;
+    padding:8px 26px;
+    border-radius:50px;
+    margin-bottom:24px;
+    animation: fadeInUp .35s ease .1s both;
+}
+
+/* ---- Cuerpo: imagen a la izquierda, info a la derecha ---- */
+.modal-body{
+    display:grid;
+    grid-template-columns: 260px 1fr;
+    gap:28px;
+    align-items:start;
+}
+
+.modal-image-col{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    animation: fadeInUp .4s ease .05s both;
+}
+
+.modal-image{
+    background:var(--white);
+    border:2px solid var(--green-pastel);
+    border-radius:18px;
+    padding:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:200px;
+    overflow:hidden;
+}
+
+.modal-image img{
+    max-width:220px;
+    max-height:260px;
+    width:auto;
+    height:auto;
+    object-fit:contain;
+    display:block;
+    margin:0 auto;
+    border-radius:8px;
+}
+
+/* ---- Columna de información ---- */
+.modal-info{
+    display:flex;
+    flex-direction:column;
+    animation: fadeInUp .4s ease .1s both;
+}
+
+.modal-section-title{
+    color:var(--green-dark);
+    font-family:var(--font-title);
+    font-size:1.1rem;
+    font-weight:700;
+    margin-bottom:8px;
+    margin-top:4px;
+}
+
+.modal-description{
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.7;
+    margin-bottom:20px;
+}
+
+/* ---- Vendedor (nombre, materia y ubicación) ---- */
+.modal-seller-box{
+    margin-bottom:22px;
+}
+
+.modal-seller{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--white);
+    border:2px solid var(--green-pastel);
+    border-radius:16px;
+    padding:14px 16px;
+    animation: fadeInUp .35s ease both;
+}
+
+.modal-seller-avatar{
+    flex-shrink:0;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    background:var(--green-pastel);
+    color:var(--green-dark);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.1rem;
+}
+
+.modal-seller-info{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+.modal-seller-name{
+    font-family:var(--font-title);
+    font-weight:700;
+    color:var(--green-dark);
+    font-size:1rem;
+}
+
+.modal-seller-meta{
+    font-size:.78rem;
+    color:var(--text);
+    opacity:.75;
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+/* ---- Botones de acción ---- */
+.modal-actions{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+}
+
+.modal-btn,
+.modal-btn-outline{
+    border-radius:50px;
+    padding:12px 26px;
+    font-family:var(--font-body);
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition: transform .15s ease, background .25s ease, box-shadow .25s ease, color .25s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+}
+
+.modal-btn{
+    background:var(--green-dark);
+    color:var(--yellow);
+    border:none;
+}
+
+.modal-btn:hover{
+    background:#2a4a3c;
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(53,91,76,.3);
+}
+
+.modal-btn-outline{
+    background:transparent;
+    color:var(--green-dark);
+    border:2px solid var(--green-dark);
+}
+
+.modal-btn-outline:hover{
+    background:var(--green-dark);
+    color:var(--yellow);
+    transform:translateY(-2px);
+}
+
+.modal-btn:active,
+.modal-btn-outline:active{
+    transform:translateY(0) scale(.97);
+}
+
+/* Pequeño "pulso" de confirmación al hacer clic */
+.pulse{
+    animation: btnPulse .35s ease;
+}
+
+@keyframes btnPulse{
+    0%{ transform:scale(1); }
+    40%{ transform:scale(.93); }
+    100%{ transform:scale(1); }
+}
+
+/* ---- Toast dentro del modal (Añadido al carrito) ---- */
+.toast{
+    position:absolute;
+    bottom:-56px;
+    left:50%;
+    transform:translateX(-50%) translateY(10px);
+    background:var(--green-dark);
+    color:var(--yellow);
+    padding:10px 22px;
+    border-radius:50px;
+    font-size:.85rem;
+    font-weight:600;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    box-shadow:0 10px 24px rgba(53,91,76,.3);
+    transition: opacity .25s ease, transform .25s ease;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+/* ---- Responsive: apilar imagen e información en pantallas chicas ---- */
+@media (max-width: 640px){
+    .modal-body{ grid-template-columns: 1fr; }
+    .modal-image img{ max-width:180px; max-height:200px; }
+}
+
+/* ==========================
+   BARRA DE FILTROS (igual a marketplace.css)
+========================== */
+
+.filters-bar{
+    max-width:1280px;
+    margin:0 auto 18px auto;
+    padding:0;
+
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:14px;
+}
+
+.filter-group{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    background:#ffffff;
+    border:2px solid var(--green-pastel);
+    border-radius:50px;
+    padding:6px;
+
+    box-shadow:0 6px 16px rgba(53,91,76,.06);
+}
+
+.filter-condition{
+    padding:5px;
+}
+
+.filter-chip{
+    border:none;
+    background:transparent;
+    color:var(--green-dark);
+    font-family:var(--font-body);
+    font-size:.8rem;
+    font-weight:600;
+    padding:8px 16px;
+    border-radius:50px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.25s ease;
+}
+
+.filter-chip:hover{
+    background:var(--green-pastel);
+}
+
+.filter-chip.active{
+    background:var(--green-dark);
+    color:var(--yellow);
+}
+
+.filter-price{
+    padding:8px 16px;
+}
+
+.filter-label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:var(--green-dark);
+    font-family:var(--font-body);
+    font-size:.8rem;
+    font-weight:600;
+    white-space:nowrap;
+}
+
+.filter-price-input{
+    width:64px;
+    border:none;
+    outline:none;
+    background:var(--cream);
+    border-radius:50px;
+    padding:6px 10px;
+    font-family:var(--font-body);
+    font-size:.8rem;
+    color:var(--green-dark);
+    text-align:center;
+}
+
+.filter-price-sep{
+    color:var(--green-mid);
+    font-weight:700;
+}
+
+.filter-university{
+    padding:5px 6px 5px 16px;
+}
+
+.filter-select{
+    border:none;
+    outline:none;
+    background:transparent;
+    font-family:var(--font-body);
+    font-size:.8rem;
+    font-weight:600;
+    color:var(--green-dark);
+    padding:8px 6px;
+    cursor:pointer;
+    max-width:190px;
+}
+
+.filter-clear-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:none;
+    border:2px solid var(--green-pastel);
+    color:var(--green-dark);
+    border-radius:50px;
+    padding:9px 18px;
+    font-family:var(--font-body);
+    font-size:.8rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.25s ease;
+    margin-left:auto;
+}
+
+.filter-clear-btn:hover{
+    background:var(--green-pastel);
+    border-color:var(--green-mid);
+}
+
+@media (max-width:900px){
+    .filter-clear-btn{ margin-left:0; }
+}
+
+@media (max-width:600px){
+    .filters-bar{ padding:0; }
+    .filter-group{ flex:1 1 100%; justify-content:center; }
+    .filter-select{ max-width:none; flex:1; }
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:992px){
+    .books-shell{
+        grid-template-columns:1fr;
+        transform:none;
+        padding-top:0;
+    }
+    .books-main{
+        margin-top:0;
+    }
+    .books-sidebar{
+        position:static;
+        flex-direction:row;
+        flex-wrap:wrap;
+        border-radius:30px;
+    }
+    .cat-btn{
+        width:auto;
+        flex:1 1 auto;
+    }
+}
+
+@media(max-width:768px){
+    .books-hero{
+        padding:50px 20px 70px;
+    }
+    .books-page{
+        padding:0 18px 80px;
+    }
+    .books-grid{
+        gap:14px;
+    }
+    .books-grid .book-card{
+        flex:0 0 150px;
+        width:150px;
+    }
+}
+.cursor,
+.cursor-follower{
+    pointer-events:none;
+    position:fixed;
+    left:0;
+    top:0;
+    border-radius:50%;
+}
+
+.cursor{
+    width:8px;
+    height:8px;
+    background:var(--green-mid);
+    transform:translate(-50%,-50%);
+    z-index:10000;
+}
+
+/* IMPORTANTE: la posición (left/top) la actualiza books.js cada frame
+   con requestAnimationFrame, así que NO debe llevar transition o el
+   seguidor "arrastra" y se ve con lag. Solo animamos tamaño/opacidad
+   (para el efecto de agrandado al pasar sobre enlaces y tarjetas). */
+.cursor-follower{
+    width:32px;
+    height:32px;
+    border:2px solid rgba(125,175,156,.5);
+    transform:translate(-50%,-50%);
+    transition:width .25s ease, height .25s ease, opacity .25s ease;
+    z-index:9999;
+}
+
+/* ==========================
+   CARRITO (dropdown en la navbar)
+   Estilos idénticos a marketplace.css. Comparte la clave
+   "noesis_cart" en localStorage, así lo que se agrega en el
+   marketplace también aparece aquí (y viceversa).
+========================== */
+
+.cart-switcher{
+    position:relative;
+}
+
+.cart-btn{
+    position:relative;
+}
+
+.cart-badge{
+    position:absolute;
+    top:-4px;
+    right:-4px;
+    min-width:18px;
+    height:18px;
+    padding:0 4px;
+    border-radius:50px;
+    background:var(--yellow);
+    color:var(--green-dark);
+    font-size:.68rem;
+    font-weight:700;
+    line-height:18px;
+    text-align:center;
+    box-shadow:0 0 0 2px rgba(53,91,76,.9);
+    transition: transform .25s ease;
+    transform:scale(0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.cart-badge.show{
+    transform:scale(1);
+}
+
+.cart-badge.pulse{
+    animation: cartBadgePulse .35s ease;
+}
+
+@keyframes cartBadgePulse{
+    0%{ transform:scale(1); }
+    45%{ transform:scale(1.35); }
+    100%{ transform:scale(1); }
+}
+
+.cart-dropdown{
+    position:absolute;
+    top:calc(100% + 12px);
+    right:0;
+    width:340px;
+    max-width:90vw;
+    background:var(--cream);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(53,91,76,.22);
+    border:1px solid rgba(53,91,76,.10);
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-8px);
+    transition:opacity .25s ease, transform .25s ease, visibility .25s ease;
+    z-index:1200;
+    display:none;
+    flex-direction:column;
+}
+
+.cart-dropdown.open{
+    display:flex;
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+
+.cart-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 18px 12px;
+    border-bottom:1px solid rgba(53,91,76,.12);
+}
+
+.cart-header h3{
+    font-family:var(--font-title);
+    font-size:1.3rem;
+    color:var(--green-dark);
+    font-weight:700;
+}
+
+.cart-close{
+    background:none;
+    border:none;
+    font-size:1.4rem;
+    line-height:1;
+    color:var(--green-dark);
+    cursor:pointer;
+    opacity:.6;
+    transition:.2s ease;
+}
+
+.cart-close:hover{
+    opacity:1;
+    transform:scale(1.1);
+}
+
+.cart-items{
+    max-height:320px;
+    overflow-y:auto;
+    padding:6px 10px;
+}
+
+.cart-items::-webkit-scrollbar{
+    width:6px;
+}
+
+.cart-items::-webkit-scrollbar-thumb{
+    background:var(--green-mid);
+    border-radius:50px;
+}
+
+.cart-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 8px;
+    border-bottom:1px solid rgba(53,91,76,.08);
+    animation: cartItemIn .25s ease both;
+}
+
+@keyframes cartItemIn{
+    from{ opacity:0; transform:translateX(8px); }
+    to{ opacity:1; transform:translateX(0); }
+}
+
+.cart-item:last-child{
+    border-bottom:none;
+}
+
+.cart-item-img{
+    width:52px;
+    height:52px;
+    flex-shrink:0;
+    border-radius:12px;
+    background:var(--green-pastel);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.cart-item-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.cart-item-info{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.cart-item-name{
+    font-size:.85rem;
+    font-weight:600;
+    color:var(--text);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.cart-item-price{
+    font-size:.78rem;
+    color:var(--green-dark);
+    font-weight:600;
+}
+
+.cart-item-qty{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.qty-btn{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    border:1px solid var(--green-dark);
+    background:transparent;
+    color:var(--green-dark);
+    font-size:.85rem;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.2s ease;
+    flex-shrink:0;
+}
+
+.qty-btn:hover{
+    background:var(--green-dark);
+    color:var(--yellow);
+}
+
+.qty-value{
+    min-width:16px;
+    text-align:center;
+    font-size:.82rem;
+    font-weight:600;
+}
+
+.cart-item-remove{
+    background:none;
+    border:none;
+    color:var(--green-dark);
+    opacity:.5;
+    cursor:pointer;
+    font-size:.95rem;
+    flex-shrink:0;
+    transition:.2s ease;
+    align-self:flex-start;
+}
+
+.cart-item-remove:hover{
+    opacity:1;
+    color:#c0392b;
+    transform:scale(1.1);
+}
+
+.cart-empty{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    padding:22px 20px 28px;
+    text-align:center;
+}
+
+.cart-empty.show{
+    display:flex;
+}
+
+.cart-empty img{
+    width:90px;
+    height:auto;
+    margin-bottom:-4px;
+    filter:drop-shadow(0 6px 12px rgba(53,91,76,.16));
+}
+
+.cart-empty p{
+    color:var(--green-dark);
+    opacity:.75;
+    font-size:.85rem;
+}
+
+.cart-empty p{
+    font-size:.85rem;
+}
+
+.cart-footer{
+    padding:14px 18px 18px;
+    border-top:1px solid rgba(53,91,76,.12);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.cart-footer.hide{
+    display:none;
+}
+
+.cart-total-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-family:var(--font-body);
+    font-weight:600;
+    color:var(--green-dark);
+}
+
+.cart-total-row span:last-child{
+    font-family:var(--font-title);
+    font-size:1.3rem;
+    font-weight:700;
+}
+
+.cart-checkout-btn{
+    width:100%;
+    border:none;
+    border-radius:50px;
+    padding:12px 20px;
+    background:var(--green-dark);
+    color:var(--yellow);
+    font-family:var(--font-body);
+    font-size:.88rem;
+    font-weight:600;
+    cursor:pointer;
+    transition: transform .15s ease, background .25s ease, box-shadow .25s ease;
+}
+
+.cart-checkout-btn:hover{
+    background:#2a4a3c;
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(53,91,76,.3);
+}
+
+.cart-checkout-btn:active{
+    transform:translateY(0) scale(.97);
+}
+
+.cart-clear-btn{
+    width:100%;
+    border:none;
+    background:none;
+    color:var(--green-dark);
+    opacity:.6;
+    font-family:var(--font-body);
+    font-size:.78rem;
+    font-weight:500;
+    text-decoration:underline;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.cart-clear-btn:hover{
+    opacity:1;
+}
+
+@media (max-width:768px){
+    .cart-dropdown{ right:-10px; }
+}
+
+/* ---- Toast global de confirmación (fuera de cualquier modal) ---- */
+.toast-global{
+    position:fixed;
+    left:50%;
+    bottom:32px;
+    right:auto;
+    transform:translateX(-50%) translateY(14px);
+    background:var(--green-dark);
+    color:var(--yellow);
+    padding:10px 22px;
+    border-radius:50px;
+    font-size:.85rem;
+    font-weight:600;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    box-shadow:0 10px 24px rgba(53,91,76,.3);
+    transition: opacity .25s ease, transform .25s ease;
+    z-index:2000;
+}
+
+.toast-global.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+/* =====================================================
+   BOTÓN "VENDER" (nav) + MODAL DE PUBLICACIÓN
+   Idéntico al de marketplace.css, adaptado para publicar
+   libros: nombre/título, precio, estado, categoría (una sola,
+   ya que los libros se agrupan por materia) y descripción.
+===================================================== */
+
+.sell-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--green-dark);
+    color:var(--yellow);
+    border:none;
+    border-radius:50px;
+    padding:10px 20px;
+    font-family:inherit;
+    font-size:.82rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+    white-space:nowrap;
+}
+
+.sell-btn:hover{
+    background:#2a4a3c;
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(53,91,76,.3);
+}
+
+.sell-btn i{ font-size:.78rem; }
+
+.publish-content{
+    max-width:600px;
+}
+
+.publish-form{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    padding:6px 4px 4px;
+}
+
+.publish-field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    flex:1;
+}
+
+.publish-field-row{
+    display:flex;
+    gap:14px;
+}
+
+.publish-field label{
+    font-weight:600;
+    font-size:.82rem;
+    color:var(--green-dark);
+}
+
+.publish-field input[type="text"],
+.publish-field input[type="number"],
+.publish-field input[type="file"],
+.publish-field select,
+.publish-field textarea{
+    border:1px solid rgba(53,91,76,.25);
+    border-radius:12px;
+    padding:12px 14px;
+    font-family:inherit;
+    font-size:.9rem;
+    color:var(--text);
+    background:rgba(255,255,255,.75);
+    outline:none;
+    transition:.3s;
+    resize:vertical;
+}
+
+.publish-field input:focus,
+.publish-field select:focus,
+.publish-field textarea:focus{
+    border-color:var(--green-dark);
+    background:white;
+    box-shadow:0 0 0 3px rgba(53,91,76,.12);
+}
+
+.publish-field select{ cursor:pointer; }
+
+.publish-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.publish-tag-chip{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    background:rgba(255,255,255,.7);
+    border:2px solid var(--green-pastel, #C8E9D7);
+    border-radius:50px;
+    padding:8px 16px;
+    font-size:.78rem;
+    font-weight:500;
+    color:var(--green-dark);
+    cursor:pointer;
+    transition:.25s;
+    user-select:none;
+}
+
+.publish-tag-chip input{
+    display:none;
+}
+
+.publish-tag-chip.selected{
+    background:var(--green-dark);
+    color:var(--yellow);
+    border-color:var(--green-dark);
+}
+
+.publish-tag-chip:hover{
+    transform:translateY(-2px);
+}
+
+.publish-image-preview{
+    display:none;
+    margin-top:10px;
+    max-width:160px;
+    max-height:120px;
+    border-radius:14px;
+    object-fit:cover;
+    border:2px solid var(--green-pastel, #C8E9D7);
+}
+
+.publish-image-preview.show{
+    display:block;
+}
+
+.publish-submit-btn{
+    justify-content:center;
+    width:100%;
+}
+
+.publish-hint{
+    text-align:center;
+    font-size:.72rem;
+    color:rgba(53,91,76,.55);
+}
+
+.publish-error{
+    display:none;
+    align-items:center;
+    gap:10px;
+    background:rgba(180,83,75,.12);
+    color:#B4534B;
+    border:1px solid rgba(180,83,75,.3);
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:.82rem;
+    font-weight:500;
+}
+
+.publish-error.visible{ display:flex; }
+
+/* Sacudida cuando falta llenar un campo */
+@keyframes publishShake{
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-8px); }
+    40%{ transform:translateX(8px); }
+    60%{ transform:translateX(-5px); }
+    80%{ transform:translateX(5px); }
+}
+.publish-shake{ animation: publishShake .4s ease; }
+
+/* Botón de eliminar publicación (solo visible en tus propios libros) */
+.modal-btn-danger{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:transparent;
+    border:2px solid #B4534B;
+    color:#B4534B;
+    border-radius:50px;
+    padding:14px 26px;
+    font-family:inherit;
+    font-size:.9rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+    flex:1;
+}
+
+.modal-btn-danger:hover{
+    background:#B4534B;
+    color:white;
+}
+
+/* Insignia "Tuyo" sobre las tarjetas de tus propias publicaciones */
+.card-mine-badge{
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:var(--yellow);
+    color:var(--green-dark);
+    font-size:.65rem;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:50px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    z-index:2;
+}
+
+/* La tarjeta de libro necesita position:relative para que el badge
+   "Tuyo" se ancle correctamente en su esquina. */
+.book-card{
+    position:relative;
+}
+
+@media (max-width:600px){
+    .publish-field-row{ flex-direction:column; }
+    .sell-btn span{ display:none; }
+    .sell-btn{ padding:10px 12px; }
+}

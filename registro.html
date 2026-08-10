@@ -73,6 +73,25 @@
 
         <div class="auth-error" id="registerError"></div>
 
+        <!-- Selector de rol: estudiante o tutor -->
+        <div class="auth-field">
+          <label data-i18n="field_role">¿Cómo quieres usar Noesis?</label>
+          <div class="role-selector" id="roleSelector">
+            <label class="role-card" data-role="student">
+              <input type="radio" name="registerRole" value="student" checked>
+              <i class="fa-solid fa-user-graduate"></i>
+              <span class="role-card-title" data-i18n="role_student">Soy estudiante</span>
+              <span class="role-card-desc" data-i18n="role_student_desc">Quiero comprar, publicar y encontrar tutores</span>
+            </label>
+            <label class="role-card" data-role="tutor">
+              <input type="radio" name="registerRole" value="tutor">
+              <i class="fa-solid fa-chalkboard-user"></i>
+              <span class="role-card-title" data-i18n="role_tutor">Soy tutor</span>
+              <span class="role-card-desc" data-i18n="role_tutor_desc">Quiero ofrecer clases en la comunidad</span>
+            </label>
+          </div>
+        </div>
+
         <div class="auth-field">
           <label for="registerName" data-i18n="field_name">Nombre completo</label>
           <div class="auth-input-wrap">
@@ -110,6 +129,41 @@
             <div class="auth-input-wrap">
               <i class="fa-solid fa-location-dot"></i>
               <input type="text" id="registerLocation" name="registerLocation" value="David, Chiriquí" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campos exclusivos para tutores: solo se muestran si eligen "Soy tutor" -->
+        <div class="tutor-fields" id="tutorFields">
+          <div class="auth-field-row">
+            <div class="auth-field">
+              <label for="registerSubject" data-i18n="field_tutor_subject">Materia principal</label>
+              <div class="auth-input-wrap">
+                <i class="fa-solid fa-book-open"></i>
+                <select id="registerSubject" name="registerSubject">
+                  <option value="physics" data-i18n="cat_physics">Física</option>
+                  <option value="chemistry" data-i18n="cat_chemistry">Química</option>
+                  <option value="economics" data-i18n="cat_economics">Economía</option>
+                  <option value="biology" data-i18n="cat_biology">Biología</option>
+                  <option value="math" data-i18n="cat_math">Matemáticas</option>
+                  <option value="english" data-i18n="cat_english">Inglés</option>
+                  <option value="systems" data-i18n="cat_systems">Sistemas</option>
+                </select>
+              </div>
+            </div>
+            <div class="auth-field">
+              <label for="registerPrice" data-i18n="field_tutor_price">Precio por hora (B/.)</label>
+              <div class="auth-input-wrap">
+                <i class="fa-solid fa-sack-dollar"></i>
+                <input type="number" id="registerPrice" name="registerPrice" min="5" step="1" placeholder="15">
+              </div>
+            </div>
+          </div>
+          <div class="auth-field">
+            <label for="registerBio" data-i18n="field_tutor_bio">Cuéntanos de ti como tutor</label>
+            <div class="auth-input-wrap">
+              <i class="fa-solid fa-comment"></i>
+              <input type="text" id="registerBio" name="registerBio" placeholder="Ej. Estudiante de ingeniería, 2 años dando clases de física...">
             </div>
           </div>
         </div>

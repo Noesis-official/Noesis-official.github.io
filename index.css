@@ -324,17 +324,11 @@ body.page-leaving{
 }
 
 .hamburger{
-
     display:none;
-
     flex-direction:column;
-
     gap:5px;
-
     border:none;
-
     background:none;
-
     cursor:pointer;
 
 }
@@ -548,7 +542,7 @@ body.page-leaving{
 
     background:var(--green-dark);
 
-    padding:70px 40px 90px;
+    padding:75px 30px 75px;
 
 }
 
@@ -641,13 +635,14 @@ body.page-leaving{
 ===================================================== */
 
 .offer{
+    position: relative;
 
-    position:relative;
+    background-image: url("IMG/Offers.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
-    background:var(--green-mid);
-
-    padding:0 40px 90px;
-
+    padding: 0 40px 90px;
 }
 
 .offer-card{
@@ -664,11 +659,13 @@ body.page-leaving{
 
     border-radius:var(--radius-lg);
 
-    padding:65px 80px;
+    padding:30px 30px;
 
     text-align:center;
 
     box-shadow:var(--shadow);
+
+    border: 5px solid white;
 
     transition:.35s;
 
@@ -718,21 +715,7 @@ body.page-leaving{
 
     border-radius:30px;
 
-    border:6px solid rgba(255,255,255,.75);
-
-    box-shadow:
-
-    0 18px 45px rgba(0,0,0,.18),
-
-    0 6px 15px rgba(0,0,0,.10);
-
-    transition:.35s;
-
-}
-
-.offer-card:hover .offer-deco{
-
-    transform:scale(1.03);
+    transition:transform .5s cubic-bezier(.4,0,.2,1);
 
 }
 
@@ -742,7 +725,7 @@ body.page-leaving{
 
     bottom:20px;
 
-    width:220px;
+    width:205px;
 
     transform:rotate(-10deg);
 
@@ -752,11 +735,25 @@ body.page-leaving{
 
     right:-110px;
 
-    top:10px;
+    top:-55px;
 
-    width:220px;
+    width:350px;
 
     transform:rotate(8deg);
+
+}
+
+/* Al pasar el mouse cada decoración conserva su giro y crece un poco */
+
+.offer-card:hover .offer-deco--left{
+
+    transform:rotate(-14deg) scale(1.05) translateY(-4px);
+
+}
+
+.offer-card:hover .offer-deco--right{
+
+    transform:rotate(12deg) scale(1.05) translateY(-4px);
 
 }
 
@@ -1143,25 +1140,41 @@ body.page-leaving{
 
 .faq-section{
 
-    background:var(--green-dark);
-
-    padding:90px 40px;
-
+   position: relative;
+    overflow: hidden;
+    padding: 90px 40px;
+    background: transparent;
+}
+/* Video de fondo */
+.faq-bg-video{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
 }
 
+/* Capa oscura encima del video */
+.faq-section::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 1;
+}
+
+/* Todo el contenido encima del video */
+.faq-section .container{
+    position: relative;
+    z-index: 2;
+}
+
+
 .faq-container{
-
-    max-width:1400px;
-
-    margin:auto;
-
-    display:grid;
-
-    grid-template-columns:300px 1fr 300px;
-
-    gap:40px;
-
-    align-items:center;
+ max-width:1000px;
+ margin:0 auto;
 
 }
 
@@ -1195,6 +1208,7 @@ body.page-leaving{
 .faq-inner{
 
     width:100%;
+    text-align:center;
 
 }
 
@@ -1230,23 +1244,30 @@ body.page-leaving{
 
 .faq-list{
 
+    max-width:620px;
+    margin:0 auto;
     display:flex;
-
     flex-direction:column;
-
-    gap:18px;
+    align-items:center;
+    gap:14px;
 
 }
 
 .faq-item{
 
-    background:rgba(255,255,255,.05);
+    width:100%;
 
-    border:1px solid rgba(255,255,255,.10);
+    background:rgba(245,237,183,.08);
+
+    border:1px solid rgba(245,237,183,.35);
 
     border-radius:18px;
 
     overflow:hidden;
+
+    backdrop-filter:blur(6px);
+
+    -webkit-backdrop-filter:blur(6px);
 
     transition:.3s;
 
@@ -1254,35 +1275,28 @@ body.page-leaving{
 
 .faq-item.open{
 
-    border-color:rgba(255,255,255,.30);
+    border-color:rgba(245,237,183,.7);
+
+    background:rgba(245,237,183,.13);
 
 }
 
 .faq-q{
 
     width:100%;
-
     background:none;
-
     border:none;
-
     cursor:pointer;
-
-    padding:22px 28px;
-
+    padding:16px 44px;
     display:flex;
-
-    justify-content:space-between;
-
+    justify-content:center; /* centra horizontalmente */
     align-items:center;
-
+    text-align:center; /* centra el texto */
     color:white;
-
-    font-size:1rem;
-
+    font-size:.92rem;
     font-weight:600;
-
     transition:.3s;
+    position:relative;
 
 }
 
@@ -1299,6 +1313,8 @@ body.page-leaving{
 .faq-q .ph{
 
     transition:.35s;
+    position: absolute;
+    right: 28px;
 
 }
 
@@ -1330,9 +1346,11 @@ body.page-leaving{
 
 .faq-a p{
 
-    padding:0 28px 24px;
+    padding:0 24px 20px;
 
-    line-height:1.8;
+    line-height:1.7;
+
+    text-align:center;
 
     color:rgba(255,255,255,.75);
 
@@ -1626,6 +1644,30 @@ a{
     border-radius:12px;
 
     background:rgba(53,91,76,.12);
+
+}
+
+.form-error-msg{
+
+    display:none;
+
+}
+
+.form-error-msg.visible{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    background:rgba(180,83,75,.12);
+
+    color:#B4534B;
 
 }
 
@@ -2327,23 +2369,25 @@ section{
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:10px;
-    padding:36px 20px;
+    gap:4px;
+    padding:22px 20px 28px;
     text-align:center;
-    color:var(--green-dark);
-    opacity:.7;
 }
 
 .cart-empty.show{
     display:flex;
 }
 
-.cart-empty i{
-    font-size:1.8rem;
-    opacity:.5;
+.cart-empty img{
+    width:90px;
+    height:auto;
+    margin-bottom:-4px;
+    filter:drop-shadow(0 6px 12px rgba(53,91,76,.16));
 }
 
 .cart-empty p{
+    color:var(--green-dark);
+    opacity:.75;
     font-size:.85rem;
 }
 
@@ -2445,4 +2489,288 @@ section{
 .toast.show{
     opacity:1;
     transform:translateX(-50%) translateY(0);
+}
+
+
+/* ---- Widget flotante de mascota → comunidad.html ---- */
+.mascot-widget{
+    position:fixed;
+    bottom:28px;
+    right:28px;
+    z-index:900;
+    display:flex;
+    align-items:flex-end;
+    cursor:pointer;
+    transition:.3s;
+    filter:drop-shadow(0 8px 20px rgba(0,0,0,.15));
+    text-decoration:none;
+}
+.mascot-widget:hover{ transform:translateY(-6px) scale(1.04); }
+.mascot-widget-img{ width:90px; height:auto; }
+.mascot-widget-bubble{
+    position:absolute; bottom:100%; right:0; margin-bottom:8px;
+    background:var(--green-dark); color:var(--yellow);
+    padding:10px 18px; border-radius:16px 16px 4px 16px;
+    font-family:var(--font-body); font-size:.78rem; font-weight:600;
+    white-space:nowrap; box-shadow:0 6px 18px rgba(53,91,76,.25);
+    animation:bubblePulse 3s ease-in-out infinite;
+}
+@keyframes bubblePulse{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-4px); } }
+.mascot-widget-close{
+    position:absolute; top:-6px; right:-6px;
+    width:20px; height:20px; border-radius:50%;
+    background:var(--green-dark); color:var(--yellow);
+    border:none; font-size:.65rem; line-height:20px;
+    text-align:center; cursor:pointer; opacity:0; transition:.2s;
+}
+.mascot-widget:hover .mascot-widget-close{ opacity:1; }
+@media (max-width:768px){ .mascot-widget-img{ width:70px; } }
+/* =====================================================
+   PULIDO VISUAL
+   Detalles de acabado que refuerzan la identidad de
+   Noesis sin alterar la estructura del sitio: enfoque
+   accesible, revelados escalonados, micro-interacciones
+   y ajustes de lectura.
+===================================================== */
+
+/* ---- Selección de texto con la paleta del sitio ---- */
+
+::selection{
+    background:var(--green-mid);
+    color:var(--cream);
+}
+
+/* ---- Barra de desplazamiento de la página ---- */
+
+html{
+    scrollbar-width:thin;
+    scrollbar-color:var(--green-mid) var(--cream);
+}
+
+body::-webkit-scrollbar{
+    width:10px;
+}
+
+body::-webkit-scrollbar-track{
+    background:var(--cream);
+}
+
+body::-webkit-scrollbar-thumb{
+    background:var(--green-mid);
+    border-radius:50px;
+    border:2px solid var(--cream);
+}
+
+body::-webkit-scrollbar-thumb:hover{
+    background:var(--green-dark);
+}
+
+/* ---- Foco visible por teclado (accesibilidad) ----
+   Solo aparece al navegar con Tab, no al hacer clic. */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible{
+    outline:2px solid var(--green-mid);
+    outline-offset:3px;
+    border-radius:6px;
+}
+
+.faq-q:focus-visible,
+.nav-link:focus-visible,
+.nav-icon-btn:focus-visible{
+    outline:2px solid var(--yellow);
+    outline-offset:3px;
+}
+
+/* ---- Títulos con mejor equilibrio de líneas ---- */
+
+.about-title,
+.offer-title,
+.services-title,
+.section-title,
+.vision-label-box span{
+    text-wrap:balance;
+}
+
+/* ---- Logo de la navbar: leve realce al pasar el mouse ---- */
+
+.nav-logo{
+    transition:text-shadow var(--transition), transform var(--transition);
+}
+
+.navbar:hover .nav-logo{
+    text-shadow:0 0 22px rgba(245,237,183,.45);
+}
+
+/* ---- Etiqueta de sección con guion decorativo ---- */
+
+.section-tag::before{
+    content:"";
+    display:inline-block;
+    width:22px;
+    height:1px;
+    margin-right:10px;
+    vertical-align:middle;
+    background:currentColor;
+    opacity:.6;
+}
+
+/* ---- Tarjetas de servicio: revelado escalonado ---- */
+
+.services.fade-in-section .service-card{
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity .6s ease, transform .6s cubic-bezier(.4,0,.2,1),
+               box-shadow .35s ease;
+}
+
+.services.fade-in-section.visible .service-card{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.services.fade-in-section.visible .service-card--1{ transition-delay:.05s; }
+.services.fade-in-section.visible .service-card--2{ transition-delay:.15s; }
+.services.fade-in-section.visible .service-card--3{ transition-delay:.25s; }
+.services.fade-in-section.visible .service-card--4{ transition-delay:.35s; }
+
+/* La flecha avanza al pasar el mouse por la tarjeta */
+
+.service-arrow svg{
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+
+.service-card:hover .service-arrow svg{
+    transform:translateX(7px);
+}
+
+/* ---- Piezas de rompecabezas con flotación suave ---- */
+
+.puzzle--left{
+    animation:floating 7s ease-in-out infinite;
+}
+
+.puzzle--right{
+    animation:floating 7s ease-in-out infinite;
+    animation-delay:-3.5s;
+}
+
+/* ---- Collage de visión: los bloques responden al mouse ---- */
+
+.vision-vid-left,
+.vision-img-center,
+.vision-img-right,
+.vision-label-box,
+.vision-text-box{
+    transition:transform var(--transition), box-shadow var(--transition);
+}
+
+.vision-vid-left:hover,
+.vision-img-center:hover,
+.vision-img-right:hover,
+.vision-label-box:hover,
+.vision-text-box:hover{
+    transform:translateY(-6px);
+    box-shadow:var(--shadow);
+}
+
+/* ---- Preguntas frecuentes: acento lateral al abrir ---- */
+
+.faq-item{
+    position:relative;
+}
+
+.faq-item::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:50%;
+    width:3px;
+    height:0;
+    background:var(--yellow);
+    border-radius:0 3px 3px 0;
+    transform:translateY(-50%);
+    transition:height .35s ease;
+}
+
+.faq-item.open::before{
+    height:60%;
+}
+
+.faq-q .ph,
+.faq-q i{
+    color:var(--yellow);
+}
+
+/* ---- Botón deshabilitado mientras se envía el mensaje ---- */
+
+.btn:disabled{
+    opacity:.6;
+    cursor:progress;
+    transform:none;
+}
+
+/* ---- Enlaces del pie: se desplazan al pasar el mouse ---- */
+
+.footer-links ul a{
+    display:inline-block;
+    transition:transform .25s ease, color .25s ease, opacity .25s ease;
+}
+
+.footer-links ul a:hover{
+    transform:translateX(5px);
+    color:var(--yellow);
+    opacity:1;
+}
+
+.social-icons a{
+    display:inline-flex;
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+
+.social-icons a:hover{
+    transform:translateY(-4px) scale(1.08);
+}
+
+/* ---- Carga progresiva del contenido multimedia ---- */
+
+img,
+video{
+    max-width:100%;
+}
+
+/* =====================================================
+   MOVIMIENTO REDUCIDO
+   Respeta la preferencia del sistema: se conserva todo
+   el diseño, pero sin animaciones ni desplazamientos.
+===================================================== */
+
+@media (prefers-reduced-motion: reduce){
+
+    html{
+        scroll-behavior:auto;
+    }
+
+    *,
+    *::before,
+    *::after{
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:.01ms !important;
+        scroll-behavior:auto !important;
+    }
+
+    .fade-in-section,
+    .services.fade-in-section .service-card{
+        opacity:1;
+        transform:none;
+    }
+
+    .cursor,
+    .cursor-follower{
+        display:none;
+    }
+
 }

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Noesis — Books</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="Books.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Cursor personalizado (mismo comportamiento que en index/marketplace) -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+
+<!-- =============================================
+     NAVBAR
+============================================= -->
+<nav class="navbar" id="navbar">
+<div class="nav-inner">
+<div class="nav-logo">NOESIS</div>
+<div class="nav-links" id="navLinks">
+<a class="nav-link" data-i18n="nav_menu" href="index.html">MENU</a>
+<a class="nav-link" data-i18n="nav_market" href="marketplace.html">MARKETlPLACE</a>
+<a class="nav-link" data-i18n="nav_community" href="comunidad.html">COMUNIDAD</a>
+<a class="nav-link" data-i18n="nav_Material" href="Study.html">STUDY MATERIAL</a>
+<a class="nav-link active" data-i18n="nav_books" href="books.html">BOOKS</a>
+</div>
+<div class="nav-icons">
+<!-- Selector de idioma -->
+<div class="lang-switcher" id="langSwitcher">
+<button aria-expanded="false" aria-label="Seleccionar idioma" class="nav-icon-btn lang-btn" id="langBtn">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="2" x2="22" y1="12" y2="12"></line>
+<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+</svg>
+<span id="langCurrent">ES</span>
+</button>
+<div class="lang-dropdown" id="langDropdown">
+<button class="lang-option active" data-lang="es" type="button">🇪🇸 Español</button>
+<button class="lang-option" data-lang="en" type="button">🇬🇧 English</button>
+</div>
+</div>
+<!-- Botón para publicar un libro -->
+<button class="sell-btn" id="sellBtn" type="button">
+<i class="fa-solid fa-plus"></i>
+<span data-i18n="sell_btn">Vender</span>
+</button>
+<!-- Carrito (propio de la página de libros) -->
+<div class="cart-switcher" id="cartSwitcher">
+<button aria-expanded="false" aria-label="Cart" class="nav-icon-btn cart-btn" id="cartBtn">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>
+<span class="cart-badge" id="cartBadge">0</span>
+</button>
+<div class="cart-dropdown" id="cartDropdown">
+<div class="cart-header">
+<h3 data-i18n="cart_title">Tu carrito</h3>
+<button aria-label="Cerrar carrito" class="cart-close" id="cartClose" type="button">&times;</button>
+</div>
+<div class="cart-items" id="cartItems"></div>
+<div class="cart-empty" id="cartEmpty">
+<img src="IMG/mascot-thinking.png" alt=""/>
+<p data-i18n="cart_empty_msg">Tu carrito está vacío</p>
+</div>
+<div class="cart-footer" id="cartFooter">
+<div class="cart-total-row">
+<span data-i18n="cart_total">Total</span>
+<span id="cartTotalAmount">B/. 0.00</span>
+</div>
+<button class="cart-checkout-btn" id="cartCheckoutBtn" type="button" data-i18n="cart_checkout">Finalizar compra</button>
+<button class="cart-clear-btn" id="cartClearBtn" type="button" data-i18n="cart_clear">Vaciar carrito</button>
+</div>
+</div>
+</div>
+<a aria-label="User" class="nav-icon-btn" href="login.html" id="userNavBtn">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+</a>
+<button aria-label="Menu" class="hamburger" id="hamburger">
+<span></span>
+<span></span>
+<span></span>
+</button>
+</div>
+</div>
+</nav>
+
+<!-- =============================================
+     ENCABEZADO DE LA PÁGINA
+============================================= -->
+<header class="books-hero">
+<h1 data-i18n="books_hero_title">Explora nuestra biblioteca</h1>
+<p data-i18n="books_hero_text">Libros de texto y guías compartidos por estudiantes de David, Chiriquí.</p>
+</header>
+
+<!-- =============================================
+     CONTENIDO PRINCIPAL — sidebar + resultados
+============================================= -->
+<main class="books-page">
+<div class="books-shell">
+
+<!-- Sidebar de categorías -->
+<aside class="books-sidebar" id="booksSidebar">
+<button class="cat-btn active" data-category="all" data-i18n="cat_all" type="button">Todas</button>
+<button class="cat-btn" data-category="medicine" data-i18n="cat_medicine" type="button">Medicina</button>
+<button class="cat-btn" data-category="systems" data-i18n="cat_systems" type="button">Ingeniería en Sistemas</button>
+<button class="cat-btn" data-category="nursing" data-i18n="cat_nursing" type="button">Enfermería</button>
+<button class="cat-btn" data-category="math" data-i18n="cat_math" type="button">Matemáticas</button>
+<button class="cat-btn" data-category="biology" data-i18n="cat_biology" type="button">Biología</button>
+<button class="cat-btn" data-category="architecture" data-i18n="cat_architecture" type="button">Arquitectura</button>
+<button class="cat-btn" data-category="physics" data-i18n="cat_physics" type="button">Física</button>
+</aside>
+
+<!-- Resultados -->
+<section class="books-main">
+
+<div class="books-search-wrap">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input type="text" id="bookSearchInput" data-i18n-placeholder="search_placeholder" placeholder="Anatomy book"/>
+</div>
+
+<div id="booksResults"><!-- Generado dinámicamente por books.js --></div>
+
+<div class="books-no-results" id="booksNoResults">
+<img src="IMG/mascot-thinking.png" alt=""/>
+<h3 data-i18n="no_results_title">¿Nada por aquí?</h3>
+<p data-i18n="no_results">No encontramos libros que coincidan con tu búsqueda.</p>
+</div>
+
+</section>
+</div>
+</main>
+
+<!-- =============================================
+     MODAL DE DETALLES
+     Misma estructura visual que el modal del marketplace:
+     encabezado (ícono + título), condición, precio, imagen,
+     descripción, datos del vendedor y botones de acción.
+============================================= -->
+<div class="modal" id="bookModalOverlay">
+<div class="modal-content">
+<span class="close" id="bookModalClose" aria-label="Cerrar">&times;</span>
+
+<!-- Encabezado: ícono + título -->
+<div class="modal-header">
+<div class="modal-icon"><i class="fa-solid fa-book"></i></div>
+<h2 class="modal-title" id="bookModalTitle"></h2>
+</div>
+
+<!-- Estado del libro (Buen estado / Como nuevo) -->
+<span class="modal-condition" id="bookModalCondition"></span>
+
+<!-- Precio destacado -->
+<div class="modal-price" id="bookModalPrice"></div>
+
+<div class="modal-body">
+
+<!-- Columna izquierda: portada -->
+<div class="modal-image-col">
+<div class="modal-image" id="bookModalImage">
+<img id="bookModalImg" src="" alt=""/>
+</div>
+</div>
+
+<!-- Columna derecha: descripción, vendedor y acciones -->
+<div class="modal-info">
+<h3 class="modal-section-title" data-i18n="modal_desc_title">Descripción</h3>
+<p class="modal-description" id="bookModalDesc"></p>
+
+<div class="modal-seller-box">
+<h3 class="modal-section-title" data-i18n="modal_seller_title">Vendedor</h3>
+<div class="modal-seller">
+<div class="modal-seller-avatar"><i class="fa-solid fa-user"></i></div>
+<div class="modal-seller-info">
+<span class="modal-seller-name" id="bookModalSeller"></span>
+<span class="modal-seller-meta"><i class="fa-solid fa-book-open"></i> <span id="bookModalTag"></span></span>
+<span class="modal-seller-meta"><i class="fa-solid fa-location-dot"></i> <span id="bookModalLocation"></span></span>
+</div>
+</div>
+</div>
+
+<div class="modal-actions">
+<button class="modal-btn-outline" id="bookModalAddCart" type="button">
+<i class="fa-solid fa-cart-plus"></i> <span data-i18n="modal_add_cart">Añadir al carrito</span>
+</button>
+<button class="modal-btn" id="bookModalContact" type="button">
+<i class="fa-brands fa-whatsapp"></i> <span data-i18n="modal_contact">Contactar vendedor</span>
+</button>
+<button class="modal-btn-danger" id="deleteListingBtn" type="button" style="display:none">
+<i class="fa-solid fa-trash"></i>
+<span data-i18n="delete_listing_btn">Eliminar publicación</span>
+</button>
+</div>
+</div>
+
+</div>
+
+<!-- Aviso flotante (toast) para confirmar acciones -->
+<div class="toast" id="bookCartToast"></div>
+</div>
+</div>
+
+<!-- =============================================
+     MODAL PARA PUBLICAR UN LIBRO
+     Requiere sesión activa (localStorage). Los libros publicados
+     se guardan bajo "noesis_user_books" y se combinan con el
+     catálogo de ejemplo al renderizar el grid.
+============================================= -->
+<div class="modal" id="publishModal">
+<div class="modal-content publish-content">
+<span class="close" id="closePublishModal">&times;</span>
+
+<div class="modal-header">
+<div class="modal-icon"><i class="fa-solid fa-book"></i></div>
+<h2 class="modal-title" data-i18n="publish_title">Publicar un libro</h2>
+</div>
+
+<form class="publish-form" id="publishForm" novalidate>
+
+<div class="publish-error" id="publishError"></div>
+
+<div class="publish-field">
+<label for="publishName" data-i18n="publish_name_label">Título del libro</label>
+<input type="text" id="publishName" name="publishName" placeholder="Ej. Anatomía Humana" required>
+</div>
+
+<div class="publish-field-row">
+<div class="publish-field">
+<label for="publishPrice" data-i18n="publish_price_label">Precio (B/.)</label>
+<input type="number" id="publishPrice" name="publishPrice" min="0" step="0.01" placeholder="20.00" required>
+</div>
+
+<div class="publish-field">
+<label for="publishCondition" data-i18n="publish_condition_label">Estado</label>
+<select id="publishCondition" name="publishCondition" required>
+<option value="Como nuevo" data-i18n="cond_like_new">Como nuevo</option>
+<option value="Buen estado" data-i18n="cond_good">Buen estado</option>
+<option value="Usado" data-i18n="cond_used">Usado</option>
+</select>
+</div>
+</div>
+
+<div class="publish-field">
+<label data-i18n="publish_category_label">Categoría</label>
+<div class="publish-tags" id="publishTagsContainer">
+<!-- Chips de categorías inyectados por JS -->
+</div>
+</div>
+
+<div class="publish-field">
+<label for="publishDescription" data-i18n="publish_desc_label">Descripción</label>
+<textarea id="publishDescription" name="publishDescription" rows="3" placeholder="Cuéntale a los compradores el estado del libro..." required></textarea>
+</div>
+
+<div class="publish-field">
+<label for="publishImage" data-i18n="publish_image_label">Foto de la portada</label>
+<input type="file" id="publishImage" name="publishImage" accept="image/*" required>
+<img id="publishImagePreview" class="publish-image-preview" alt=""/>
+</div>
+
+<button type="submit" class="modal-btn publish-submit-btn">
+<i class="fa-solid fa-store"></i>
+<span data-i18n="publish_submit_btn">Publicar libro</span>
+</button>
+
+<p class="publish-hint" data-i18n="publish_hint">Simulado con localStorage — tu publicación solo se guarda en este navegador.</p>
+</form>
+
+</div>
+</div>
+
+
+<!-- =============================================
+     FOOTER — mismo diseño que index.html
+============================================= -->
+<footer class="footer">
+<div class="footer-inner">
+<div class="footer-brand">
+<a class="nav-logo footer-logo" href="index.html">
+<span class="logo-text">NOESIS</span>
+</a>
+<p data-i18n="footer_desc">El marketplace universitario de<br/>David, Chiriquí.</p>
+</div>
+<div class="footer-links">
+<h4 data-i18n="footer_platform">Plataforma</h4>
+<ul>
+<li><a data-i18n="footer_marketplace" href="marketplace.html">Marketplace</a></li>
+<li><a data-i18n="nav_books" href="books.html">Books</a></li>
+<li><a data-i18n="footer_kits" href="#">Kits de Inicio</a></li>
+</ul>
+</div>
+<div class="footer-links">
+<h4 data-i18n="footer_support">Soporte</h4>
+<ul>
+<li><a data-i18n="footer_faq" href="index.html#ayuda">Ayuda / FAQ</a></li>
+<li><a data-i18n="footer_contact" href="index.html#contacto">Contáctanos</a></li>
+<li><a data-i18n="footer_terms" href="#">Términos de uso</a></li>
+</ul>
+</div>
+<div class="footer-social">
+<h4 data-i18n="footer_follow">Síguenos</h4>
+<div class="social-icons">
+<a href="https://instagram.com">
+<img alt="Instagram" src="img/instagram.webp"/>
+</a>
+<a href="https://facebook.com">
+<img alt="Facebook" src="img/Facebook.png"/>
+</a>
+<a href="https://wa.me/50760000000">
+<img alt="WhatsApp" src="img/WhatsApp.png"/>
+</a>
+</div>
+</div>
+</div>
+<div class="footer-bottom">
+<p data-i18n="footer_copyright">© 2026 Noesis · Todos los derechos reservados · David, Chiriquí, Panamá</p>
+</div>
+</footer>
+
+<div class="toast toast-global" id="globalToast"></div>
+
+<script src="Books.js"></script>
+<script src="mascot-widget.js"></script>
+</body>
+</html>

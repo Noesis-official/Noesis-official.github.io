@@ -1,734 +1,655 @@
-const navbar = document.getElementById('navbar');
-const hamburger = document.getElementById('hamburger');
-const navLinks = document.getElementById('navLinks');
+/* =====================================================
+   NOESIS — index.js
+   Interactividad principal del sitio:
+   cursor personalizado, navbar, menú móvil, selector de
+   idioma, carrito (compartido vía localStorage), acordeón
+   de FAQ, revelado de secciones al hacer scroll y envío
+   del formulario de contacto (Web3Forms).
+===================================================== */
+(function () {
+  "use strict";
 
-
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 40) {
-    navbar.classList.add('scrolled');
-  } else {
-    navbar.classList.remove('scrolled');
-  }
-});
-
-
-hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('active');
-  navLinks.classList.toggle('open');
-});
-
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    hamburger.classList.remove('active');
-    navLinks.classList.remove('open');
+  document.addEventListener("DOMContentLoaded", () => {
+    initCursor();
+    initNavbar();
+    initMobileMenu();
+    initLangSwitcher();
+    initCart();
+    initFaqAccordion();
+    initFadeInSections();
+    initContactForm();
+    initOutsideClicks();
+    initPageTransition();
+    initKeyboardShortcuts();
   });
-});
 
-// -----------------------------------------------
-// TRANSICIÓN SUAVE AL NAVEGAR ENTRE PÁGINAS
-// Evita el salto brusco al pasar de index.html a
-// marketplace.html: hace un fundido de salida antes
-// de cargar la siguiente página. Solo aplica a enlaces
-// que van a otra página (ignora "#" y anclas internas).
-// -----------------------------------------------
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ¿El usuario prefiere menos movimiento? Lo respetamos en todo el sitio.
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', (e) => {
-    const href = link.getAttribute('href');
-    if (!href || href.startsWith('#')) return;
+  /* =====================================================
+     CURSOR PERSONALIZADO
+  ===================================================== */
+  function initCursor() {
+    const cursor = document.getElementById("cursor");
+    const follower = document.getElementById("cursorFollower");
+    if (!cursor || !follower) return;
 
-    e.preventDefault();
-    if (prefersReducedMotion) {
-      window.location.href = href;
+    // En pantallas táctiles (o con movimiento reducido) no tiene
+    // sentido un cursor personalizado.
+    if (window.matchMedia("(pointer: coarse)").matches || reducedMotion) {
+      cursor.style.display = "none";
+      follower.style.display = "none";
       return;
     }
-    document.body.classList.add('page-leaving');
-    window.setTimeout(() => { window.location.href = href; }, 220);
-  });
-});
 
+    let mouseX = 0,
+      mouseY = 0,
+      followerX = 0,
+      followerY = 0;
 
-const fadeSections = document.querySelectorAll('.fade-in-section');
-
-const observerOptions = {
-  threshold: 0.12,
-  rootMargin: '0px 0px -40px 0px'
-};
-
-const sectionObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      sectionObserver.unobserve(entry.target);
-    }
-  });
-}, observerOptions);
-
-fadeSections.forEach(section => {
-  sectionObserver.observe(section);
-});
-
-
-const serviceCards = document.querySelectorAll('.service-card');
-
-serviceCards.forEach(card => {
-  card.addEventListener('mouseenter', () => {
-    card.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s ease';
-  });
-
-  card.addEventListener('mouseleave', () => {
-    card.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease';
-  });
-});
-
-
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    const href = this.getAttribute('href');
-    // Ignora los enlaces placeholder ("#" solo) para no romper con un
-    // selector inválido ni saltar bruscamente al inicio de la página.
-    if (!href || href === '#') {
-      e.preventDefault();
-      return;
-    }
-    const target = document.querySelector(href);
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-});
-
-
-const visionImages = document.querySelectorAll('.vision-img-left img, .vision-img-center img, .vision-img-right img');
-
-const imgObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry, i) => {
-    if (entry.isIntersecting) {
-      setTimeout(() => {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'scale(1)';
-      }, i * 120);
-      imgObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.2 });
-
-visionImages.forEach(img => {
-  img.style.opacity = '0';
-  img.style.transform = 'scale(0.96)';
-  img.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-  imgObserver.observe(img);
-});
-
-// -----------------------------------------------
-// 1. CURSOR PERSONALIZADO
-//    Mueve el punto y el anillo con el mouse
-// -----------------------------------------------
-const cursor         = document.getElementById('cursor');
-const cursorFollower = document.getElementById('cursorFollower');
-
-let mouseX = 0, mouseY = 0;   // posición real del mouse
-let follX  = 0, follY  = 0;   // posición suavizada del anillo
-
-// Actualiza la posición del cursor puntual inmediatamente
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  cursor.style.left = mouseX + 'px';
-  cursor.style.top  = mouseY + 'px';
-});
-
-// El anillo sigue con una leve inercia (animación de persecución)
-function animateFollower() {
-  follX += (mouseX - follX) * 0.12;
-  follY += (mouseY - follY) * 0.12;
-  cursorFollower.style.left = follX + 'px';
-  cursorFollower.style.top  = follY + 'px';
-  requestAnimationFrame(animateFollower);
-}
-animateFollower();
-
-// Al pasar sobre un enlace o botón, agranda el anillo
-const interactives = document.querySelectorAll('a, button, .cat-card, .kit-card, .faq-q');
-interactives.forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    cursorFollower.style.width   = '54px';
-    cursorFollower.style.height  = '54px';
-    cursorFollower.style.opacity = '0.6';
-  });
-  el.addEventListener('mouseleave', () => {
-    cursorFollower.style.width   = '32px';
-    cursorFollower.style.height  = '32px';
-    cursorFollower.style.opacity = '1';
-  });
-});
-
-// -----------------------------------------------
-// 7. FORMULARIO DE CONTACTO — validación y envío simulado
-// -----------------------------------------------
-const contactForm = document.getElementById('contactForm');
-const formSuccess = document.getElementById('formSuccess');
-
-contactForm.addEventListener('submit', (e) => {
-  e.preventDefault(); // evitar recarga de página
-
-  const nombre  = contactForm.nombre.value.trim();
-  const email   = contactForm.email.value.trim();
-  const mensaje = contactForm.mensaje.value.trim();
-
-  // Validación básica de campos
-  if (!nombre || !email || !mensaje) {
-    shakeForm(contactForm);  // efecto de sacudida si faltan campos
-    return;
-  }
-
-  // Validar formato de email con regex
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    shakeForm(contactForm.email);
-    contactForm.email.focus();
-    return;
-  }
-
-  // Simular envío: mostrar estado de carga en el botón
-  const btn = contactForm.querySelector('button[type="submit"]');
-  const currentLang = localStorage.getItem('noesis_lang') || 'es';
-  btn.disabled    = true;
-  btn.textContent = currentLang === 'en' ? '⏳ Sending...' : '⏳ Enviando...';
-
-  // Simular respuesta del servidor después de 1.5s
-  setTimeout(() => {
-    formSuccess.classList.add('visible');
-    contactForm.reset();
-    btn.disabled    = false;
-    btn.innerHTML   = '<i class="ph ph-paper-plane-tilt"></i> <span data-i18n="form_btn">' +
-      (translations[currentLang] ? translations[currentLang].form_btn : 'Enviar mensaje') + '</span>';
-
-    // Ocultar el mensaje de éxito después de 5s
-    setTimeout(() => formSuccess.classList.remove('visible'), 5000);
-  }, 1500);
-});
-
-// Función auxiliar: sacudir elemento con error
-function shakeForm(el) {
-  el.style.animation = 'none';
-  el.style.borderColor = '#ff6b6b';
-  setTimeout(() => { el.style.borderColor = ''; }, 2000);
-
-  // Insertar keyframe de sacudida dinámicamente
-  el.animate([
-    { transform: 'translateX(0)' },
-    { transform: 'translateX(-8px)' },
-    { transform: 'translateX(8px)' },
-    { transform: 'translateX(-6px)' },
-    { transform: 'translateX(6px)' },
-    { transform: 'translateX(0)' }
-  ], { duration: 400, easing: 'ease-out' });
-}
-
-// -----------------------------------------------
-// 6. ACORDEÓN DE PREGUNTAS FRECUENTES
-// -----------------------------------------------
-const faqItems = document.querySelectorAll('.faq-item');
-
-faqItems.forEach(item => {
-  const btn = item.querySelector('.faq-q');
-  btn.addEventListener('click', () => {
-    const isOpen = item.classList.contains('open');
-
-    // Cerrar todos los demás antes de abrir el actual
-    faqItems.forEach(i => {
-      i.classList.remove('open');
-      i.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + "px";
+      cursor.style.top = mouseY + "px";
     });
 
-    if (!isOpen) {
-      item.classList.add('open');
-      btn.setAttribute('aria-expanded', 'true');
-    }
-  });
-});
+    (function animate() {
+      followerX += (mouseX - followerX) * 0.18;
+      followerY += (mouseY - followerY) * 0.18;
+      follower.style.left = followerX + "px";
+      follower.style.top = followerY + "px";
+      requestAnimationFrame(animate);
+    })();
 
-// -----------------------------------------------
-// 8. SELECTOR DE IDIOMA (ES / EN)
-// -----------------------------------------------
-const translations = {
-  es: {
-    nav_menu: "MENU",
-    nav_market: "MARKETPLACE",
-    nav_study: "MATERIAL DE ESTUDIO",
-    nav_books: "LIBROS",
-    about_title: "SOBRE NOSOTROS",
-    about_text: "En Noesis creemos que todos merecen acceso a herramientas que apoyen su aprendizaje. Nuestro objetivo es ayudar a estudiantes de primaria, secundaria y universidad, ofreciendo materiales de estudio, recursos educativos y útiles escolares accesibles. Estamos construyendo un espacio moderno donde aprender, compartir y crecer sea más fácil para todos.",
-    about_badge_sub: "Recursos educativos",
-    offer_title: "QUÉ OFRECEMOS",
-    offer_text: "Ofrecemos materiales de estudio, apuntes, guías, resúmenes y recursos educativos para estudiantes desde primaria hasta la universidad. También ofrecemos útiles escolares accesibles y artículos académicos de segunda mano para hacer el aprendizaje más accesible para todos.",
-    services_title: "NUESTROS SERVICIOS",
-    service1_text: "Accede a libros y recursos de lectura útiles para diferentes niveles y materias académicas.",
-    service1_label: "LIBROS",
-    service2_text: "Compra, vende o intercambia útiles escolares accesibles y artículos de estudio de segunda mano.",
-    service2_label: "MARKETPLACE",
-    service3_text: "Encuentra apuntes, guías, resúmenes y recursos educativos diseñados para apoyar a los estudiantes en cada nivel.",
-    service3_label: "ESTUDIO",
-    service4_text: "Descubre kits de estudio, herramientas de productividad y consejos útiles para mejorar tus hábitos de aprendizaje.",
-    service4_label: "KITS Y CONSEJOS",
-    vision_label: "VISIÓN",
-    vision_text: "Crear oportunidades de aprendizaje para estudiantes de todos los niveles, ofreciendo materiales de estudio accesibles, recursos asequibles y una comunidad donde las limitaciones económicas nunca sean una barrera para la educación.",
-    faq_tag: "Ayuda",
-    faq_title: "Preguntas frecuentes",
-    faq_q1: "¿Noesis cobra comisión por las ventas?",
-    faq_a1: "No. Noesis es completamente gratuito para los estudiantes de David, Chiriquí. No cobramos ninguna comisión por ventas ni intercambios.",
-    faq_q2: "¿Cómo me registro?",
-    faq_a2: "Solo necesitas tu correo universitario o cédula para verificar que eres estudiante en David. El proceso toma menos de 2 minutos.",
-    faq_q3: "¿Cómo se hacen los pagos?",
-    faq_a3: "Los pagos se acuerdan directamente entre compradores y vendedores. Puedes pagar en efectivo al recoger el artículo en campus o usar Yappy/transferencia bancaria.",
-    faq_q4: "¿Puedo publicar desde cualquier universidad de David?",
-    faq_a4: "Sí. Noesis está abierto a estudiantes de la UTP, UNACHI, USMA, ISAE y demás universidades con sede en David, Chiriquí.",
-    contact_tag: "Contáctanos",
-    contact_title: "Estamos en David",
-    contact_text: "¿Tienes dudas, sugerencias o quieres unirte como colaborador? Escríbenos y te respondemos rápido.",
-    contact_location: "David, Chiriquí, Panamá",
-    form_name: "Nombre",
-    form_email: "Correo electrónico",
-    form_message: "Mensaje",
-    form_success: "¡Mensaje enviado! Te contactamos pronto.",
-    form_btn: "Enviar mensaje",
-    footer_desc: "El marketplace universitario de<br>David, Chiriquí.",
-    footer_platform: "Plataforma",
-    footer_marketplace: "Marketplace",
-    footer_exchanges: "Intercambios",
-    footer_kits: "Kits de Inicio",
-    footer_support: "Soporte",
-    footer_faq: "Ayuda / FAQ",
-    footer_contact: "Contáctanos",
-    footer_terms: "Términos de uso",
-    footer_follow: "Síguenos",
-    footer_copyright: "© 2026 Noesis · Todos los derechos reservados · David, Chiriquí, Panamá",
-    cart_title: "Tu carrito",
-    cart_empty_msg: "Tu carrito está vacío",
-    cart_total: "Total",
-    cart_checkout: "Finalizar compra",
-    cart_clear: "Vaciar carrito",
-    cart_added_toast: "Añadido al carrito ✓",
-    cart_removed_toast: "Producto eliminado",
-    cart_cleared_toast: "Carrito vaciado",
-    cart_checkout_success: "¡Compra realizada con éxito! 🎉",
-    cart_checkout_empty: "Tu carrito está vacío"
-  },
-  en: {
-    nav_menu: "MENU",
-    nav_market: "MARKETPLACE",
-    nav_study: "STUDY MATERIAL",
-    nav_books: "BOOKS",
-    about_title: "ABOUT US",
-    about_text: "At Noesis, we believe everyone deserves access to tools that support their learning journey. Our goal is to help students from elementary, middle school, high school, and university by providing study materials, educational resources, and affordable school supplies. We are building a modern space where learning, sharing, and growing become easier and more accessible for everyone.",
-    about_badge_sub: "Educational resources",
-    offer_title: "WHAT WE OFFER",
-    offer_text: "We offer study materials, notes, guides, summaries, and educational resources for students from elementary school to university. We also provide affordable school supplies and second-hand academic items to make learning more accessible for everyone. Our platform is designed to help students study, stay organized, and explore knowledge in a modern, creative, and supportive environment.",
-    services_title: "OUR SERVICES",
-    service1_text: "Access useful books and reading resources for different academic levels and subjects.",
-    service1_label: "BOOKS",
-    service2_text: "Buy, sell, or exchange affordable school supplies and second-hand study items.",
-    service2_label: "MARKETPLACE",
-    service3_text: "Find notes, guides, summaries, and educational resources designed to support students at every level.",
-    service3_label: "STUDY",
-    service4_text: "Discover study kits, productivity tools, and helpful tips to improve learning habits.",
-    service4_label: "KITS and TIPS",
-    vision_label: "VISION",
-    vision_text: "To create learning opportunities for students of all levels by providing accessible study materials, affordable resources, and a community where financial limitations never become a barrier to education.",
-    faq_tag: "Help",
-    faq_title: "Frequently Asked Questions",
-    faq_q1: "Does Noesis charge a commission on sales?",
-    faq_a1: "No. Noesis is completely free for students in David, Chiriquí. We don't charge any commission on sales or exchanges.",
-    faq_q2: "How do I sign up?",
-    faq_a2: "You only need your university email or ID to verify you're a student in David. The process takes less than 2 minutes.",
-    faq_q3: "How are payments made?",
-    faq_a3: "Payments are arranged directly between buyers and sellers. You can pay in cash when picking up the item on campus or use Yappy/bank transfer.",
-    faq_q4: "Can I post from any university in David?",
-    faq_a4: "Yes. Noesis is open to students from UTP, UNACHI, USMA, ISAE, and other universities based in David, Chiriquí.",
-    contact_tag: "Contact Us",
-    contact_title: "We're in David",
-    contact_text: "Have questions, suggestions, or want to join as a collaborator? Write to us and we'll get back to you quickly.",
-    contact_location: "David, Chiriquí, Panama",
-    form_name: "Name",
-    form_email: "Email",
-    form_message: "Message",
-    form_success: "Message sent! We'll contact you soon.",
-    form_btn: "Send message",
-    footer_desc: "The university marketplace of<br>David, Chiriquí.",
-    footer_platform: "Platform",
-    footer_marketplace: "Marketplace",
-    footer_exchanges: "Exchanges",
-    footer_kits: "Starter Kits",
-    footer_support: "Support",
-    footer_faq: "Help / FAQ",
-    footer_contact: "Contact Us",
-    footer_terms: "Terms of Use",
-    footer_follow: "Follow Us",
-    footer_copyright: "© 2026 Noesis · All rights reserved · David, Chiriquí, Panama",
-    cart_title: "Your cart",
-    cart_empty_msg: "Your cart is empty",
-    cart_total: "Total",
-    cart_checkout: "Checkout",
-    cart_clear: "Clear cart",
-    cart_added_toast: "Added to cart ✓",
-    cart_removed_toast: "Item removed",
-    cart_cleared_toast: "Cart cleared",
-    cart_checkout_success: "Purchase completed successfully! 🎉",
-    cart_checkout_empty: "Your cart is empty"
+    document
+      .querySelectorAll("a, button, .faq-q, .service-card, input, textarea")
+      .forEach((el) => {
+        el.addEventListener("mouseenter", () => {
+          follower.style.transform = "translate(-50%,-50%) scale(1.6)";
+        });
+        el.addEventListener("mouseleave", () => {
+          follower.style.transform = "translate(-50%,-50%) scale(1)";
+        });
+      });
   }
-};
 
-// -----------------------------------------------
-// PRODUCTOS
-// Mismo catálogo que en marketplace.js. Se necesita aquí
-// solo para poder mostrar nombre, imagen y precio de cada
-// producto dentro del carrito (los datos del carrito en sí
-// se comparten vía localStorage con marketplace.html).
-// -----------------------------------------------
-const products = [
-  { name: "Calculadora", image: "IMG/Calculadora.png", price: 20 },
-  { name: "Ipad", image: "IMG/Ipad.png", price: 450 },
-  { name: "Casco", image: "IMG/Casco.png", price: 18 },
-  { name: "Bata", image: "IMG/Bata.png", price: 25 },
-  { name: "Tubos de ensayo", image: "IMG/Tubodeensayo.png", price: 12 },
-  { name: "Estetoscopio", image: "IMG/Estetoscopio.png", price: 30 },
-  { name: "Laptop", image: "IMG/Laptop.png", price: 700 },
-  { name: "Globo terráqueo", image: "IMG/GloboT.png", price: 35 }
-];
+  /* =====================================================
+     NAVBAR — sombra/fondo sólido al hacer scroll
+  ===================================================== */
+  function initNavbar() {
+    const navbar = document.getElementById("navbar");
+    if (!navbar) return;
 
-const productNamesTranslations = {
-  es: {
-    "Calculadora": "Calculadora",
-    "Ipad": "Ipad",
-    "Casco": "Casco",
-    "Bata": "Bata",
-    "Tubos de ensayo": "Tubos de ensayo",
-    "Estetoscopio": "Estetoscopio",
-    "Laptop": "Laptop",
-    "Globo terráqueo": "Globo terráqueo"
-  },
-  en: {
-    "Calculadora": "Calculator",
-    "Ipad": "iPad",
-    "Casco": "Helmet",
-    "Bata": "Lab Coat",
-    "Tubos de ensayo": "Test Tubes",
-    "Estetoscopio": "Stethoscope",
-    "Laptop": "Laptop",
-    "Globo terráqueo": "Globe"
+    // Agrupamos las lecturas de scroll en un solo frame para que
+    // el desplazamiento se mantenga fluido.
+    let ticking = false;
+    const update = () => {
+      navbar.classList.toggle("scrolled", window.scrollY > 30);
+      ticking = false;
+    };
+
+    update();
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true }
+    );
   }
-};
 
-function formatPrice(amount) {
-  return `B/. ${Number(amount).toFixed(2)}`;
-}
+  /* =====================================================
+     MENÚ HAMBURGUESA (móvil)
+  ===================================================== */
+  function initMobileMenu() {
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.getElementById("navLinks");
+    if (!hamburger || !navLinks) return;
 
-// -----------------------------------------------
-// CARRITO DE COMPRAS
-// Persiste en localStorage bajo la misma clave que usa
-// marketplace.js ('noesis_cart'), como un arreglo de
-// { index, qty } donde `index` es la posición del producto
-// dentro de `products`. Así, lo que se agregue en el
-// marketplace aparece también aquí, y viceversa.
-// -----------------------------------------------
-const CART_KEY = 'noesis_cart';
+    hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      navLinks.classList.toggle("open");
+    });
 
-const cartSwitcher    = document.getElementById('cartSwitcher');
-const cartBtn         = document.getElementById('cartBtn');
-const cartDropdown    = document.getElementById('cartDropdown');
-const cartClose       = document.getElementById('cartClose');
-const cartItemsBox    = document.getElementById('cartItems');
-const cartEmptyBox    = document.getElementById('cartEmpty');
-const cartFooterBox   = document.getElementById('cartFooter');
-const cartBadge       = document.getElementById('cartBadge');
-const cartTotalAmount = document.getElementById('cartTotalAmount');
-const cartCheckoutBtn = document.getElementById('cartCheckoutBtn');
-const cartClearBtn    = document.getElementById('cartClearBtn');
-const globalToast     = document.getElementById('globalToast');
-
-function loadCart() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(CART_KEY));
-    return Array.isArray(stored) ? stored : [];
-  } catch {
-    return [];
+    navLinks.querySelectorAll(".nav-link").forEach((link) => {
+      link.addEventListener("click", () => {
+        hamburger.classList.remove("active");
+        navLinks.classList.remove("open");
+      });
+    });
   }
-}
 
-function saveCart(cartData) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cartData));
-}
+  /* =====================================================
+     SELECTOR DE IDIOMA (ES / EN)
+  ===================================================== */
+  const translations = {
+    nav_Material: { es: "MATERIAL DE ESTUDIO", en: "STUDY MATERIAL" },
+    nav_menu: { es: "MENÚ", en: "MENU" },
+    nav_market: { es: "MARKETPLACE", en: "MARKETPLACE" },
+    nav_community: { es: "COMUNIDAD", en: "COMMUNITY" },
+    nav_books: { es: "LIBROS", en: "BOOKS" },
 
-let cart = loadCart();
-let globalToastTimer = null;
+    cart_title: { es: "Tu carrito", en: "Your cart" },
+    cart_empty_msg: { es: "Tu carrito está vacío", en: "Your cart is empty" },
+    cart_total: { es: "Total", en: "Total" },
+    cart_checkout: { es: "Finalizar compra", en: "Checkout" },
+    cart_clear: { es: "Vaciar carrito", en: "Clear cart" },
 
-function showGlobalToast(message) {
-  if (!globalToast) return;
-  globalToast.textContent = message;
-  globalToast.classList.remove('show');
-  void globalToast.offsetWidth;
-  globalToast.classList.add('show');
-  clearTimeout(globalToastTimer);
-  globalToastTimer = setTimeout(() => globalToast.classList.remove('show'), 2200);
-}
+    about_title: { es: "SOBRE NOSOTROS", en: "ABOUT US" },
+    about_text: {
+      es: "En Noesis creemos que todos merecen acceso a herramientas que apoyen su proceso de aprendizaje. Nuestro objetivo es ayudar a estudiantes de primaria, secundaria, media y universidad, ofreciendo materiales de estudio, recursos educativos y útiles escolares accesibles. Estamos construyendo un espacio moderno donde aprender, compartir y crecer sea más fácil y accesible para todos.",
+      en: "At Noesis, we believe everyone deserves access to tools that support their learning journey. Our goal is to help students from elementary, middle school, high school, and university by providing study materials, educational resources, and affordable school supplies. We are building a modern space where learning, sharing, and growing become easier and more accessible for everyone.",
+    },
+    about_badge_sub: { es: "Recursos educativos", en: "Educational resources" },
 
-function cartTotalQty() {
-  return cart.reduce((sum, item) => sum + item.qty, 0);
-}
+    offer_title: { es: "¿QUÉ OFRECEMOS?", en: "WHAT WE OFFER?" },
+    offer_text: {
+      es: "Ofrecemos materiales de estudio, apuntes, guías, resúmenes y recursos educativos para estudiantes desde primaria hasta la universidad. También ofrecemos útiles escolares accesibles y artículos académicos de segunda mano para que aprender sea más accesible para todos. Nuestra plataforma está diseñada para ayudar a los estudiantes a estudiar, organizarse y explorar el conocimiento en un entorno moderno, creativo y de apoyo.",
+      en: "We offer study materials, notes, guides, summaries, and educational resources for students from elementary school to university. We also provide affordable school supplies and second-hand academic items to make learning more accessible for everyone. Our platform is designed to help students study, stay organized, and explore knowledge in a modern, creative, and supportive environment.",
+    },
 
-function cartTotalPrice() {
-  return cart.reduce((sum, item) => {
-    const product = products[item.index];
-    return product ? sum + product.price * item.qty : sum;
-  }, 0);
-}
+    services_title: { es: "NUESTROS SERVICIOS", en: "OUR SERVICES" },
+    service1_text: {
+      es: "Accede a libros útiles y recursos de lectura para distintos niveles académicos y materias.",
+      en: "Access useful books and reading resources for different academic levels and subjects.",
+    },
+    service1_label: { es: "LIBROS", en: "BOOKS" },
+    service2_text: {
+      es: "Compra, vende o intercambia útiles escolares accesibles y artículos de estudio de segunda mano.",
+      en: "Buy, sell, or exchange affordable school supplies and second-hand study items.",
+    },
+    service2_label: { es: "MARKETPLACE", en: "MARKET PLACE" },
+    service3_text: {
+      es: "Encuentra apuntes, guías, resúmenes y recursos educativos diseñados para apoyar a estudiantes de todos los niveles.",
+      en: "Find notes, guides, summaries, and educational resources designed to support students at every level.",
+    },
+    service3_label: { es: "ESTUDIO", en: "STUDY" },
+    service4_text: {
+      es: "Descubre kits de estudio, herramientas de productividad y consejos útiles para mejorar tus hábitos de aprendizaje.",
+      en: "Discover study kits, productivity tools, and helpful tips to improve learning habits.",
+    },
+    service4_label: { es: "KITS Y CONSEJOS", en: "KITS AND TIPS" },
 
-function removeFromCart(index) {
-  cart = cart.filter(item => item.index !== index);
-  saveCart(cart);
-  renderCart();
-}
+    vision_label: { es: "VISIÓN", en: "VISION" },
+    vision_text: {
+      es: "Crear oportunidades de aprendizaje para estudiantes de todos los niveles, ofreciendo materiales de estudio accesibles, recursos económicos y una comunidad donde las limitaciones financieras nunca sean una barrera para la educación.",
+      en: "To create learning opportunities for students of all levels by providing accessible study materials, affordable resources, and a community where financial limitations never become a barrier to education.",
+    },
 
-function changeQty(index, delta) {
-  const item = cart.find(i => i.index === index);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) {
-    removeFromCart(index);
-    return;
-  }
-  saveCart(cart);
-  renderCart();
-}
+    faq_tag: { es: "Ayuda", en: "Help" },
+    faq_title: { es: "Preguntas frecuentes", en: "Frequently asked questions" },
+    faq_q1: { es: "¿Noesis cobra comisión por las ventas?", en: "Does Noesis charge a commission on sales?" },
+    faq_a1: {
+      es: "No. Noesis es completamente gratuito para los estudiantes de David, Chiriquí. No cobramos ninguna comisión por ventas ni intercambios.",
+      en: "No. Noesis is completely free for students in David, Chiriquí. We don't charge any commission on sales or exchanges.",
+    },
+    faq_q2: { es: "¿Cómo me registro?", en: "How do I sign up?" },
+    faq_a2: {
+      es: "Solo necesitas tu correo universitario o cédula para verificar que eres estudiante en David. El proceso toma menos de 2 minutos.",
+      en: "You only need your university email or ID to verify you're a student in David. The process takes less than 2 minutes.",
+    },
+    faq_q3: { es: "¿Cómo se hacen los pagos?", en: "How do payments work?" },
+    faq_a3: {
+      es: "Los pagos se acuerdan directamente entre compradores y vendedores. Puedes pagar en efectivo al recoger el artículo en campus o usar Yappy/transferencia bancaria.",
+      en: "Payments are arranged directly between buyers and sellers. You can pay in cash when picking up the item on campus, or use Yappy/bank transfer.",
+    },
+    faq_q4: { es: "¿Puedo publicar desde cualquier universidad de David?", en: "Can I post from any university in David?" },
+    faq_a4: {
+      es: "Sí. Noesis está abierto a estudiantes de la UTP, UNACHI, USMA, ISAE y demás universidades con sede en David, Chiriquí.",
+      en: "Yes. Noesis is open to students from UTP, UNACHI, USMA, ISAE, and other universities based in David, Chiriquí.",
+    },
 
-function clearCart() {
-  cart = [];
-  saveCart(cart);
-  renderCart();
-}
+    footer_desc: {
+      es: "El marketplace universitario de<br/>David, Chiriquí.",
+      en: "The university marketplace of<br/>David, Chiriquí.",
+    },
+    footer_platform: { es: "Plataforma", en: "Platform" },
+    footer_marketplace: { es: "Marketplace", en: "Marketplace" },
+    footer_exchanges: { es: "Intercambios", en: "Exchanges" },
+    footer_kits: { es: "Kits de Inicio", en: "Starter Kits" },
+    footer_support: { es: "Soporte", en: "Support" },
+    footer_faq: { es: "Ayuda / FAQ", en: "Help / FAQ" },
+    footer_contact: { es: "Contáctanos", en: "Contact us" },
+    footer_terms: { es: "Términos de uso", en: "Terms of use" },
+    footer_follow: { es: "Síguenos", en: "Follow us" },
+    footer_copyright: {
+      es: "© 2026 Noesis · Todos los derechos reservados · David, Chiriquí, Panamá",
+      en: "© 2026 Noesis · All rights reserved · David, Chiriquí, Panama",
+    },
 
-function renderCart({ pulse = false } = {}) {
-  const lang = localStorage.getItem('noesis_lang') || 'es';
-  const totalQty = cartTotalQty();
+    contact_tag: { es: "Contáctanos", en: "Contact us" },
+    contact_title: { es: "Estamos en David", en: "We're based in David" },
+    contact_text: {
+      es: "¿Tienes dudas, sugerencias o quieres unirte como colaborador? Escríbenos y te respondemos rápido.",
+      en: "Have questions, suggestions, or want to join as a collaborator? Write to us and we'll get back to you quickly.",
+    },
+    contact_location: { es: "David, Chiriquí, Panamá", en: "David, Chiriquí, Panama" },
 
-  // ---- Badge ----
-  if (cartBadge) {
-    cartBadge.textContent = totalQty > 99 ? '99+' : String(totalQty);
-    cartBadge.classList.toggle('show', totalQty > 0);
-    if (pulse) {
-      cartBadge.classList.remove('pulse');
-      void cartBadge.offsetWidth;
-      cartBadge.classList.add('pulse');
+    form_name: { es: "Nombre", en: "Name" },
+    form_email: { es: "Correo electrónico", en: "Email" },
+    form_message: { es: "Mensaje", en: "Message" },
+    form_success: { es: "¡Mensaje enviado! Te contactamos pronto.", en: "Message sent! We'll contact you soon." },
+    form_error: {
+      es: "No se pudo enviar el mensaje. Inténtalo de nuevo o escríbenos directamente a esauc.montenegro2027@fegrjdavid.superate.org",
+      en: "We couldn't send your message. Please try again or email us directly at esauc.montenegro2027@fegrjdavid.superate.org",
+    },
+    form_btn: { es: "Enviar mensaje", en: "Send message" },
+  };
+
+  function applyLanguage(lang) {
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const entry = translations[el.getAttribute("data-i18n")];
+      if (entry && entry[lang]) el.innerHTML = entry[lang];
+    });
+
+    document.documentElement.setAttribute("lang", lang);
+
+    const current = document.getElementById("langCurrent");
+    if (current) current.textContent = lang.toUpperCase();
+
+    document.querySelectorAll(".lang-option").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.lang === lang);
+    });
+
+    try {
+      localStorage.setItem("noesis_lang", lang);
+    } catch (e) {
+      /* localStorage no disponible, seguimos sin persistir */
     }
   }
 
-  // ---- Lista de ítems ----
-  if (cartItemsBox) {
-    cartItemsBox.innerHTML = '';
-    cart.forEach(({ index, qty }) => {
-      const product = products[index];
-      if (!product) return;
+  function initLangSwitcher() {
+    const langBtn = document.getElementById("langBtn");
+    const langDropdown = document.getElementById("langDropdown");
 
-      const displayName = productNamesTranslations[lang][product.name] || product.name;
-      const row = document.createElement('div');
-      row.className = 'cart-item';
-      row.innerHTML = `
-        <div class="cart-item-img"><img src="${product.image}" alt="${displayName}"></div>
+    if (langBtn && langDropdown) {
+      langBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = langDropdown.classList.toggle("open");
+        langBtn.setAttribute("aria-expanded", String(isOpen));
+      });
+
+      langDropdown.querySelectorAll(".lang-option").forEach((option) => {
+        option.addEventListener("click", () => {
+          applyLanguage(option.dataset.lang);
+          langDropdown.classList.remove("open");
+          langBtn.setAttribute("aria-expanded", "false");
+        });
+      });
+    }
+
+    let savedLang = "es";
+    try {
+      savedLang = localStorage.getItem("noesis_lang") || "es";
+    } catch (e) {
+      /* usa "es" por defecto */
+    }
+    applyLanguage(savedLang);
+  }
+
+  /* =====================================================
+     CARRITO — persistido en localStorage, compartido
+     entre index.html y marketplace.html
+  ===================================================== */
+  const CART_KEY = "noesis_cart";
+
+  function getCart() {
+    try {
+      return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveCart(cart) {
+    try {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    } catch (e) {
+      /* no se pudo persistir el carrito */
+    }
+  }
+
+  function formatPrice(n) {
+    return "B/. " + Number(n || 0).toFixed(2);
+  }
+
+  function renderCart() {
+    const itemsWrap = document.getElementById("cartItems");
+    if (!itemsWrap) return;
+
+    const cart = getCart();
+    const emptyMsg = document.getElementById("cartEmpty");
+    const footer = document.getElementById("cartFooter");
+    const badge = document.getElementById("cartBadge");
+    const totalEl = document.getElementById("cartTotalAmount");
+
+    const totalQty = cart.reduce((sum, it) => sum + it.qty, 0);
+    const totalPrice = cart.reduce((sum, it) => sum + it.qty * it.price, 0);
+
+    if (badge) {
+      badge.textContent = totalQty;
+      badge.classList.toggle("show", totalQty > 0);
+    }
+    if (totalEl) totalEl.textContent = formatPrice(totalPrice);
+
+    if (cart.length === 0) {
+      itemsWrap.innerHTML = "";
+      if (emptyMsg) emptyMsg.classList.add("show");
+      if (footer) footer.classList.add("hide");
+      return;
+    }
+
+    if (emptyMsg) emptyMsg.classList.remove("show");
+    if (footer) footer.classList.remove("hide");
+
+    itemsWrap.innerHTML = cart
+      .map(
+        (item) => `
+      <div class="cart-item" data-id="${item.id}">
+        <div class="cart-item-img"><img src="${item.image || ""}" alt="${item.name}"></div>
         <div class="cart-item-info">
-          <span class="cart-item-name">${displayName}</span>
-          <span class="cart-item-price">${formatPrice(product.price * qty)}</span>
+          <span class="cart-item-name">${item.name}</span>
+          <span class="cart-item-price">${formatPrice(item.price)}</span>
           <div class="cart-item-qty">
-            <button type="button" class="qty-btn" data-action="minus" data-index="${index}" aria-label="-">−</button>
-            <span class="qty-value">${qty}</span>
-            <button type="button" class="qty-btn" data-action="plus" data-index="${index}" aria-label="+">+</button>
+            <button class="qty-btn" data-action="dec" type="button">&minus;</button>
+            <span class="qty-value">${item.qty}</span>
+            <button class="qty-btn" data-action="inc" type="button">+</button>
           </div>
         </div>
-        <button type="button" class="cart-item-remove" data-action="remove" data-index="${index}" aria-label="Eliminar">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      `;
-      cartItemsBox.appendChild(row);
+        <button class="cart-item-remove" data-action="remove" type="button" aria-label="Quitar"><i class="ph ph-trash"></i></button>
+      </div>`
+      )
+      .join("");
+  }
+
+  function pulseBadge() {
+    const badge = document.getElementById("cartBadge");
+    if (!badge) return;
+    badge.classList.remove("pulse");
+    void badge.offsetWidth; // fuerza el reflow para reiniciar la animación
+    badge.classList.add("pulse");
+  }
+
+  function addToCart(product) {
+    const cart = getCart();
+    const existing = cart.find((it) => String(it.id) === String(product.id));
+    if (existing) {
+      existing.qty += product.qty || 1;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: Number(product.price) || 0,
+        image: product.image || "",
+        qty: product.qty || 1,
+      });
+    }
+    saveCart(cart);
+    renderCart();
+    pulseBadge();
+    showToast(`${product.name} se añadió al carrito`);
+  }
+
+  function initCart() {
+    renderCart();
+
+    const cartBtn = document.getElementById("cartBtn");
+    const cartDropdown = document.getElementById("cartDropdown");
+    const cartClose = document.getElementById("cartClose");
+    const clearBtn = document.getElementById("cartClearBtn");
+    const checkoutBtn = document.getElementById("cartCheckoutBtn");
+    const itemsWrap = document.getElementById("cartItems");
+
+    if (cartBtn && cartDropdown) {
+      cartBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = cartDropdown.classList.toggle("open");
+        cartBtn.setAttribute("aria-expanded", String(isOpen));
+      });
+    }
+
+    if (cartClose && cartDropdown) {
+      cartClose.addEventListener("click", () => {
+        cartDropdown.classList.remove("open");
+        if (cartBtn) cartBtn.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        saveCart([]);
+        renderCart();
+        showToast("Carrito vaciado");
+      });
+    }
+
+    if (checkoutBtn) {
+      checkoutBtn.addEventListener("click", () => {
+        if (getCart().length === 0) return;
+        showToast("Escríbenos por WhatsApp para finalizar tu compra");
+      });
+    }
+
+    if (itemsWrap) {
+      itemsWrap.addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-action]");
+        if (!btn) return;
+        const row = btn.closest(".cart-item");
+        if (!row) return;
+
+        const cart = getCart();
+        const item = cart.find((it) => String(it.id) === row.dataset.id);
+        if (!item) return;
+
+        if (btn.dataset.action === "inc") item.qty += 1;
+        if (btn.dataset.action === "dec") item.qty = Math.max(1, item.qty - 1);
+        if (btn.dataset.action === "remove") {
+          cart.splice(cart.indexOf(item), 1);
+        }
+
+        saveCart(cart);
+        renderCart();
+      });
+    }
+
+    // API pública mínima para que marketplace.html pueda añadir productos:
+    // window.NoesisCart.add({ id, name, price, image, qty })
+    window.NoesisCart = { add: addToCart, get: getCart, render: renderCart };
+  }
+
+  /* =====================================================
+     ACORDEÓN DE PREGUNTAS FRECUENTES
+  ===================================================== */
+  function initFaqAccordion() {
+    document.querySelectorAll(".faq-item").forEach((item) => {
+      const btn = item.querySelector(".faq-q");
+      if (!btn) return;
+      btn.addEventListener("click", () => {
+        const isOpen = item.classList.toggle("open");
+        btn.setAttribute("aria-expanded", String(isOpen));
+      });
     });
   }
 
-  // ---- Estado vacío vs. footer ----
-  const isEmpty = cart.length === 0;
-  if (cartEmptyBox) cartEmptyBox.classList.toggle('show', isEmpty);
-  if (cartFooterBox) cartFooterBox.classList.toggle('hide', isEmpty);
-  if (cartItemsBox) cartItemsBox.style.display = isEmpty ? 'none' : '';
+  /* =====================================================
+     REVELADO DE SECCIONES AL HACER SCROLL
+  ===================================================== */
+  function initFadeInSections() {
+    const sections = document.querySelectorAll(".fade-in-section");
+    if (!sections.length) return;
 
-  if (cartTotalAmount) cartTotalAmount.textContent = formatPrice(cartTotalPrice());
-}
-
-function openCartDropdown() {
-  if (!cartDropdown) return;
-  cartDropdown.classList.add('open');
-  cartBtn.setAttribute('aria-expanded', 'true');
-}
-
-function closeCartDropdown() {
-  if (!cartDropdown) return;
-  cartDropdown.classList.remove('open');
-  cartBtn.setAttribute('aria-expanded', 'false');
-}
-
-if (cartBtn) {
-  cartBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = cartDropdown.classList.contains('open');
-    if (isOpen) {
-      closeCartDropdown();
-    } else {
-      if (typeof langDropdown !== 'undefined' && langDropdown) langDropdown.classList.remove('open');
-      openCartDropdown();
-    }
-  });
-}
-
-if (cartClose) {
-  cartClose.addEventListener('click', () => closeCartDropdown());
-}
-
-document.addEventListener('click', (e) => {
-  if (cartSwitcher && !cartSwitcher.contains(e.target)) {
-    closeCartDropdown();
-  }
-});
-
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeCartDropdown();
-});
-
-// Delegación de eventos para +/-/eliminar dentro del carrito
-if (cartItemsBox) {
-  cartItemsBox.addEventListener('click', (e) => {
-    const actionBtn = e.target.closest('[data-action]');
-    if (!actionBtn) return;
-
-    const index = Number(actionBtn.dataset.index);
-    const action = actionBtn.dataset.action;
-    const lang = localStorage.getItem('noesis_lang') || 'es';
-
-    if (action === 'plus') changeQty(index, 1);
-    if (action === 'minus') changeQty(index, -1);
-    if (action === 'remove') {
-      removeFromCart(index);
-      showGlobalToast(translations[lang].cart_removed_toast);
-    }
-  });
-}
-
-if (cartClearBtn) {
-  cartClearBtn.addEventListener('click', () => {
-    const lang = localStorage.getItem('noesis_lang') || 'es';
-    clearCart();
-    showGlobalToast(translations[lang].cart_cleared_toast);
-  });
-}
-
-if (cartCheckoutBtn) {
-  cartCheckoutBtn.addEventListener('click', () => {
-    const lang = localStorage.getItem('noesis_lang') || 'es';
-    if (cart.length === 0) {
-      showGlobalToast(translations[lang].cart_checkout_empty);
+    if (!("IntersectionObserver" in window)) {
+      sections.forEach((s) => s.classList.add("visible"));
       return;
     }
-    showGlobalToast(translations[lang].cart_checkout_success);
-    clearCart();
-    closeCartDropdown();
-  });
-}
 
-// Render inicial del carrito (respeta lo guardado en localStorage,
-// incluyendo lo que se haya agregado desde marketplace.html)
-renderCart();
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
 
-function setLanguage(lang) {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (translations[lang] && translations[lang][key]) {
-      el.innerHTML = translations[lang][key];
-    }
-  });
-
-  // Refresca los nombres de producto dentro del carrito, si ya existe
-  if (typeof renderCart === 'function' && document.getElementById('cartItems')) {
-    renderCart();
+    sections.forEach((s) => observer.observe(s));
   }
 
-  // Placeholders del formulario
-  const nombreInput = document.getElementById('nombre');
-  const emailInput = document.getElementById('email');
-  const mensajeInput = document.getElementById('mensaje');
-  if (lang === 'en') {
-    if (nombreInput) nombreInput.placeholder = 'Your full name';
-    if (emailInput) emailInput.placeholder = 'youremail@university.edu';
-    if (mensajeInput) mensajeInput.placeholder = 'Tell us how we can help...';
-  } else {
-    if (nombreInput) nombreInput.placeholder = 'Tu nombre completo';
-    if (emailInput) emailInput.placeholder = 'tucorreo@universidad.edu';
-    if (mensajeInput) mensajeInput.placeholder = 'Cuéntanos en qué podemos ayudarte...';
-  }
+  /* =====================================================
+     FORMULARIO DE CONTACTO (Web3Forms)
+  ===================================================== */
+  function initContactForm() {
+    const form = document.getElementById("contactForm");
+    if (!form) return;
 
-  const langCurrent = document.getElementById('langCurrent');
-  if (langCurrent) langCurrent.textContent = lang.toUpperCase();
+    const successMsg = document.getElementById("formSuccess");
+    const errorMsg = document.getElementById("formErrorMsg");
+    const submitBtn = form.querySelector('button[type="submit"]');
 
-  document.querySelectorAll('.lang-option').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-  });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (successMsg) successMsg.classList.remove("visible");
+      if (errorMsg) errorMsg.classList.remove("visible");
+      if (submitBtn) submitBtn.disabled = true;
 
-  document.documentElement.setAttribute('lang', lang);
-  localStorage.setItem('noesis_lang', lang);
-}
+      try {
+        const formData = new FormData(form);
+        const response = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { Accept: "application/json" },
+          body: formData,
+        });
+        const result = await response.json();
 
-// Abrir/cerrar el dropdown de idioma
-const langBtn = document.getElementById('langBtn');
-const langDropdown = document.getElementById('langDropdown');
-const langSwitcher = document.getElementById('langSwitcher');
-
-if (langBtn && langDropdown && langSwitcher) {
-  langBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    langDropdown.classList.toggle('open');
-  });
-
-  document.querySelectorAll('.lang-option').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setLanguage(btn.getAttribute('data-lang'));
-      langDropdown.classList.remove('open');
+        if (result.success) {
+          form.reset();
+          if (successMsg) successMsg.classList.add("visible");
+        } else if (errorMsg) {
+          errorMsg.classList.add("visible");
+        }
+      } catch (err) {
+        if (errorMsg) errorMsg.classList.add("visible");
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
     });
-  });
+  }
 
-  // Cerrar el dropdown al hacer clic afuera
-  document.addEventListener('click', (e) => {
-    if (!langSwitcher.contains(e.target)) {
-      langDropdown.classList.remove('open');
-    }
-  });
-}
+  /* =====================================================
+     TOAST GLOBAL
+  ===================================================== */
+  let toastTimer = null;
+  function showToast(message) {
+    const toast = document.getElementById("globalToast");
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+  }
+  window.NoesisShowToast = showToast;
 
-// Cargar idioma guardado (o español por defecto)
-const savedLang = localStorage.getItem('noesis_lang') || 'es';
-setLanguage(savedLang);
+  /* =====================================================
+     TRANSICIÓN SUAVE AL NAVEGAR
+     Aplica body.page-leaving antes de cambiar de página
+     para que no se vea el "salto" blanco entre index,
+     marketplace, books, comunidad, etc.
+  ===================================================== */
+  function initPageTransition() {
+    if (reducedMotion) return;
 
-// -----------------------------------------------
-// SESIÓN SIMULADA (localStorage)
-// Si hay un usuario con sesión activa, el ícono de usuario
-// lleva al perfil en lugar de a la pantalla de inicio de sesión.
-// -----------------------------------------------
-(function syncUserNavIcon() {
-  const userNavBtn = document.getElementById('userNavBtn');
-  if (!userNavBtn) return;
-  try {
-    const session = JSON.parse(localStorage.getItem('noesis_session'));
-    const users = JSON.parse(localStorage.getItem('noesis_users')) || [];
-    const loggedIn = session && users.some(u => u.email === session.email);
-    userNavBtn.href = loggedIn ? 'perfil.html' : 'login.html';
-    userNavBtn.title = loggedIn ? 'Mi perfil' : 'Iniciar sesión / Registrarse';
-  } catch {
-    userNavBtn.href = 'login.html';
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("a");
+      if (!link) return;
+
+      const href = link.getAttribute("href");
+
+      // Ignoramos anclas, enlaces externos, descargas y nueva pestaña.
+      if (
+        !href ||
+        href.startsWith("#") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        link.target === "_blank" ||
+        link.hasAttribute("download") ||
+        link.hostname !== window.location.hostname ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey
+      ) {
+        return;
+      }
+
+      e.preventDefault();
+      document.body.classList.add("page-leaving");
+      setTimeout(() => {
+        window.location.href = href;
+      }, 220);
+    });
+
+    // Al volver con el botón "atrás" el navegador puede restaurar la
+    // página desde caché con la clase puesta: la quitamos.
+    window.addEventListener("pageshow", () => {
+      document.body.classList.remove("page-leaving");
+    });
+  }
+
+  /* =====================================================
+     ATAJOS DE TECLADO
+  ===================================================== */
+  function initKeyboardShortcuts() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+
+      closeDropdowns();
+
+      const hamburger = document.getElementById("hamburger");
+      const navLinks = document.getElementById("navLinks");
+      if (hamburger && navLinks) {
+        hamburger.classList.remove("active");
+        navLinks.classList.remove("open");
+      }
+    });
+  }
+
+  function closeDropdowns() {
+    const langDropdown = document.getElementById("langDropdown");
+    const langBtn = document.getElementById("langBtn");
+    if (langDropdown) langDropdown.classList.remove("open");
+    if (langBtn) langBtn.setAttribute("aria-expanded", "false");
+
+    const cartDropdown = document.getElementById("cartDropdown");
+    const cartBtn = document.getElementById("cartBtn");
+    if (cartDropdown) cartDropdown.classList.remove("open");
+    if (cartBtn) cartBtn.setAttribute("aria-expanded", "false");
+  }
+
+  /* =====================================================
+     CERRAR DROPDOWNS AL HACER CLIC AFUERA
+  ===================================================== */
+  function initOutsideClicks() {
+    document.addEventListener("click", (e) => {
+      const langSwitcher = document.getElementById("langSwitcher");
+      const langDropdown = document.getElementById("langDropdown");
+      const langBtn = document.getElementById("langBtn");
+      if (langSwitcher && langDropdown && !langSwitcher.contains(e.target)) {
+        langDropdown.classList.remove("open");
+        if (langBtn) langBtn.setAttribute("aria-expanded", "false");
+      }
+
+      const cartSwitcher = document.getElementById("cartSwitcher");
+      const cartDropdown = document.getElementById("cartDropdown");
+      const cartBtn = document.getElementById("cartBtn");
+      if (cartSwitcher && cartDropdown && !cartSwitcher.contains(e.target)) {
+        cartDropdown.classList.remove("open");
+        if (cartBtn) cartBtn.setAttribute("aria-expanded", "false");
+      }
+    });
   }
 })();

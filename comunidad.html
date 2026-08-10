@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noesis — Comunidad</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap">
+
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="comunidad.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Cursor personalizado -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+<div class="nav-inner">
+<div class="nav-logo">NOESIS</div>
+<div class="nav-links" id="navLinks">
+<a class="nav-link" data-i18n="nav_menu" href="index.html">MENU</a>
+<a class="nav-link" data-i18n="nav_market" href="marketplace.html">MARKETPLACE</a>
+<a class="nav-link active" data-i18n="nav_community" href="comunidad.html">COMUNIDAD</a>
+<a class="nav-link" data-i18n="nav_Material" href="Study.html">STUDY MATERIAL</a>
+<a class="nav-link" data-i18n="nav_books" href="books.html">BOOKS</a>
+</div>
+<div class="nav-icons">
+<!-- Idioma -->
+<div class="lang-switcher" id="langSwitcher">
+<button aria-expanded="false" aria-label="Seleccionar idioma" class="nav-icon-btn lang-btn" id="langBtn">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="2" x2="22" y1="12" y2="12"></line>
+<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+</svg>
+<span id="langCurrent">ES</span>
+</button>
+<div class="lang-dropdown" id="langDropdown">
+<button class="lang-option active" data-lang="es" type="button">🇪🇸 Español</button>
+<button class="lang-option" data-lang="en" type="button">🇬🇧 English</button>
+</div>
+</div>
+<!-- Usuario -->
+<a aria-label="User" class="nav-icon-btn" href="login.html" id="userNavBtn">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+</a>
+<button aria-label="Menu" class="hamburger" id="hamburger">
+<span></span><span></span><span></span>
+</button>
+</div>
+</div>
+</nav>
+
+<!-- HERO / BARRA DE BÚSQUEDA -->
+<header class="comm-hero">
+<div class="comm-hero-inner">
+<div class="comm-search-box">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input type="text" id="tutorSearch" data-i18n-placeholder="search_tutors" placeholder="Buscar tutores..."/>
+</div>
+<div class="comm-notif-switcher" id="commNotifSwitcher">
+<button class="comm-notif" id="commNotifBtn" type="button">
+<span data-i18n="notif_classes">¡No olvides tus clases programadas!</span>
+<span class="comm-notif-bell-wrap">
+<i class="fa-solid fa-bell"></i>
+<span class="comm-notif-badge" id="commNotifBadge">0</span>
+</span>
+</button>
+<div class="comm-notif-dropdown" id="commNotifDropdown">
+<div class="comm-notif-header">
+<h4 data-i18n="my_classes">Mis clases reservadas</h4>
+</div>
+<div class="comm-notif-list" id="commNotifList"></div>
+<div class="comm-notif-empty" id="commNotifEmpty">
+<i class="fa-solid fa-calendar-xmark"></i>
+<p data-i18n="no_classes_booked">Aún no tienes clases reservadas.</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+<!-- CATEGORÍAS (pestañas) -->
+<div class="comm-categories-wrap">
+<div class="comm-categories" id="commCategories">
+<button class="comm-cat-btn active" data-category="all" type="button">
+<i class="fa-solid fa-border-all"></i> <span data-i18n="cat_all">Todas</span>
+</button>
+<button class="comm-cat-btn" data-category="physics" type="button">
+<i class="fa-solid fa-atom"></i> <span data-i18n="cat_physics">Física</span>
+</button>
+<button class="comm-cat-btn" data-category="chemistry" type="button">
+<i class="fa-solid fa-flask"></i> <span data-i18n="cat_chemistry">Química</span>
+</button>
+<button class="comm-cat-btn" data-category="economics" type="button">
+<i class="fa-solid fa-chart-column"></i> <span data-i18n="cat_economics">Economía</span>
+</button>
+<button class="comm-cat-btn" data-category="biology" type="button">
+<i class="fa-solid fa-dna"></i> <span data-i18n="cat_biology">Biología</span>
+</button>
+<button class="comm-cat-btn" data-category="math" type="button">
+<i class="fa-solid fa-square-root-variable"></i> <span data-i18n="cat_math">Matemáticas</span>
+</button>
+<button class="comm-cat-btn" data-category="english" type="button">
+<i class="fa-solid fa-language"></i> <span data-i18n="cat_english">Inglés</span>
+</button>
+<button class="comm-cat-btn" data-category="systems" type="button">
+<i class="fa-solid fa-laptop-code"></i> <span data-i18n="cat_systems">Sistemas</span>
+</button>
+</div>
+</div>
+
+<!-- CONTENIDO: sidebar filtros + grid de tutores -->
+<main class="comm-main">
+<div class="comm-shell">
+
+<!-- Sidebar de filtros -->
+<aside class="comm-sidebar" id="commSidebar">
+<h3 data-i18n="filter_title">Filtrar búsqueda</h3>
+
+<div class="filter-group">
+<h4 data-i18n="filter_mode">Modalidad</h4>
+<label class="filter-radio">
+<input type="radio" name="mode" value="all" checked> <span data-i18n="filter_mode_all">Todas</span>
+</label>
+<label class="filter-radio">
+<input type="radio" name="mode" value="online"> <span data-i18n="filter_mode_online">En línea</span>
+</label>
+<label class="filter-radio">
+<input type="radio" name="mode" value="presencial"> <span data-i18n="filter_mode_person">Presencial</span>
+</label>
+</div>
+
+<div class="filter-group">
+<h4 data-i18n="filter_availability">Disponibilidad</h4>
+<select id="filterTime" class="filter-select">
+<option value="all" data-i18n="filter_time_all">Cualquier horario</option>
+<option value="morning" data-i18n="filter_time_morning">Mañana</option>
+<option value="afternoon" data-i18n="filter_time_afternoon">Tarde</option>
+<option value="evening" data-i18n="filter_time_evening">Noche</option>
+</select>
+</div>
+
+<div class="filter-group">
+<h4 data-i18n="filter_price">Rango de precio (por hora)</h4>
+<div class="price-range-labels">
+<span>B/. 5</span>
+<span>B/. 30+</span>
+</div>
+<input type="range" id="filterPrice" class="filter-range" min="5" max="30" value="30">
+<div class="price-range-value">B/. <span id="priceValue">30</span>+</div>
+</div>
+
+<div class="filter-actions">
+<button class="filter-apply-btn" id="filterApply" type="button" data-i18n="filter_apply">Aplicar</button>
+<button class="filter-clear-btn" id="filterClear" type="button" data-i18n="filter_clear">Limpiar</button>
+</div>
+</aside>
+
+<!-- Grid de tutores -->
+<section class="comm-results">
+<h2 class="comm-section-title" data-i18n="featured_tutors">Tutores destacados</h2>
+<div class="tutor-grid" id="tutorGrid">
+<!-- Generado por comunidad.js -->
+</div>
+<div class="comm-no-results" id="commNoResults">
+<img src="IMG/mascot-thinking.png" alt=""/>
+<h3 data-i18n="no_results_title">¿Nada por aquí?</h3>
+<p data-i18n="no_tutors">No encontramos tutores que coincidan con tu búsqueda.</p>
+</div>
+</section>
+
+</div>
+</main>
+
+<!-- BANNER CTA -->
+<section class="comm-cta">
+<div class="comm-cta-inner">
+<div class="comm-cta-left">
+<img src="IMG/mascot-stand.png" alt="" class="comm-cta-mascot"/>
+<div class="comm-cta-text">
+<h3 data-i18n="cta_title">¿Necesitas ayuda con algo específico?</h3>
+<p data-i18n="cta_text">Publica tu solicitud y encuentra al tutor ideal para ti.</p>
+<button class="comm-cta-btn" id="postRequestBtn" type="button" data-i18n="cta_btn">Publicar solicitud <i class="fa-solid fa-plus"></i></button>
+</div>
+</div>
+<div class="comm-cta-badges">
+<div class="comm-badge">
+<i class="fa-solid fa-circle-check"></i>
+<strong data-i18n="badge_verified">Tutores verificados</strong>
+<span data-i18n="badge_verified_desc">Cada tutor pasa por un proceso de verificación.</span>
+</div>
+<div class="comm-badge">
+<i class="fa-solid fa-clock"></i>
+<strong data-i18n="badge_pace">Aprende a tu ritmo</strong>
+<span data-i18n="badge_pace_desc">Clases personalizadas según tu disponibilidad.</span>
+</div>
+<div class="comm-badge">
+<i class="fa-solid fa-shield-halved"></i>
+<strong data-i18n="badge_secure">Pagos seguros</strong>
+<span data-i18n="badge_secure_desc">Transacciones protegidas y confiables.</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- MODAL DE DETALLES DEL TUTOR -->
+<div class="modal" id="tutorModal">
+<div class="modal-content tutor-modal-content">
+<span class="close" id="tutorModalClose">&times;</span>
+
+<div class="tutor-detail">
+<!-- Columna izquierda: foto + info -->
+<div class="tutor-detail-left">
+<div class="tutor-detail-avatar" id="tutorDetailAvatar"></div>
+<button class="tutor-fav-btn" id="tutorFavBtn" type="button" aria-label="Favorito">
+<i class="fa-solid fa-heart"></i>
+</button>
+<h3 class="tutor-detail-name" id="tutorDetailName"></h3>
+<p class="tutor-detail-subject" id="tutorDetailSubject"></p>
+<div class="tutor-detail-rating">
+<i class="fa-solid fa-star"></i>
+<span id="tutorDetailRating"></span>
+</div>
+<p class="tutor-detail-reviews-count" id="tutorDetailReviewsCount"></p>
+<!-- Recuadro de disponibilidad (horarios) -->
+<div class="tutor-schedule-box" id="tutorScheduleBox">
+<i class="fa-regular fa-calendar"></i>
+<span class="tutor-schedule-label" data-i18n="schedule_label">Horarios disponibles</span>
+<div class="tutor-schedule-slots" id="tutorScheduleSlots"></div>
+</div>
+</div>
+
+<!-- Columna derecha: about, tags, subjects, reviews -->
+<div class="tutor-detail-right">
+<h3 class="tutor-detail-section" data-i18n="about_me">Sobre mí</h3>
+<p class="tutor-detail-bio" id="tutorDetailBio"></p>
+
+<div class="tutor-detail-tags" id="tutorDetailTags"></div>
+
+<h3 class="tutor-detail-section" data-i18n="subjects_teach">Materias que enseño</h3>
+<div class="tutor-detail-subjects" id="tutorDetailSubjects"></div>
+
+<h3 class="tutor-detail-section">
+<span data-i18n="reviews_title">Reseñas</span>
+<span class="tutor-reviews-link" id="tutorReviewsLink"></span>
+</h3>
+<div class="tutor-reviews-list" id="tutorReviewsList"></div>
+</div>
+</div>
+
+<!-- Barra inferior: precio + acciones -->
+<div class="tutor-detail-footer">
+<div class="tutor-detail-price">
+<span class="price-label" data-i18n="price_per_hour">Precio (por hora)</span>
+<span class="price-amount" id="tutorDetailPrice"></span>
+<span class="price-secure"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="secure_payment">Pago seguro</span></span>
+</div>
+<div class="tutor-detail-actions">
+<button class="tutor-book-btn" id="tutorBookBtn" type="button">
+<i class="fa-solid fa-calendar-check"></i> <span data-i18n="book_class">Reservar clase</span>
+</button>
+<span class="tutor-action-or" data-i18n="or_label">o</span>
+<button class="tutor-msg-btn" id="tutorMsgBtn" type="button">
+<i class="fa-solid fa-comment-dots"></i> <span data-i18n="send_message">Enviar mensaje</span>
+</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- MODAL: PUBLICAR SOLICITUD -->
+<div class="modal" id="requestModal">
+<div class="modal-content publish-content">
+<span class="close" id="closeRequestModal">&times;</span>
+
+<div class="modal-header">
+<div class="modal-icon"><i class="fa-solid fa-comment-medical"></i></div>
+<h2 class="modal-title" data-i18n="request_title">Publicar solicitud</h2>
+</div>
+<p class="request-subtitle" data-i18n="request_subtitle">Cuéntanos qué necesitas y los tutores disponibles podrán contactarte.</p>
+
+<form class="publish-form" id="requestForm" novalidate>
+
+<div class="publish-error" id="requestError"></div>
+
+<div class="publish-field">
+<label for="reqSubject" data-i18n="request_subject_label">¿Qué materia necesitas?</label>
+<input type="text" id="reqSubject" name="reqSubject" placeholder="Ej. Cálculo II" required>
+</div>
+
+<div class="publish-field">
+<label for="reqDescription" data-i18n="request_desc_label">Describe lo que necesitas</label>
+<textarea id="reqDescription" name="reqDescription" rows="3" placeholder="Ej. Necesito ayuda para preparar el examen final..." required></textarea>
+</div>
+
+<div class="publish-field-row">
+<div class="publish-field">
+<label for="reqBudget" data-i18n="request_budget_label">Presupuesto (por hora)</label>
+<input type="number" id="reqBudget" name="reqBudget" min="5" step="1" placeholder="15" required>
+</div>
+<div class="publish-field">
+<label for="reqTime" data-i18n="request_time_label">Horario preferido</label>
+<select id="reqTime" name="reqTime" required>
+<option value="morning" data-i18n="filter_time_morning">Mañana</option>
+<option value="afternoon" data-i18n="filter_time_afternoon">Tarde</option>
+<option value="evening" data-i18n="filter_time_evening">Noche</option>
+</select>
+</div>
+</div>
+
+<button type="submit" class="modal-btn publish-submit-btn">
+<i class="fa-solid fa-paper-plane"></i>
+<span data-i18n="request_submit_btn">Publicar solicitud</span>
+</button>
+
+<p class="publish-hint" data-i18n="request_hint">Simulado con localStorage — tu solicitud solo se guarda en este navegador.</p>
+</form>
+
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+<div class="footer-inner">
+<div class="footer-brand">
+<a class="nav-logo footer-logo" href="index.html"><span class="logo-text">NOESIS</span></a>
+<p data-i18n="footer_desc">El marketplace universitario de<br/>David, Chiriquí.</p>
+</div>
+<div class="footer-links">
+<h4 data-i18n="footer_platform">Plataforma</h4>
+<ul>
+<li><a data-i18n="footer_marketplace" href="marketplace.html">Marketplace</a></li>
+<li><a data-i18n="nav_books" href="books.html">Books</a></li>
+<li><a data-i18n="nav_community" href="comunidad.html">Comunidad</a></li>
+</ul>
+</div>
+<div class="footer-links">
+<h4 data-i18n="footer_support">Soporte</h4>
+<ul>
+<li><a data-i18n="footer_faq" href="index.html#ayuda">Ayuda / FAQ</a></li>
+<li><a data-i18n="footer_contact" href="index.html#contacto">Contáctanos</a></li>
+<li><a data-i18n="footer_terms" href="#">Términos de uso</a></li>
+</ul>
+</div>
+<div class="footer-social">
+<h4 data-i18n="footer_follow">Síguenos</h4>
+<div class="social-icons">
+<a href="https://instagram.com"><img alt="Instagram" src="img/instagram.webp"/></a>
+<a href="https://facebook.com"><img alt="Facebook" src="img/Facebook.png"/></a>
+<a href="https://wa.me/50760000000"><img alt="WhatsApp" src="img/WhatsApp.png"/></a>
+</div>
+</div>
+</div>
+<div class="footer-bottom">
+<p data-i18n="footer_copyright">© 2026 Noesis · Todos los derechos reservados · David, Chiriquí, Panamá</p>
+</div>
+</footer>
+
+<div class="toast toast-global" id="globalToast"></div>
+
+<script src="comunidad.js"></script>
+</body>
+</html>

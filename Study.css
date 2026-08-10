@@ -1,0 +1,171 @@
+/* ==========================================================
+   STUDY MATERIAL — estilos adicionales
+   Este archivo se carga DESPUÉS de marketplace.css y solo
+   agrega/ajusta lo necesario para la tarjeta y el modal de
+   "kits de estudio", reutilizando las mismas variables de
+   color, tipografía y componentes (navbar, filtros, carrito,
+   footer, modales) definidos en marketplace.css.
+   ========================================================== */
+
+/* ---- Tarjeta de kit: reutiliza .card, solo ajustamos la imagen
+   para que se vea como foto de portada en vez de ícono ---- */
+.card-icon-wrap.kit-cover {
+    width: 100%;
+    height: 150px;
+    border-radius: 14px;
+}
+
+.card-icon-wrap.kit-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    padding: 0;
+}
+
+/* ---- Modal de detalle rediseñado para kits: imagen arriba,
+   ancha, y la info organizada en dos columnas debajo ---- */
+.kit-modal-content {
+    width: 760px;
+}
+
+.kit-modal-content .modal-header {
+    margin-bottom: 10px;
+    padding-right: 40px;
+}
+
+.kit-modal-image {
+    width: 100%;
+    min-height: 240px;
+    border-radius: 18px;
+}
+
+.kit-modal-image img {
+    max-width: 100%;
+    max-height: 280px;
+}
+
+.kit-modal-content .modal-title {
+    margin-bottom: 4px;
+}
+
+.modal-seller-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--green-dark);
+    opacity: .8;
+    font-size: .85rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.kit-price-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.kit-price-row .modal-price {
+    margin-bottom: 0;
+}
+
+.kit-price-row .modal-condition {
+    margin-bottom: 0;
+}
+
+.kit-modal-content .modal-gallery {
+    margin-bottom: 24px;
+}
+
+.kit-modal-body {
+    grid-template-columns: 1fr 1fr;
+}
+
+/* ---- Lista "Incluye" ---- */
+.includes-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.includes-list li {
+    position: relative;
+    padding-left: 22px;
+    font-size: .92rem;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.includes-list li::before {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: var(--green-mid);
+    font-size: .75rem;
+}
+
+/* ---- Columna de datos del kit (categoría, condición, fecha, vendedor) ---- */
+.kit-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.kit-info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--white);
+    border: 2px solid var(--green-pastel);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.kit-info-row i {
+    color: var(--green-dark);
+    font-size: 1rem;
+    margin-top: 2px;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.kit-info-row > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.kit-info-label {
+    font-size: .7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--green-dark);
+    opacity: .65;
+}
+
+.kit-info-value {
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+@media (max-width: 640px) {
+    .kit-modal-content {
+        width: 100%;
+    }
+    .kit-modal-body {
+        grid-template-columns: 1fr;
+    }
+    .kit-price-row {
+        flex-wrap: wrap;
+    }
+}

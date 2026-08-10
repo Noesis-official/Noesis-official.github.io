@@ -1,173 +1,124 @@
 // ============================================================
-//  NOESIS – Market Place 2  |  script.js
-//  Renderiza las tarjetas de productos, maneja la búsqueda,
-//  el modal de detalles (con galería, categorías y precio),
-//  el idioma y el cursor personalizado.
+//  NOESIS – Study Material  |  study-material.js
+//  Misma lógica que marketplace.js (tarjetas, búsqueda, filtros,
+//  modal, carrito, idioma, cursor) adaptada a "kits de estudio":
+//  cada kit tiene una lista de contenido ("incluye"), categoría,
+//  condición, fecha de publicación y vendedor estudiante.
 // ============================================================
 
 // -----------------------------------------------
-// CATEGORÍAS ("¿Quiénes lo usan?")
-// Cada categoría tiene un ícono (Font Awesome, ya cargado
-// en index.html) y su nombre en cada idioma.
+// CATEGORÍAS DE KITS
 // -----------------------------------------------
 const categories = {
-  ingenieria:   { icon: "fa-solid fa-hard-hat",            es: "Ingeniería",        en: "Engineering" },
-  fisica:       { icon: "fa-solid fa-atom",                es: "Física",            en: "Physics" },
-  matematicas:  { icon: "fa-solid fa-square-root-variable", es: "Matemáticas",      en: "Mathematics" },
-  economia:     { icon: "fa-solid fa-chart-column",        es: "Economía",          en: "Economics" },
-  medicina:     { icon: "fa-solid fa-stethoscope",         es: "Medicina",          en: "Medicine" },
-  quimica:      { icon: "fa-solid fa-flask",               es: "Química",           en: "Chemistry" },
-  diseno:       { icon: "fa-solid fa-pen-ruler",           es: "Diseño",            en: "Design" },
-  arquitectura: { icon: "fa-solid fa-drafting-compass",    es: "Arquitectura",      en: "Architecture" },
-  geografia:    { icon: "fa-solid fa-earth-americas",      es: "Geografía",         en: "Geography" },
-  general:      { icon: "fa-solid fa-graduation-cap",      es: "Todas las carreras", en: "All majors" }
+  ingenieria:   { icon: "fa-solid fa-hard-hat",         es: "Ingeniería",        en: "Engineering" },
+  arquitectura: { icon: "fa-solid fa-drafting-compass", es: "Arquitectura",      en: "Architecture" },
+  medicina:     { icon: "fa-solid fa-stethoscope",      es: "Medicina",          en: "Medicine" },
+  enfermeria:   { icon: "fa-solid fa-user-nurse",       es: "Enfermería",        en: "Nursing" },
+  derecho:      { icon: "fa-solid fa-gavel",            es: "Derecho",           en: "Law" }
+};
+
+const conditionLabels = {
+  new:       { es: "Nuevo",           en: "New" },
+  excellent: { es: "Excelente estado", en: "Excellent condition" },
+  used:      { es: "Segunda mano",     en: "Second-hand" }
 };
 
 // -----------------------------------------------
-// PRODUCTOS
-// Información genérica de ejemplo (condición, categorías,
-// galería). Ajusta estos valores con los datos reales de tu
-// catálogo cuando los tengas.
-//
-// 📷 AGREGAR IMÁGENES AQUÍ:
-// - `image`   → foto principal de la tarjeta y del modal.
-// - `gallery` → hasta 4 fotos para las miniaturas del modal.
-//               Si un archivo todavía no existe, el sitio
-//               muestra automáticamente la imagen principal
-//               como respaldo (no se rompe el diseño).
-//   Ejemplo para agregar fotos reales de la Calculadora:
-//   gallery: ["IMG/Calculadora-1.png", "IMG/Calculadora-2.png",
-//             "IMG/Calculadora-3.png", "IMG/Calculadora-4.png"]
+// KITS DE ESTUDIO (catálogo de ejemplo)
+// 📷 AGREGAR IMÁGENES AQUÍ: reemplaza `image`/`gallery` con las
+// fotos reales de cada kit cuando las tengas.
 // -----------------------------------------------
 const products = [
   {
-    name: "Calculadora",
-    icon: "fa-solid fa-calculator",
-    image: "IMG/Calculadora.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería de la Calculadora)
-    gallery: ["IMG/Calculadora-1.png", "IMG/Calculadora-2.png", "IMG/Calculadora-3.png", "IMG/Calculadora-4.png"],
-    price: 20,
-    condition: "used",
-    tags: ["ingenieria", "fisica", "matematicas", "economia"],
-    seller: { name: "Andrés Ríos", university: "UTP", location: "David, Chiriquí" },
-    description: {
-      es: "Calculadora científica ideal para matemáticas, física y química. Herramienta en buen estado, incluye tapa protectora.",
-      en: "Scientific calculator ideal for mathematics, physics and chemistry. In good condition, includes protective cover."
-    }
+    name: { es: "Kit de inicio - Ingeniería Química", en: "Chemical Engineering Entry Kit" },
+    image: "IMG/kit-quimica.png",
+    gallery: ["IMG/kit-quimica-1.png", "IMG/kit-quimica-2.png", "IMG/kit-quimica-3.png", "IMG/kit-quimica-4.png"],
+    price: 120,
+    condition: "excellent",
+    category: "ingenieria",
+    postedAt: "2026-07-14",
+    includes: {
+      es: ["Calculadora científica", "Gafas de seguridad", "Libreta de laboratorio", "Set básico de herramientas de laboratorio", "Libro de texto de Química"],
+      en: ["Scientific calculator", "Safety glasses", "Lab notebook", "Basic lab tools set", "Chemistry textbook"]
+    },
+    seller: { name: "Jonh Maikol", university: "UNACHI", location: "David, Chiriquí" }
   },
   {
-    name: "Ipad",
-    icon: "fa-solid fa-tablet-screen-button",
-    image: "IMG/Ipad.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería del Ipad)
-    gallery: ["IMG/Ipad-1.png", "IMG/Ipad-2.png", "IMG/Ipad-3.png", "IMG/Ipad-4.png"],
-    price: 450,
-    condition: "used",
-    tags: ["diseno", "arquitectura", "general"],
-    seller: { name: "Valeria Gómez", university: "USMA", location: "David, Chiriquí" },
-    description: {
-      es: "Tablet de Apple utilizada para estudiar y tomar apuntes. Ideal para tomar notas a mano y trabajar con apps de diseño.",
-      en: "Apple tablet used for studying and taking notes. Great for handwritten notes and design apps."
-    }
-  },
-  {
-    name: "Casco",
-    icon: "fa-solid fa-hard-hat",
-    image: "IMG/Casco.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería del Casco)
-    gallery: ["IMG/Casco-1.png", "IMG/Casco-2.png", "IMG/Casco-3.png", "IMG/Casco-4.png"],
-    price: 18,
+    name: { es: "Kit de inicio - Arquitectura", en: "Architecture Entry Kit" },
+    image: "IMG/kit-arquitectura.png",
+    gallery: ["IMG/kit-arquitectura-1.png", "IMG/kit-arquitectura-2.png", "IMG/kit-arquitectura-3.png", "IMG/kit-arquitectura-4.png"],
+    price: 95,
     condition: "new",
-    tags: ["ingenieria", "arquitectura"],
-    seller: { name: "Kevin Santos", university: "UTP", location: "David, Chiriquí" },
-    description: {
-      es: "Casco de seguridad utilizado en laboratorios y construcciones. Cumple con normas básicas de protección.",
-      en: "Safety helmet used in laboratories and construction sites. Meets basic protection standards."
-    }
+    category: "arquitectura",
+    postedAt: "2026-07-10",
+    includes: {
+      es: ["Set de reglas de dibujo", "Lápices técnicos", "Tablero de dibujo", "Papel para planos", "Manual de arquitectura"],
+      en: ["Drafting ruler set", "Technical pencils", "Drawing board", "Blueprint paper", "Architecture handbook"]
+    },
+    seller: { name: "Valeria Gómez", university: "USMA", location: "David, Chiriquí" }
   },
   {
-    name: "Bata",
-    icon: "fa-solid fa-user-doctor",
-    image: "IMG/Bata.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería de la Bata)
-    gallery: ["IMG/Bata-1.png", "IMG/Bata-2.png", "IMG/Bata-3.png", "IMG/Bata-4.png"],
-    price: 25,
-    condition: "new",
-    tags: ["medicina", "quimica"],
-    seller: { name: "María José Pinto", university: "USMA", location: "David, Chiriquí" },
-    description: {
-      es: "Bata de laboratorio utilizada en prácticas de ciencias. Tela resistente y fácil de lavar.",
-      en: "Laboratory coat used in science practices. Durable, easy-to-wash fabric."
-    }
-  },
-  {
-    name: "Tubos de ensayo",
-    icon: "fa-solid fa-vial",
-    image: "IMG/Tubodeensayo.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería de los Tubos de ensayo)
-    gallery: ["IMG/Tubodeensayo-1.png", "IMG/Tubodeensayo-2.png", "IMG/Tubodeensayo-3.png", "IMG/Tubodeensayo-4.png"],
-    price: 12,
-    condition: "new",
-    tags: ["quimica", "fisica", "medicina"],
-    seller: { name: "Carlos Espinoza", university: "UNACHI", location: "David, Chiriquí" },
-    description: {
-      es: "Conjunto de tubos de ensayo para experimentos de laboratorio. Vidrio resistente al calor.",
-      en: "Set of test tubes used for laboratory experiments. Heat-resistant glass."
-    }
-  },
-  {
-    name: "Estetoscopio",
-    icon: "fa-solid fa-stethoscope",
-    image: "IMG/Estetoscopio.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería del Estetoscopio)
-    gallery: ["IMG/Estetoscopio-1.png", "IMG/Estetoscopio-2.png", "IMG/Estetoscopio-3.png", "IMG/Estetoscopio-4.png"],
-    price: 30,
+    name: { es: "Kit de inicio - Ingeniería en Sistemas", en: "Systems Engineering Entry Kit" },
+    image: "IMG/kit-sistemas.png",
+    gallery: ["IMG/kit-sistemas-1.png", "IMG/kit-sistemas-2.png", "IMG/kit-sistemas-3.png", "IMG/kit-sistemas-4.png"],
+    price: 150,
     condition: "used",
-    tags: ["medicina"],
-    seller: { name: "Ana Lucía Herrera", university: "USMA", location: "David, Chiriquí" },
-    description: {
-      es: "Instrumento médico para escuchar los sonidos del cuerpo. Ideal para prácticas de enfermería y medicina.",
-      en: "Medical instrument used to listen to body sounds. Great for nursing and medicine practice."
-    }
+    category: "ingenieria",
+    postedAt: "2026-07-16",
+    includes: {
+      es: ["Base para laptop", "Disco duro externo", "Libro de lógica de programación", "Libreta y marcadores", "Memoria USB"],
+      en: ["Laptop stand", "External hard drive", "Programming logic textbook", "Notebook & markers", "USB flash drive"]
+    },
+    seller: { name: "Diego Fernández", university: "ISAE", location: "David, Chiriquí" }
   },
   {
-    name: "Laptop",
-    icon: "fa-solid fa-laptop",
-    image: "IMG/Laptop.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería de la Laptop)
-    gallery: ["IMG/Laptop-1.png", "IMG/Laptop-2.png", "IMG/Laptop-3.png", "IMG/Laptop-4.png"],
-    price: 700,
-    condition: "used",
-    tags: ["general"],
-    seller: { name: "Diego Fernández", university: "ISAE", location: "David, Chiriquí" },
-    description: {
-      es: "Computadora portátil ideal para estudiar y trabajar. Buen rendimiento para tareas y clases virtuales.",
-      en: "Portable computer ideal for studying and working. Good performance for homework and online classes."
-    }
-  },
-  {
-    name: "Globo terráqueo",
-    icon: "fa-solid fa-earth-americas",
-    image: "IMG/GloboT.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería del Globo terráqueo)
-    gallery: ["IMG/GloboT-1.png", "IMG/GloboT-2.png", "IMG/GloboT-3.png", "IMG/GloboT-4.png"],
-    price: 35,
+    name: { es: "Kit de inicio - Medicina", en: "Medical Entry Kit" },
+    image: "IMG/kit-medicina.png",
+    gallery: ["IMG/kit-medicina-1.png", "IMG/kit-medicina-2.png", "IMG/kit-medicina-3.png", "IMG/kit-medicina-4.png"],
+    price: 110,
     condition: "new",
-    tags: ["geografia", "general"],
-    seller: { name: "Sofía Batista", university: "UNACHI", location: "David, Chiriquí" },
-    description: {
-      es: "Representación de la Tierra utilizada en geografía. Buen tamaño para escritorio o estantería.",
-      en: "Representation of the Earth used in geography. Good size for a desk or shelf."
-    }
+    category: "medicina",
+    postedAt: "2026-07-09",
+    includes: {
+      es: ["Estetoscopio", "Tensiómetro", "Set de batas clínicas", "Libreta clínica", "Linterna de bolsillo"],
+      en: ["Stethoscope", "Blood pressure monitor", "Scrubs set", "Clinical notebook", "Penlight"]
+    },
+    seller: { name: "Ana Lucía Herrera", university: "USMA", location: "David, Chiriquí" }
+  },
+  {
+    name: { es: "Kit de inicio - Enfermería", en: "Nursing Entry Kit" },
+    image: "IMG/kit-enfermeria.png",
+    gallery: ["IMG/kit-enfermeria-1.png", "IMG/kit-enfermeria-2.png", "IMG/kit-enfermeria-3.png", "IMG/kit-enfermeria-4.png"],
+    price: 90,
+    condition: "new",
+    category: "enfermeria",
+    postedAt: "2026-07-12",
+    includes: {
+      es: ["Set de uniforme de enfermería", "Kit de vendas y curitas", "Termómetro digital", "Manual de enfermería", "Gafete con nombre"],
+      en: ["Nursing scrubs", "Bandage & dressing kit", "Digital thermometer", "Nursing handbook", "Name badge"]
+    },
+    seller: { name: "María José Pinto", university: "USMA", location: "David, Chiriquí" }
+  },
+  {
+    name: { es: "Kit de inicio - Derecho", en: "Law Entry Kit" },
+    image: "IMG/kit-derecho.png",
+    gallery: ["IMG/kit-derecho-1.png", "IMG/kit-derecho-2.png", "IMG/kit-derecho-3.png", "IMG/kit-derecho-4.png"],
+    price: 130,
+    condition: "used",
+    category: "derecho",
+    postedAt: "2026-07-08",
+    includes: {
+      es: ["Libretas de apuntes legales", "Código civil", "Réplica de mazo de juez", "Set de resaltadores", "Carpeta portadocumentos"],
+      en: ["Legal pad notebooks", "Civil code textbook", "Gavel replica", "Highlighter set", "Briefcase folder"]
+    },
+    seller: { name: "Carlos Espinoza", university: "UNACHI", location: "David, Chiriquí" }
   }
 ];
 
 // -----------------------------------------------
-// PRODUCTOS PUBLICADOS POR USUARIOS (localStorage)
-// Se guardan aparte del catálogo de ejemplo y se combinan
-// con él al momento de renderizar el grid.
+// KITS PUBLICADOS POR USUARIOS (localStorage)
 // -----------------------------------------------
-const USER_PRODUCTS_KEY = "noesis_user_products";
+const USER_PRODUCTS_KEY = "noesis_study_user_products";
 const USERS_KEY = "noesis_users";
 const SESSION_KEY = "noesis_session";
 
@@ -194,9 +145,6 @@ function getCurrentUser() {
   }
 }
 
-// Combina el catálogo de ejemplo con las publicaciones de usuarios.
-// Se recalcula cada vez que se llama, así que una publicación nueva
-// aparece de inmediato sin recargar la página.
 function getAllProducts() {
   return [...products, ...loadUserProducts()];
 }
@@ -204,75 +152,50 @@ function getAllProducts() {
 // -----------------------------------------------
 // TRADUCCIONES
 // -----------------------------------------------
-const productNamesTranslations = {
-  es: {
-    "Calculadora": "Calculadora",
-    "Ipad": "Ipad",
-    "Casco": "Casco",
-    "Bata": "Bata",
-    "Tubos de ensayo": "Tubos de ensayo",
-    "Estetoscopio": "Estetoscopio",
-    "Laptop": "Laptop",
-    "Globo terráqueo": "Globo terráqueo"
-  },
-  en: {
-    "Calculadora": "Calculator",
-    "Ipad": "iPad",
-    "Casco": "Helmet",
-    "Bata": "Lab Coat",
-    "Tubos de ensayo": "Test Tubes",
-    "Estetoscopio": "Stethoscope",
-    "Laptop": "Laptop",
-    "Globo terráqueo": "Globe"
-  }
-};
-
 const translations = {
   es: {
     nav_menu: "MENU",
     nav_market: "MARKETPLACE",
+    nav_study: "STUDY MATERIAL",
     nav_community: "COMUNIDAD",
     nav_books: "LIBROS",
-    search_placeholder: "Buscar productos...",
-    notif_msg: "¡Recuerda usar esta sección correctamente!",
+    search_placeholder_study: "Buscar kits de estudio...",
     details_btn: "Detalles",
-    modal_default_title: "Nombre del producto",
-    modal_default_desc: "Descripción del producto.",
-    modal_close_btn: "Cerrar",
-    modal_details_prefix: "Detalles de:",
-    modal_price: "Precio",
-    modal_desc_title: "Descripción",
-    modal_tags_title: "¿Quiénes lo usan?",
+    modal_default_title: "Nombre del kit",
+    modal_includes_title: "Incluye",
+    modal_category_label: "Categoría",
+    modal_condition_label: "Condición",
+    modal_posted_label: "Publicado",
+    modal_seller_student_label: "Vendedor estudiante",
+    modal_message_seller: "Contactar vendedor",
     modal_add_cart: "Añadir al carrito",
     modal_buy_now: "Comprar ahora",
     condition_new: "Nuevo",
+    condition_excellent: "Excelente estado",
     condition_used: "Segunda mano",
     cart_toast: "Añadido al carrito ✓",
-    no_results_msg: "No encontramos productos con ese nombre.",
-    seller_label: "Vendido por",
-    modal_seller_title: "Vendedor",
-    modal_contact: "Contactar vendedor",
-    seller_login_hint: "Inicia sesión para contactar al vendedor",
+    no_results_msg: "No encontramos kits con ese nombre.",
     sell_btn: "Vender",
-    publish_title: "Publicar un producto",
-    publish_name_label: "Nombre del producto",
+    publish_title_study: "Publicar un kit de estudio",
+    publish_name_label_study: "Nombre del kit",
     publish_price_label: "Precio (B/.)",
     publish_condition_label: "Condición",
-    publish_tags_label: "¿Quiénes lo usan? (elige una o más)",
-    publish_desc_label: "Descripción",
-    publish_image_label: "Foto del producto",
-    publish_submit_btn: "Publicar producto",
+    publish_category_label: "Categoría (elige una)",
+    publish_includes_label: "¿Qué incluye? (una por línea)",
+    publish_image_label: "Foto del kit",
+    publish_submit_btn_study: "Publicar kit",
     publish_hint: "Simulado con localStorage — tu publicación solo se guarda en este navegador.",
-    publish_err_required: "Por favor completa todos los campos y elige al menos una categoría.",
-    publish_login_required: "Inicia sesión para publicar un producto.",
-    publish_success: "¡Producto publicado con éxito! 🎉",
+    publish_err_required: "Por favor completa todos los campos y elige una categoría.",
+    publish_login_required: "Inicia sesión para publicar un kit.",
+    publish_success: "¡Kit publicado con éxito! 🎉",
     delete_listing_btn: "Eliminar publicación",
     delete_confirm: "¿Seguro que quieres eliminar esta publicación?",
     delete_success: "Publicación eliminada.",
     card_mine_badge: "Tuyo",
+    notif_msg_study: "¡Aquí te avisaremos si agregamos nuevos kits de estudio!",
     notif_panel_title: "Novedades",
-    notif_new_msg: "Hay {count} publicaciones nuevas desde tu última visita",
-    notif_none_msg: "No hay publicaciones nuevas desde tu última visita.",
+    notif_new_msg: "Hay {count} kits nuevos desde tu última visita",
+    notif_none_msg: "No hay kits nuevos desde tu última visita.",
     filter_all: "Todos",
     filter_price_label: "Precio",
     filter_all_universities: "Todas las universidades",
@@ -300,48 +223,46 @@ const translations = {
   en: {
     nav_menu: "MENU",
     nav_market: "MARKETPLACE",
+    nav_study: "STUDY MATERIAL",
     nav_community: "COMMUNITY",
     nav_books: "BOOKS",
-    search_placeholder: "Search products...",
-    notif_msg: "Remember to use this section correctly!",
+    search_placeholder_study: "Search study kits...",
     details_btn: "Details",
-    modal_default_title: "Product name",
-    modal_default_desc: "Product description.",
-    modal_close_btn: "Close",
-    modal_details_prefix: "Details of:",
-    modal_price: "Price",
-    modal_desc_title: "Description",
-    modal_tags_title: "Who uses this?",
+    modal_default_title: "Kit name",
+    modal_includes_title: "Includes",
+    modal_category_label: "Category",
+    modal_condition_label: "Condition",
+    modal_posted_label: "Posted",
+    modal_seller_student_label: "Student seller",
+    modal_message_seller: "Message seller",
     modal_add_cart: "Add to cart",
-    modal_buy_now: "Buy now",
+    modal_buy_now: "Buy this now",
     condition_new: "New",
+    condition_excellent: "Excellent condition",
     condition_used: "Second-hand",
     cart_toast: "Added to cart ✓",
-    no_results_msg: "We couldn't find any products with that name.",
-    seller_label: "Sold by",
-    modal_seller_title: "Seller",
-    modal_contact: "Contact seller",
-    seller_login_hint: "Log in to contact the seller",
+    no_results_msg: "We couldn't find any kits with that name.",
     sell_btn: "Sell",
-    publish_title: "Publish a product",
-    publish_name_label: "Product name",
+    publish_title_study: "Publish a study kit",
+    publish_name_label_study: "Kit name",
     publish_price_label: "Price (B/.)",
     publish_condition_label: "Condition",
-    publish_tags_label: "Who uses this? (choose one or more)",
-    publish_desc_label: "Description",
-    publish_image_label: "Product photo",
-    publish_submit_btn: "Publish product",
+    publish_category_label: "Category (choose one)",
+    publish_includes_label: "What's included? (one per line)",
+    publish_image_label: "Kit photo",
+    publish_submit_btn_study: "Publish kit",
     publish_hint: "Simulated with localStorage — your listing is only saved on this browser.",
-    publish_err_required: "Please fill in all fields and choose at least one category.",
-    publish_login_required: "Log in to publish a product.",
-    publish_success: "Product published successfully! 🎉",
+    publish_err_required: "Please fill in all fields and choose a category.",
+    publish_login_required: "Log in to publish a kit.",
+    publish_success: "Kit published successfully! 🎉",
     delete_listing_btn: "Delete listing",
     delete_confirm: "Are you sure you want to delete this listing?",
     delete_success: "Listing deleted.",
     card_mine_badge: "Yours",
+    notif_msg_study: "Here we'll let you know if we add new study kits.",
     notif_panel_title: "What's new",
-    notif_new_msg: "There are {count} new listings since your last visit",
-    notif_none_msg: "No new listings since your last visit.",
+    notif_new_msg: "There are {count} new kits since your last visit",
+    notif_none_msg: "No new kits since your last visit.",
     filter_all: "All",
     filter_price_label: "Price",
     filter_all_universities: "All universities",
@@ -375,10 +296,8 @@ const grid = document.getElementById('product-grid');
 const noResults = document.getElementById('noResults');
 const searchInput = document.getElementById('searchInput');
 
-// Quita acentos y pasa a minúsculas para que la búsqueda sea flexible
-// (p. ej. "estetoscopio", "Estetoscopio" e "ESTETOSCOPIO" son equivalentes).
 function normalize(str) {
-  return str
+  return String(str)
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
@@ -388,9 +307,23 @@ function formatPrice(amount) {
   return `B/. ${Number(amount).toFixed(2)}`;
 }
 
-// Cada tarjeta guarda el índice real del producto en `products` dentro de
-// data-index, así el modal siempre abre lo correcto sin importar cuántas
-// veces se haya filtrado o reordenado la lista visible.
+function formatDate(isoDate, lang) {
+  const d = new Date(isoDate);
+  if (isNaN(d)) return '';
+  return d.toLocaleDateString(lang === 'es' ? 'es-PA' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function getName(product, lang) {
+  if (typeof product.name === 'string') return product.name;
+  return product.name[lang] || product.name.es || product.name.en;
+}
+
+function getIncludes(product, lang) {
+  if (!product.includes) return [];
+  if (Array.isArray(product.includes)) return product.includes;
+  return product.includes[lang] || product.includes.es || product.includes.en || [];
+}
+
 function renderProducts(entries, { animate = true } = {}) {
   const lang = localStorage.getItem('noesis_lang') || 'es';
   const currentUser = getCurrentUser();
@@ -405,21 +338,21 @@ function renderProducts(entries, { animate = true } = {}) {
       card.style.animationDelay = `${position * 55}ms`;
     }
 
-    const displayName = productNamesTranslations[lang][product.name] || product.name;
+    const displayName = getName(product, lang);
     const detailsLabel = translations[lang].details_btn;
     const seller = product.seller;
     const isMine = currentUser && product.ownerEmail === currentUser.email;
 
     card.innerHTML = `
 ${isMine ? `<span class="card-mine-badge">${translations[lang].card_mine_badge}</span>` : ''}
-<div class="card-icon-wrap">
+<div class="card-icon-wrap kit-cover">
     <img src="${product.image}" alt="${displayName}">
 </div>
     <span class="card-name">${displayName}</span>
     ${seller ? `
     <div class="card-seller">
-      <i class="fa-solid fa-user"></i>
-      <span>${seller.name} · ${seller.university}</span>
+      <i class="fa-solid fa-graduation-cap"></i>
+      <span>${seller.university} · ${seller.location}</span>
     </div>` : ''}
     <button class="card-btn" type="button">${detailsLabel}</button>
   `;
@@ -433,24 +366,58 @@ ${isMine ? `<span class="card-mine-badge">${translations[lang].card_mine_badge}<
 }
 
 // -----------------------------------------------
-// FILTROS (condición, precio, universidad)
-// Estado actual de los filtros seleccionados. "all" = sin filtrar.
+// FILTROS (categoría, precio, universidad)
 // -----------------------------------------------
 const activeFilters = {
-  condition: 'all',   // 'all' | 'new' | 'used'
+  category: 'all',
   priceMin: null,
   priceMax: null,
   university: 'all'
 };
 
-const conditionFilterGroup = document.getElementById('conditionFilterGroup');
+const categoryFilterGroup = document.getElementById('categoryFilterGroup');
 const priceMinInput = document.getElementById('priceMinInput');
 const priceMaxInput = document.getElementById('priceMaxInput');
 const universityFilterSelect = document.getElementById('universityFilterSelect');
 const clearFiltersBtn = document.getElementById('clearFiltersBtn');
 
-// Rellena el <select> de universidades con las universidades reales
-// que aparecen en el catálogo (de ejemplo + publicadas por usuarios).
+// Genera los chips de categoría a partir de las categorías que
+// realmente aparecen en el catálogo (de ejemplo + publicados).
+function populateCategoryFilter() {
+  if (!categoryFilterGroup) return;
+  const lang = localStorage.getItem('noesis_lang') || 'es';
+  const usedKeys = Array.from(new Set(getAllProducts().map(p => p.category).filter(Boolean)));
+
+  const allChip = categoryFilterGroup.querySelector('[data-category="all"]');
+  categoryFilterGroup.innerHTML = '';
+  categoryFilterGroup.appendChild(allChip || createAllChip(lang));
+
+  usedKeys.forEach(key => {
+    const cat = categories[key];
+    if (!cat) return;
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'filter-chip' + (activeFilters.category === key ? ' active' : '');
+    chip.dataset.category = key;
+    chip.textContent = cat[lang];
+    categoryFilterGroup.appendChild(chip);
+  });
+
+  categoryFilterGroup.querySelectorAll('.filter-chip').forEach(c => {
+    c.classList.toggle('active', c.getAttribute('data-category') === activeFilters.category);
+  });
+}
+
+function createAllChip(lang) {
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = 'filter-chip active';
+  chip.dataset.category = 'all';
+  chip.setAttribute('data-i18n', 'filter_all');
+  chip.textContent = translations[lang].filter_all;
+  return chip;
+}
+
 function populateUniversityFilter() {
   if (!universityFilterSelect) return;
 
@@ -467,7 +434,6 @@ function populateUniversityFilter() {
   universityFilterSelect.innerHTML = `<option value="all" data-i18n="filter_all_universities">${translations[lang].filter_all_universities}</option>` +
     universities.map(u => `<option value="${u}">${u}</option>`).join('');
 
-  // Conserva la selección previa si sigue existiendo en la lista
   if ([...universityFilterSelect.options].some(o => o.value === selected)) {
     universityFilterSelect.value = selected;
   }
@@ -480,25 +446,20 @@ function getFilteredEntries(query) {
   const all = getAllProducts().map((product, index) => ({ product, index }));
 
   return all.filter(({ product }) => {
-    // --- búsqueda por nombre ---
     if (q) {
-      const nameEs = normalize(product.name);
-      const nameEn = normalize(productNamesTranslations.en[product.name] || product.name);
-      const nameLocalized = normalize(productNamesTranslations[lang][product.name] || product.name);
-      if (!(nameEs.includes(q) || nameEn.includes(q) || nameLocalized.includes(q))) return false;
+      const nameEs = normalize(getName(product, 'es'));
+      const nameEn = normalize(getName(product, 'en'));
+      if (!(nameEs.includes(q) || nameEn.includes(q))) return false;
     }
 
-    // --- filtro por condición (nuevo / segunda mano) ---
-    if (activeFilters.condition !== 'all' && product.condition !== activeFilters.condition) {
+    if (activeFilters.category !== 'all' && product.category !== activeFilters.category) {
       return false;
     }
 
-    // --- filtro por precio ---
     const price = Number(product.price) || 0;
     if (activeFilters.priceMin !== null && price < activeFilters.priceMin) return false;
     if (activeFilters.priceMax !== null && price > activeFilters.priceMax) return false;
 
-    // --- filtro por universidad ---
     if (activeFilters.university !== 'all') {
       const university = product.seller && product.seller.university;
       if (university !== activeFilters.university) return false;
@@ -513,19 +474,17 @@ function refreshGrid(animate = true) {
   renderProducts(getFilteredEntries(query), { animate });
 }
 
-// Chips de condición (Todos / Nuevo / Segunda mano)
-if (conditionFilterGroup) {
-  conditionFilterGroup.addEventListener('click', (e) => {
+if (categoryFilterGroup) {
+  categoryFilterGroup.addEventListener('click', (e) => {
     const chip = e.target.closest('.filter-chip');
     if (!chip) return;
-    conditionFilterGroup.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    categoryFilterGroup.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
-    activeFilters.condition = chip.getAttribute('data-condition');
+    activeFilters.category = chip.getAttribute('data-category');
     refreshGrid();
   });
 }
 
-// Precio mínimo / máximo
 if (priceMinInput) {
   priceMinInput.addEventListener('input', () => {
     const v = parseFloat(priceMinInput.value);
@@ -541,7 +500,6 @@ if (priceMaxInput) {
   });
 }
 
-// Universidad
 if (universityFilterSelect) {
   universityFilterSelect.addEventListener('change', () => {
     activeFilters.university = universityFilterSelect.value;
@@ -549,17 +507,16 @@ if (universityFilterSelect) {
   });
 }
 
-// Limpiar filtros
 if (clearFiltersBtn) {
   clearFiltersBtn.addEventListener('click', () => {
-    activeFilters.condition = 'all';
+    activeFilters.category = 'all';
     activeFilters.priceMin = null;
     activeFilters.priceMax = null;
     activeFilters.university = 'all';
 
-    if (conditionFilterGroup) {
-      conditionFilterGroup.querySelectorAll('.filter-chip').forEach(c => {
-        c.classList.toggle('active', c.getAttribute('data-condition') === 'all');
+    if (categoryFilterGroup) {
+      categoryFilterGroup.querySelectorAll('.filter-chip').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-category') === 'all');
       });
     }
     if (priceMinInput) priceMinInput.value = '';
@@ -574,15 +531,13 @@ if (clearFiltersBtn) {
   });
 }
 
+populateCategoryFilter();
 populateUniversityFilter();
 
 // -----------------------------------------------
-// CAMPANITA: publicaciones nuevas desde la última visita
-// Compara la fecha guardada de la última visita al marketplace
-// con el campo `createdAt` de los productos guardados en
-// localStorage (solo los publicados por usuarios lo tienen).
+// CAMPANITA: kits nuevos desde la última visita
 // -----------------------------------------------
-const LAST_VISIT_KEY = 'noesis_marketplace_last_visit';
+const LAST_VISIT_KEY = 'noesis_study_last_visit';
 
 const bellBtn = document.getElementById('bellBtn');
 const bellBadge = document.getElementById('bellBadge');
@@ -618,7 +573,7 @@ function updateBellUI(newCount) {
   if (notifMsg) {
     notifMsg.textContent = newCount > 0
       ? (translations[lang].notif_new_msg || '').replace('{count}', newCount)
-      : translations[lang].notif_msg;
+      : translations[lang].notif_msg_study;
   }
 
   if (notifPanelBody) {
@@ -628,18 +583,13 @@ function updateBellUI(newCount) {
   }
 }
 
-// 1) Leemos la fecha de la última visita ANTES de sobreescribirla.
 const storedLastVisit = localStorage.getItem(LAST_VISIT_KEY);
-const lastVisitDate = storedLastVisit ? new Date(storedLastVisit) : new Date(0); // sin visitas previas = todo es "nuevo"
+const lastVisitDate = storedLastVisit ? new Date(storedLastVisit) : new Date(0);
 
-// 2) Calculamos y mostramos cuántas publicaciones son nuevas desde esa fecha.
 updateBellUI(countNewListingsSince(lastVisitDate));
 
-// 3) Guardamos "ahora" como la nueva última visita, para que en la
-//    próxima carga solo cuenten las publicaciones creadas después de esto.
 localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
 
-// Abrir/cerrar el panel de novedades al hacer clic en la campana o el mensaje
 function toggleNotifPanel(forceState) {
   if (!notifPanel || !bellBtn) return;
   const willOpen = typeof forceState === 'boolean' ? forceState : !notifPanel.classList.contains('open');
@@ -662,10 +612,8 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Render inicial
 refreshGrid();
 
-// Filtra en vivo mientras el usuario escribe
 if (searchInput) {
   searchInput.addEventListener('input', () => {
     searchInput.parentElement.classList.toggle('has-value', searchInput.value.trim() !== '');
@@ -674,18 +622,20 @@ if (searchInput) {
 }
 
 // -----------------------------------------------
-// MODAL DE DETALLES (delegación de eventos:
-// funciona sin importar cuántas veces se re-renderice el grid)
+// MODAL DE DETALLES
 // -----------------------------------------------
 const modal = document.getElementById("productModal");
-const modalIcon = document.getElementById("modalIcon");
 const modalTitle = document.getElementById("modalTitle");
 const modalCondition = document.getElementById("modalCondition");
 const modalPrice = document.getElementById("modalPrice");
-const modalDescription = document.getElementById("modalDescription");
 const modalImage = document.getElementById("modalMainImage");
 const modalGallery = document.getElementById("modalGallery");
-const modalTags = document.getElementById("modalTags");
+const modalIncludes = document.getElementById("modalIncludes");
+const modalCategory = document.getElementById("modalCategory");
+const modalConditionValue = document.getElementById("modalConditionValue");
+const modalPosted = document.getElementById("modalPosted");
+const modalSellerName = document.getElementById("modalSellerName");
+const modalSellerUniLine = document.getElementById("modalSellerUniLine");
 const closeModal = document.getElementById("closeModal");
 const addToCartBtn = document.getElementById("addToCartBtn");
 const buyNowBtn = document.getElementById("buyNowBtn");
@@ -693,13 +643,12 @@ const contactSellerBtn = document.getElementById("contactSellerBtn");
 const deleteListingBtn = document.getElementById("deleteListingBtn");
 const cartToast = document.getElementById("cartToast");
 
-let currentOpenProduct = null; // Producto que se está viendo en el modal (para el carrito)
+let currentOpenProduct = null;
 let toastTimer = null;
 
 function showToast(message) {
   cartToast.textContent = message;
-  cartToast.classList.remove('show'); // reinicia la animación si ya estaba visible
-  // Forzamos reflow para poder reiniciar la animación en clics seguidos
+  cartToast.classList.remove('show');
   void cartToast.offsetWidth;
   cartToast.classList.add('show');
 
@@ -707,7 +656,6 @@ function showToast(message) {
   toastTimer = setTimeout(() => cartToast.classList.remove('show'), 2200);
 }
 
-// Cambia la imagen principal con una pequeña transición (crossfade)
 function setMainImage(src, alt) {
   modalImage.classList.add('swapping');
   window.setTimeout(() => {
@@ -720,22 +668,20 @@ function setMainImage(src, alt) {
 function openModal(product) {
   currentOpenProduct = product;
   const lang = localStorage.getItem('noesis_lang') || 'es';
-  const displayName = productNamesTranslations[lang][product.name] || product.name;
+  const displayName = getName(product, lang);
 
-  modalIcon.innerHTML = `<i class="${product.icon || 'fa-solid fa-box'}"></i>`;
   modalTitle.textContent = displayName;
 
-  modalCondition.textContent = translations[lang][`condition_${product.condition}`] || '';
-  modalPrice.textContent = formatPrice(product.price);
+  const cat = categories[product.category];
+  modalSellerUniLine.textContent = product.seller ? `${product.seller.university}, ${product.seller.location}` : '';
 
-  modalDescription.textContent = product.description[lang];
+  modalCondition.textContent = (conditionLabels[product.condition] && conditionLabels[product.condition][lang]) || '';
+  modalPrice.textContent = formatPrice(product.price);
 
   modalImage.src = product.image;
   modalImage.alt = displayName;
 
   // ---- Galería de miniaturas ----
-  // Si una imagen de `gallery` todavía no existe (404), se reemplaza
-  // automáticamente por la imagen principal del producto (onerror).
   modalGallery.innerHTML = '';
   const galleryImages = (product.gallery && product.gallery.length ? product.gallery : [product.image]);
 
@@ -755,45 +701,21 @@ function openModal(product) {
     modalGallery.appendChild(thumb);
   });
 
-  // ---- Vendedor (nombre, universidad y ubicación) ----
-  const modalSellerBox = document.getElementById('modalSellerBox');
-  if (modalSellerBox) {
-    if (product.seller) {
-      modalSellerBox.innerHTML = `
-        <h3 class="modal-section-title">${translations[lang].modal_seller_title}</h3>
-        <div class="modal-seller">
-          <div class="modal-seller-avatar"><i class="fa-solid fa-user"></i></div>
-          <div class="modal-seller-info">
-            <span class="modal-seller-name">${product.seller.name}</span>
-            <span class="modal-seller-meta"><i class="fa-solid fa-graduation-cap"></i> ${product.seller.university}</span>
-            <span class="modal-seller-meta"><i class="fa-solid fa-location-dot"></i> ${product.seller.location}</span>
-          </div>
-        </div>
-      `;
-      modalSellerBox.style.display = '';
-    } else {
-      modalSellerBox.innerHTML = '';
-      modalSellerBox.style.display = 'none';
-    }
-  }
-
-  // ---- Categorías ("¿Quiénes lo usan?") ----
-  modalTags.innerHTML = '';
-  (product.tags || []).forEach((tagKey, i) => {
-    const tag = categories[tagKey];
-    if (!tag) return;
-
-    const chip = document.createElement('div');
-    chip.className = 'modal-tag';
-    chip.style.animationDelay = `${i * 70}ms`;
-    chip.innerHTML = `
-      <i class="${tag.icon}"></i>
-      <span>${tag[lang]}</span>
-    `;
-    modalTags.appendChild(chip);
+  // ---- Incluye ----
+  modalIncludes.innerHTML = '';
+  getIncludes(product, lang).forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    modalIncludes.appendChild(li);
   });
 
-  // ---- Botón de eliminar publicación (solo si el producto es tuyo) ----
+  // ---- Datos del kit ----
+  modalCategory.textContent = cat ? cat[lang] : '—';
+  modalConditionValue.textContent = (conditionLabels[product.condition] && conditionLabels[product.condition][lang]) || '—';
+  modalPosted.textContent = product.postedAt ? formatDate(product.postedAt, lang) : '—';
+  modalSellerName.textContent = product.seller ? product.seller.name : '—';
+
+  // ---- Botón de eliminar publicación (solo si el kit es tuyo) ----
   const currentUser = getCurrentUser();
   const isMine = currentUser && product.ownerEmail === currentUser.email;
 
@@ -810,12 +732,11 @@ function openModal(product) {
       const userProducts = loadUserProducts().filter(p => p.id !== product.id);
       saveUserProducts(userProducts);
 
-      // Si el producto eliminado estaba en el carrito de alguien, lo quitamos
-      // para no dejar una fila "fantasma" apuntando a un producto inexistente.
       if (typeof removeFromCart === 'function') removeFromCart(product.id);
 
       modal.classList.remove('show');
-      if (typeof populateUniversityFilter === 'function') populateUniversityFilter();
+      populateCategoryFilter();
+      populateUniversityFilter();
       refreshGrid(false);
       showToast(translations[lang2].delete_success);
     };
@@ -851,7 +772,6 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-// ---- Botones de acción: conectados al carrito real (ver sección CARRITO más abajo) ----
 if (addToCartBtn) {
   addToCartBtn.addEventListener('click', () => {
     if (!currentOpenProduct) return;
@@ -871,8 +791,6 @@ if (buyNowBtn) {
     void buyNowBtn.offsetWidth;
     buyNowBtn.classList.add('pulse');
 
-    // "Comprar ahora": agrega el producto al carrito y abre el
-    // carrito de inmediato para que el usuario finalice la compra.
     addToCart(currentOpenProduct, 1);
     modal.classList.remove('show');
     if (typeof langDropdown !== 'undefined' && langDropdown) langDropdown.classList.remove('open');
@@ -880,31 +798,23 @@ if (buyNowBtn) {
   });
 }
 
-// "Contactar vendedor": abre WhatsApp con un mensaje prellenado sobre
-// el producto que se está viendo (mismo comportamiento que en Books).
 if (contactSellerBtn) {
   contactSellerBtn.addEventListener('click', () => {
     if (!currentOpenProduct) return;
     const lang = localStorage.getItem('noesis_lang') || 'es';
-    const displayName = productNamesTranslations[lang][currentOpenProduct.name] || currentOpenProduct.name;
+    const displayName = getName(currentOpenProduct, lang);
     const msg = lang === 'es'
-      ? `Hola, me interesa "${displayName}" que publicaste en Noesis.`
-      : `Hi, I'm interested in "${displayName}" you posted on Noesis.`;
+      ? `Hola, me interesa el kit "${displayName}" que publicaste en Noesis.`
+      : `Hi, I'm interested in the "${displayName}" kit you posted on Noesis.`;
     window.open(`https://wa.me/50760000000?text=${encodeURIComponent(msg)}`, '_blank');
   });
 }
 
 // -----------------------------------------------
 // CARRITO DE COMPRAS
-// Persiste en localStorage bajo 'noesis_cart', la misma clave
-// que usa index.js, así que lo agregado aquí se ve también en
-// la página principal (y viceversa).
-//
-// Cada ítem se guarda como { key, qty }:
-// - Productos del catálogo fijo -> `key` es su índice numérico
-//   dentro de `products` (mismo esquema que usa index.js).
-// - Productos publicados por usuarios -> `key` es su id de texto
-//   (ej. "u_abc123"), ya que index.js no conoce estos productos.
+// Comparte la misma clave 'noesis_cart' que marketplace.js/index.js.
+// Las claves se prefijan con "kit_" para no chocar con los índices
+// numéricos que usa el catálogo de marketplace.
 // -----------------------------------------------
 const CART_KEY = 'noesis_cart';
 
@@ -947,17 +857,15 @@ function showGlobalToast(message) {
   globalToastTimer = setTimeout(() => globalToast.classList.remove('show'), 2200);
 }
 
-// Resuelve la "clave" de carrito de un producto: su índice numérico
-// si pertenece al catálogo fijo (compatible con index.js), o su id
-// de texto si fue publicado por un usuario.
 function getProductCartKey(product) {
   if (product.id) return product.id;
-  return products.indexOf(product);
+  const idx = products.indexOf(product);
+  return idx === -1 ? null : `kit_${idx}`;
 }
 
 function resolveProductByKey(key) {
-  if (typeof key === 'number' || /^-?\d+$/.test(String(key))) {
-    return products[Number(key)] || null;
+  if (typeof key === 'string' && key.startsWith('kit_')) {
+    return products[Number(key.slice(4))] || null;
   }
   return loadUserProducts().find(p => p.id === key) || null;
 }
@@ -966,24 +874,16 @@ function cartTotalQty() {
   return cart.reduce((sum, item) => sum + item.qty, 0);
 }
 
-// Guarda una "foto" del producto dentro del ítem del carrito, para que
-// OTRAS páginas (como Books, que no conoce este catálogo) puedan mostrar
-// el ítem sin necesidad de resolverlo contra `products`.
 function productSnapshot(product) {
-  const es = productNamesTranslations.es[product.name] || product.name;
-  const en = productNamesTranslations.en[product.name] || product.name;
-  return { title: { es, en }, price: product.price, image: product.image };
+  const lang = localStorage.getItem('noesis_lang') || 'es';
+  return { title: { es: getName(product, 'es'), en: getName(product, 'en') }, price: product.price, image: product.image };
 }
 
-// Datos a mostrar de un ítem: si pertenece a este catálogo usamos sus
-// datos frescos; si viene de otra página (p. ej. un libro) usamos el
-// snapshot guardado en el propio ítem.
 function getCartItemInfo(item) {
   const lang = localStorage.getItem('noesis_lang') || 'es';
   const product = resolveProductByKey(item.key);
   if (product) {
-    const title = productNamesTranslations[lang][product.name] || product.name;
-    return { title, price: Number(product.price) || 0, image: product.image };
+    return { title: getName(product, lang), price: Number(product.price) || 0, image: product.image };
   }
   const snap = item.snapshot;
   if (snap) {
@@ -1004,7 +904,7 @@ function cartTotalPrice() {
 
 function addToCart(product, qty = 1) {
   const key = getProductCartKey(product);
-  if (key === -1 || key === undefined || key === null) return;
+  if (key === null || key === undefined) return;
 
   const existing = cart.find(item => item.key === key);
   if (existing) {
@@ -1044,7 +944,6 @@ function renderCart({ pulse = false } = {}) {
   const lang = localStorage.getItem('noesis_lang') || 'es';
   const totalQty = cartTotalQty();
 
-  // ---- Badge ----
   if (cartBadge) {
     cartBadge.textContent = totalQty > 99 ? '99+' : String(totalQty);
     cartBadge.classList.toggle('show', totalQty > 0);
@@ -1055,7 +954,6 @@ function renderCart({ pulse = false } = {}) {
     }
   }
 
-  // ---- Lista de ítems ----
   if (cartItemsBox) {
     cartItemsBox.innerHTML = '';
     cart.forEach((item) => {
@@ -1084,7 +982,6 @@ function renderCart({ pulse = false } = {}) {
     });
   }
 
-  // ---- Estado vacío vs. footer ----
   const isEmpty = cart.length === 0;
   if (cartEmptyBox) cartEmptyBox.classList.toggle('show', isEmpty);
   if (cartFooterBox) cartFooterBox.classList.toggle('hide', isEmpty);
@@ -1132,14 +1029,13 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeCartDropdown();
 });
 
-// Delegación de eventos para +/-/eliminar dentro del carrito
 if (cartItemsBox) {
   cartItemsBox.addEventListener('click', (e) => {
     const actionBtn = e.target.closest('[data-action]');
     if (!actionBtn) return;
 
     const rawKey = actionBtn.dataset.key;
-    const key = /^-?\d+$/.test(rawKey) ? Number(rawKey) : rawKey;
+    const key = rawKey;
     const action = actionBtn.dataset.action;
     const lang = localStorage.getItem('noesis_lang') || 'es';
 
@@ -1173,12 +1069,8 @@ if (cartCheckoutBtn) {
   });
 }
 
-// Render inicial del carrito (respeta lo guardado en localStorage,
-// incluyendo lo que se haya agregado desde index.html o Books.html)
 renderCart();
 
-// Sincroniza el carrito en vivo si se modifica en otra pestaña
-// (p. ej. Books abierto al mismo tiempo). El navegador dispara "storage".
 window.addEventListener('storage', (e) => {
   if (e.key === CART_KEY) {
     cart = loadCart();
@@ -1187,10 +1079,7 @@ window.addEventListener('storage', (e) => {
 });
 
 // -----------------------------------------------
-// PUBLICAR UN PRODUCTO
-// Requiere sesión activa. El producto se guarda en
-// localStorage ("noesis_user_products") y se combina con
-// el catálogo de ejemplo al renderizar el grid.
+// PUBLICAR UN KIT
 // -----------------------------------------------
 const sellBtn = document.getElementById('sellBtn');
 const publishModal = document.getElementById('publishModal');
@@ -1201,8 +1090,6 @@ const publishTagsContainer = document.getElementById('publishTagsContainer');
 const publishImageInput = document.getElementById('publishImage');
 const publishImagePreview = document.getElementById('publishImagePreview');
 
-// Genera los chips de categorías dentro del modal de publicación,
-// a partir del mismo objeto `categories` que usa el modal de detalles.
 function renderPublishTagChips() {
   const lang = localStorage.getItem('noesis_lang') || 'es';
   publishTagsContainer.innerHTML = '';
@@ -1212,13 +1099,14 @@ function renderPublishTagChips() {
     const label = document.createElement('label');
     label.className = 'publish-tag-chip';
     label.innerHTML = `
-      <input type="checkbox" name="publishTags" value="${key}">
+      <input type="radio" name="publishCategory" value="${key}">
       <i class="${cat.icon}"></i>
       <span>${cat[lang]}</span>
     `;
-    const checkbox = label.querySelector('input');
-    checkbox.addEventListener('change', () => {
-      label.classList.toggle('selected', checkbox.checked);
+    const radio = label.querySelector('input');
+    radio.addEventListener('change', () => {
+      publishTagsContainer.querySelectorAll('.publish-tag-chip').forEach(el => el.classList.remove('selected'));
+      label.classList.toggle('selected', radio.checked);
     });
     publishTagsContainer.appendChild(label);
   });
@@ -1264,7 +1152,6 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// Vista previa de la imagen seleccionada
 if (publishImageInput) {
   publishImageInput.addEventListener('change', () => {
     const file = publishImageInput.files[0];
@@ -1305,33 +1192,33 @@ if (publishForm) {
     const name = publishForm.publishName.value.trim();
     const price = parseFloat(publishForm.publishPrice.value);
     const condition = publishForm.publishCondition.value;
-    const description = publishForm.publishDescription.value.trim();
+    const includesRaw = publishForm.publishIncludes.value.trim();
     const file = publishImageInput.files[0];
-    const selectedTags = Array.from(publishForm.querySelectorAll('input[name="publishTags"]:checked')).map(el => el.value);
+    const selectedCategory = (publishForm.querySelector('input[name="publishCategory"]:checked') || {}).value;
 
-    if (!name || isNaN(price) || price < 0 || !description || !file || selectedTags.length === 0) {
+    if (!name || isNaN(price) || price < 0 || !includesRaw || !file || !selectedCategory) {
       showPublishError(translations[lang].publish_err_required);
       return;
     }
 
-    // Convierte la imagen a base64 (Data URL) para poder guardarla en localStorage,
-    // ya que no hay un servidor/backend real donde subir archivos.
+    const includesList = includesRaw.split('\n').map(s => s.trim()).filter(Boolean);
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       const imageDataUrl = ev.target.result;
 
       const newProduct = {
         id: 'u_' + Date.now().toString(36),
-        name,
-        icon: 'fa-solid fa-box',
+        name: { es: name, en: name },
         image: imageDataUrl,
         gallery: [imageDataUrl],
         price,
         condition,
-        tags: selectedTags,
+        category: selectedCategory,
+        postedAt: new Date().toISOString(),
+        includes: { es: includesList, en: includesList },
         seller: { name: user.name, university: user.university, location: user.location },
         ownerEmail: user.email,
-        description: { es: description, en: description },
         createdAt: new Date().toISOString()
       };
 
@@ -1340,7 +1227,8 @@ if (publishForm) {
       saveUserProducts(userProducts);
 
       publishModal.classList.remove('show');
-      if (typeof populateUniversityFilter === 'function') populateUniversityFilter();
+      populateCategoryFilter();
+      populateUniversityFilter();
       refreshGrid(false);
       showToast(translations[lang].publish_success);
     };
@@ -1380,19 +1268,13 @@ animateFollower();
 // SELECTOR DE IDIOMA (ES / EN)
 // -----------------------------------------------
 function setLanguage(lang) {
-  // IMPORTANTE: guardamos el idioma en localStorage ANTES de re-renderizar
-  // nada, porque renderProducts(), populateUniversityFilter() y renderCart()
-  // leen el idioma actual desde localStorage. Si esto se hacía al final
-  // (como estaba antes), esas funciones seguían usando el idioma viejo
-  // y por eso el botón "Detalles" y el select de universidades se
-  // quedaban en español al cambiar a inglés.
   document.documentElement.setAttribute('lang', lang);
   localStorage.setItem('noesis_lang', lang);
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (translations[lang] && translations[lang][key]) {
-      el.textContent = translations[lang][key];
+      el.innerHTML = translations[lang][key];
     }
   });
 
@@ -1403,15 +1285,12 @@ function setLanguage(lang) {
     }
   });
 
-  // Re-renderiza el grid respetando el término de búsqueda actual,
-  // para que los nombres de producto cambien de idioma al instante.
   refreshGrid(false);
 
-  // Vuelve a traducir el mensaje de la campana y el select de universidades
   if (typeof updateBellUI === 'function') updateBellUI(lastKnownNewCount);
+  if (typeof populateCategoryFilter === 'function') populateCategoryFilter();
   if (typeof populateUniversityFilter === 'function') populateUniversityFilter();
 
-  // Refresca los nombres de producto dentro del carrito, si ya existe
   if (typeof renderCart === 'function' && document.getElementById('cartItems')) {
     renderCart();
   }
@@ -1449,14 +1328,11 @@ if (langBtn && langDropdown && langSwitcher) {
   });
 }
 
-// Cargar idioma guardado (o español por defecto)
 const savedLang = localStorage.getItem('noesis_lang') || 'es';
 setLanguage(savedLang);
 
 // -----------------------------------------------
 // SESIÓN SIMULADA (localStorage)
-// Si hay un usuario con sesión activa, el ícono de usuario
-// lleva al perfil en lugar de a la pantalla de inicio de sesión.
 // -----------------------------------------------
 (function syncUserNavIcon() {
   const userNavBtn = document.getElementById('userNavBtn');
@@ -1473,7 +1349,7 @@ setLanguage(savedLang);
 })();
 
 // -----------------------------------------------
-// NAVBAR: sombra al hacer scroll (detalle visual)
+// NAVBAR: sombra al hacer scroll
 // -----------------------------------------------
 const navbar = document.querySelector('.navbar');
 if (navbar) {
@@ -1504,8 +1380,6 @@ if (hamburger && navLinks) {
 
 // -----------------------------------------------
 // TRANSICIÓN SUAVE AL NAVEGAR ENTRE PÁGINAS
-// Mismo comportamiento que index.js: evita el salto
-// brusco al pasar de marketplace.html a index.html.
 // -----------------------------------------------
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

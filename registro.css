@@ -434,14 +434,92 @@ a{ transition:.3s; }
 }
 
 /* ==========================
-   RESPONSIVE
+   SELECTOR DE ROL (estudiante / tutor)
 ========================== */
+.role-selector{
+    display:flex;
+    gap:12px;
+}
+
+.role-card{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:6px;
+    padding:18px 14px;
+    border:2px solid rgba(53,91,76,.18);
+    border-radius:16px;
+    background:rgba(255,255,255,.6);
+    cursor:pointer;
+    transition:.25s;
+}
+
+.role-card input{
+    position:absolute;
+    opacity:0;
+    pointer-events:none;
+}
+
+.role-card i{
+    font-size:1.4rem;
+    color:var(--green-mid);
+    transition:.25s;
+}
+
+.role-card-title{
+    font-weight:700;
+    font-size:.88rem;
+    color:var(--green-dark);
+}
+
+.role-card-desc{
+    font-size:.7rem;
+    color:rgba(30,30,30,.6);
+    line-height:1.4;
+}
+
+.role-card:hover{
+    border-color:var(--green-mid);
+    transform:translateY(-2px);
+}
+
+.role-card.selected{
+    border-color:var(--green-dark);
+    background:var(--green-pastel);
+    box-shadow:0 8px 20px rgba(53,91,76,.15);
+}
+
+.role-card.selected i{
+    color:var(--green-dark);
+}
+
+/* ==========================
+   CAMPOS EXCLUSIVOS DE TUTOR
+   (ocultos por defecto; se muestran cuando el rol es "tutor")
+========================== */
+.tutor-fields{
+    display:none;
+    flex-direction:column;
+    gap:18px;
+    padding:16px;
+    background:rgba(200,233,215,.35);
+    border:1.5px dashed rgba(53,91,76,.3);
+    border-radius:16px;
+}
+
+.tutor-fields.show{
+    display:flex;
+}
+
 @media(max-width:600px){
     .auth-page{ padding:40px 20px 70px; }
     .auth-card{ padding:30px 22px; }
     .auth-field-row{ flex-direction:column; }
     .auth-navbar{ padding:14px 20px; }
     .auth-back-link span{ display:none; }
+    .role-selector{ flex-direction:column; }
 }
 /* ==========================
    VIDEO DE FONDO
