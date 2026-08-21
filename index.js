@@ -1,10 +1,5 @@
 /* =====================================================
    NOESIS — index.js
-   Interactividad principal del sitio:
-   cursor personalizado, navbar, menú móvil, selector de
-   idioma, carrito (compartido vía localStorage), acordeón
-   de FAQ, revelado de secciones al hacer scroll y envío
-   del formulario de contacto (Web3Forms).
 ===================================================== */
 (function () {
   "use strict";
@@ -81,11 +76,21 @@
     const navbar = document.getElementById("navbar");
     if (!navbar) return;
 
+    // El panel del menú móvil es "position:fixed" y necesita saber
+    // la altura real del navbar (cambia un poco al hacer scroll y
+    // entre pantallas) para no taparlo. La guardamos en una variable CSS.
+    const syncNavbarHeight = () => {
+      document.documentElement.style.setProperty("--navbar-h", navbar.offsetHeight + "px");
+    };
+    syncNavbarHeight();
+    window.addEventListener("resize", syncNavbarHeight);
+
     // Agrupamos las lecturas de scroll en un solo frame para que
     // el desplazamiento se mantenga fluido.
     let ticking = false;
     const update = () => {
       navbar.classList.toggle("scrolled", window.scrollY > 30);
+      syncNavbarHeight();
       ticking = false;
     };
 
@@ -104,21 +109,59 @@
   /* =====================================================
      MENÚ HAMBURGUESA (móvil)
   ===================================================== */
+  const NAV_BREAKPOINT = 1024; // debe coincidir con el @media de index.css
+
+  // Función compartida para cerrar el menú móvil desde cualquier
+  // parte del script (clic en enlace, Escape, clic afuera, resize).
+  function closeMobileMenu() {
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.getElementById("navLinks");
+    const navOverlay = document.getElementById("navOverlay");
+    if (!hamburger || !navLinks) return;
+
+    hamburger.classList.remove("active");
+    navLinks.classList.remove("open");
+    if (navOverlay) navOverlay.classList.remove("open");
+    hamburger.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("nav-open");
+  }
+
   function initMobileMenu() {
     const hamburger = document.getElementById("hamburger");
     const navLinks = document.getElementById("navLinks");
     if (!hamburger || !navLinks) return;
 
+    // Fondo oscuro detrás del panel, para poder cerrarlo tocando
+    // afuera. Se crea una sola vez (no hace falta tocar el HTML).
+    const navOverlay = document.createElement("div");
+    navOverlay.className = "nav-overlay";
+    navOverlay.id = "navOverlay";
+    document.body.appendChild(navOverlay);
+
     hamburger.addEventListener("click", () => {
-      hamburger.classList.toggle("active");
-      navLinks.classList.toggle("open");
+      const isOpen = navLinks.classList.contains("open");
+      if (isOpen) {
+        closeMobileMenu();
+        return;
+      }
+      hamburger.classList.add("active");
+      navLinks.classList.add("open");
+      navOverlay.classList.add("open");
+      hamburger.setAttribute("aria-expanded", "true");
+      document.body.classList.add("nav-open"); // bloquea el scroll de fondo
     });
 
     navLinks.querySelectorAll(".nav-link").forEach((link) => {
-      link.addEventListener("click", () => {
-        hamburger.classList.remove("active");
-        navLinks.classList.remove("open");
-      });
+      link.addEventListener("click", closeMobileMenu);
+    });
+
+    navOverlay.addEventListener("click", closeMobileMenu);
+
+    // Si el usuario rota el dispositivo o pasa de tablet a monitor
+    // con el menú abierto, lo cerramos para que no quede "flotando"
+    // en modo desktop (donde .nav-links ya no es un panel).
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > NAV_BREAKPOINT) closeMobileMenu();
     });
   }
 
@@ -208,8 +251,8 @@
     },
     footer_platform: { es: "Plataforma", en: "Platform" },
     footer_marketplace: { es: "Marketplace", en: "Marketplace" },
-    footer_exchanges: { es: "Intercambios", en: "Exchanges" },
-    footer_kits: { es: "Kits de Inicio", en: "Starter Kits" },
+    footer_material: { es: "Material de Estudio", en: "Study Material" },
+    footer_books: { es: "Libros", en: "Books" },
     footer_support: { es: "Soporte", en: "Support" },
     footer_faq: { es: "Ayuda / FAQ", en: "Help / FAQ" },
     footer_contact: { es: "Contáctanos", en: "Contact us" },
@@ -239,11 +282,33 @@
     form_btn: { es: "Enviar mensaje", en: "Send message" },
   };
 
+  /* Cambia el video del hero según el idioma activo, usando las
+     rutas guardadas en data-video-es / data-video-en del <video>. */
+  function updateHeroVideo(lang) {
+    const video = document.getElementById("heroVideo");
+    const source = document.getElementById("heroVideoSource");
+    if (!video || !source) return;
+
+    const newSrc = video.dataset[lang === "en" ? "videoEn" : "videoEs"];
+    if (!newSrc || source.getAttribute("src") === newSrc) return;
+
+    const wasPlaying = !video.paused;
+    source.setAttribute("src", newSrc);
+    video.load();
+    if (wasPlaying) {
+      video.play().catch(() => {
+        /* el navegador puede bloquear el autoplay; no es crítico */
+      });
+    }
+  }
+
   function applyLanguage(lang) {
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       const entry = translations[el.getAttribute("data-i18n")];
       if (entry && entry[lang]) el.innerHTML = entry[lang];
     });
+
+    updateHeroVideo(lang);
 
     document.documentElement.setAttribute("lang", lang);
 
@@ -608,13 +673,7 @@
       if (e.key !== "Escape") return;
 
       closeDropdowns();
-
-      const hamburger = document.getElementById("hamburger");
-      const navLinks = document.getElementById("navLinks");
-      if (hamburger && navLinks) {
-        hamburger.classList.remove("active");
-        navLinks.classList.remove("open");
-      }
+      closeMobileMenu();
     });
   }
 

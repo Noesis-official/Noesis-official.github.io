@@ -1,5 +1,5 @@
 // ============================================================
-//  NOESIS – Market Place 2  |  script.js
+//  NOESIS – Market Place   |  script.js
 //  Renderiza las tarjetas de productos, maneja la búsqueda,
 //  el modal de detalles (con galería, categorías y precio),
 //  el idioma y el cursor personalizado.
@@ -29,7 +29,7 @@ const categories = {
 // galería). Ajusta estos valores con los datos reales de tu
 // catálogo cuando los tengas.
 //
-// 📷 AGREGAR IMÁGENES AQUÍ:
+//  AGREGAR IMÁGENES AQUÍ:
 // - `image`   → foto principal de la tarjeta y del modal.
 // - `gallery` → hasta 4 fotos para las miniaturas del modal.
 //               Si un archivo todavía no existe, el sitio
@@ -44,7 +44,7 @@ const products = [
     name: "Calculadora",
     icon: "fa-solid fa-calculator",
     image: "IMG/Calculadora.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería de la Calculadora)
+    // AGREGAR IMÁGENES AQUÍ (galería de la Calculadora)
     gallery: ["IMG/Calculadora-1.png", "IMG/Calculadora-2.png", "IMG/Calculadora-3.png", "IMG/Calculadora-4.png"],
     price: 20,
     condition: "used",
@@ -59,7 +59,7 @@ const products = [
     name: "Ipad",
     icon: "fa-solid fa-tablet-screen-button",
     image: "IMG/Ipad.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería del Ipad)
+    //  AGREGAR IMÁGENES AQUÍ (galería del Ipad)
     gallery: ["IMG/Ipad-1.png", "IMG/Ipad-2.png", "IMG/Ipad-3.png", "IMG/Ipad-4.png"],
     price: 450,
     condition: "used",
@@ -74,7 +74,7 @@ const products = [
     name: "Casco",
     icon: "fa-solid fa-hard-hat",
     image: "IMG/Casco.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería del Casco)
+    //  AGREGAR IMÁGENES AQUÍ (galería del Casco)
     gallery: ["IMG/Casco-1.png", "IMG/Casco-2.png", "IMG/Casco-3.png", "IMG/Casco-4.png"],
     price: 18,
     condition: "new",
@@ -89,7 +89,7 @@ const products = [
     name: "Bata",
     icon: "fa-solid fa-user-doctor",
     image: "IMG/Bata.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería de la Bata)
+    //  AGREGAR IMÁGENES AQUÍ (galería de la Bata)
     gallery: ["IMG/Bata-1.png", "IMG/Bata-2.png", "IMG/Bata-3.png", "IMG/Bata-4.png"],
     price: 25,
     condition: "new",
@@ -104,7 +104,7 @@ const products = [
     name: "Tubos de ensayo",
     icon: "fa-solid fa-vial",
     image: "IMG/Tubodeensayo.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería de los Tubos de ensayo)
+    //  AGREGAR IMÁGENES AQUÍ (galería de los Tubos de ensayo)
     gallery: ["IMG/Tubodeensayo-1.png", "IMG/Tubodeensayo-2.png", "IMG/Tubodeensayo-3.png", "IMG/Tubodeensayo-4.png"],
     price: 12,
     condition: "new",
@@ -119,7 +119,7 @@ const products = [
     name: "Estetoscopio",
     icon: "fa-solid fa-stethoscope",
     image: "IMG/Estetoscopio.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería del Estetoscopio)
+    //  AGREGAR IMÁGENES AQUÍ (galería del Estetoscopio)
     gallery: ["IMG/Estetoscopio-1.png", "IMG/Estetoscopio-2.png", "IMG/Estetoscopio-3.png", "IMG/Estetoscopio-4.png"],
     price: 30,
     condition: "used",
@@ -134,7 +134,7 @@ const products = [
     name: "Laptop",
     icon: "fa-solid fa-laptop",
     image: "IMG/Laptop.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería de la Laptop)
+    //  AGREGAR IMÁGENES AQUÍ (galería de la Laptop)
     gallery: ["IMG/Laptop-1.png", "IMG/Laptop-2.png", "IMG/Laptop-3.png", "IMG/Laptop-4.png"],
     price: 700,
     condition: "used",
@@ -149,7 +149,7 @@ const products = [
     name: "Globo terráqueo",
     icon: "fa-solid fa-earth-americas",
     image: "IMG/GloboT.png",
-    // 📷 AGREGAR IMÁGENES AQUÍ (galería del Globo terráqueo)
+    //  AGREGAR IMÁGENES AQUÍ (galería del Globo terráqueo)
     gallery: ["IMG/GloboT-1.png", "IMG/GloboT-2.png", "IMG/GloboT-3.png", "IMG/GloboT-4.png"],
     price: 35,
     condition: "new",
@@ -164,8 +164,6 @@ const products = [
 
 // -----------------------------------------------
 // PRODUCTOS PUBLICADOS POR USUARIOS (localStorage)
-// Se guardan aparte del catálogo de ejemplo y se combinan
-// con él al momento de renderizar el grid.
 // -----------------------------------------------
 const USER_PRODUCTS_KEY = "noesis_user_products";
 const USERS_KEY = "noesis_users";
@@ -288,8 +286,9 @@ const translations = {
     cart_checkout_empty: "Tu carrito está vacío",
     footer_desc: "El marketplace universitario de<br>David, Chiriquí.",
     footer_platform: "Plataforma",
-    footer_marketplace: "Marketplace",
-    footer_kits: "Kits de Inicio",
+    footer_marketplace: "Menu",
+    foooter_study: "Material de Estudio",
+    footer_books: "Libros",
     footer_support: "Soporte",
     footer_faq: "Ayuda / FAQ",
     footer_contact: "Contáctanos",
@@ -357,8 +356,9 @@ const translations = {
     cart_checkout_empty: "Your cart is empty",
     footer_desc: "The university marketplace of<br>David, Chiriquí.",
     footer_platform: "Platform",
-    footer_marketplace: "Marketplace",
-    footer_kits: "Starter Kits",
+    footer_marketplace: "Menu",
+    foooter_study: "Study Material",
+    footer_books: "Books",
     footer_support: "Support",
     footer_faq: "Help / FAQ",
     footer_contact: "Contact Us",
@@ -1392,7 +1392,7 @@ function setLanguage(lang) {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (translations[lang] && translations[lang][key]) {
-      el.textContent = translations[lang][key];
+      el.innerHTML = translations[lang][key];
     }
   });
 
@@ -1476,36 +1476,75 @@ setLanguage(savedLang);
 // NAVBAR: sombra al hacer scroll (detalle visual)
 // -----------------------------------------------
 const navbar = document.querySelector('.navbar');
+
+// El panel del menú móvil es "position:fixed" y necesita saber la
+// altura real del navbar (cambia un poco al hacer scroll y entre
+// pantallas) para no taparlo. La guardamos en una variable CSS.
+function syncNavbarHeight() {
+  if (!navbar) return;
+  document.documentElement.style.setProperty('--navbar-h', navbar.offsetHeight + 'px');
+}
+syncNavbarHeight();
+window.addEventListener('resize', syncNavbarHeight);
+
 if (navbar) {
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 10);
+    syncNavbarHeight();
   });
 }
 
 // -----------------------------------------------
-// MENÚ HAMBURGUESA (móvil)
+// MENÚ HAMBURGUESA (móvil) — BLOQUE REUTILIZABLE
+// (idéntico al de Books.js / comunidad.js / index.js;
+// funciona en monitor, tablet y celular con el CSS de
+// arriba. Solo necesita #navbar, #hamburger y #navLinks.)
 // -----------------------------------------------
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
+const NAV_BREAKPOINT = 1024; // debe coincidir con el @media del CSS
 
 if (hamburger && navLinks) {
+  const navOverlay = document.createElement('div');
+  navOverlay.className = 'nav-overlay';
+  navOverlay.id = 'navOverlay';
+  document.body.appendChild(navOverlay);
+
+  function openMenu() {
+    hamburger.classList.add('active');
+    navLinks.classList.add('open');
+    navOverlay.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('nav-open');
+  }
+
+  function closeMenu() {
+    hamburger.classList.remove('active');
+    navLinks.classList.remove('open');
+    navOverlay.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('nav-open');
+  }
+
   hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navLinks.classList.toggle('open');
+    const isOpen = navLinks.classList.contains('open');
+    isOpen ? closeMenu() : openMenu();
   });
 
   document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('active');
-      navLinks.classList.remove('open');
-    });
+    link.addEventListener('click', closeMenu);
+  });
+  navOverlay.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMenu();
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > NAV_BREAKPOINT) closeMenu();
   });
 }
 
 // -----------------------------------------------
 // TRANSICIÓN SUAVE AL NAVEGAR ENTRE PÁGINAS
-// Mismo comportamiento que index.js: evita el salto
-// brusco al pasar de marketplace.html a index.html.
 // -----------------------------------------------
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1522,4 +1561,4 @@ document.querySelectorAll('.nav-link').forEach(link => {
     document.body.classList.add('page-leaving');
     window.setTimeout(() => { window.location.href = href; }, 220);
   });
-});
+});ñ

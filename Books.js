@@ -4,27 +4,71 @@
    categorías, buscador, grid de libros y modal de producto.
 ===================================================== */
 
-/* -----------------------------------------------
-   NAVBAR / HAMBURGUESA (igual que index.js)
+/* =====================================================
+   NAVBAR / HAMBURGUESA — BLOQUE REUTILIZABLE
 ----------------------------------------------- */
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
+const NAV_BREAKPOINT = 1024; // debe coincidir con el @media del CSS
 
 window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 40);
+  syncNavbarHeight();
 });
+
+// Fondo oscuro detrás del panel, para poder cerrarlo tocando afuera.
+// Se crea una sola vez y se reutiliza (no hace falta tocar el HTML).
+const navOverlay = document.createElement('div');
+navOverlay.className = 'nav-overlay';
+navOverlay.id = 'navOverlay';
+document.body.appendChild(navOverlay);
+
+// El panel es "position:fixed", así que necesita saber la altura
+// real del navbar (cambia un poco al hacer scroll / entre pantallas)
+// para no taparlo. La guardamos en una variable CSS.
+function syncNavbarHeight() {
+  document.documentElement.style.setProperty('--navbar-h', navbar.offsetHeight + 'px');
+}
+syncNavbarHeight();
+window.addEventListener('resize', syncNavbarHeight);
+
+function openMenu() {
+  hamburger.classList.add('active');
+  navLinks.classList.add('open');
+  navOverlay.classList.add('open');
+  hamburger.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('nav-open'); // bloquea el scroll de fondo
+}
+
+function closeMenu() {
+  hamburger.classList.remove('active');
+  navLinks.classList.remove('open');
+  navOverlay.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('nav-open');
+}
 
 hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('active');
-  navLinks.classList.toggle('open');
+  const isOpen = navLinks.classList.contains('open');
+  isOpen ? closeMenu() : openMenu();
 });
 
+// Cerrar al tocar un enlace, al tocar fuera del panel (overlay),
+// o al presionar Escape (útil con teclado en tablets con teclado).
 document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    hamburger.classList.remove('active');
-    navLinks.classList.remove('open');
-  });
+  link.addEventListener('click', closeMenu);
+});
+navOverlay.addEventListener('click', closeMenu);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMenu();
+});
+
+// Si el usuario rota el dispositivo o pasa de tablet a monitor con
+// el menú abierto, lo cerramos para que no quede "flotando" en modo
+// desktop (donde .nav-links ya no es un panel, sino la fila normal).
+window.addEventListener('resize', () => {
+  if (window.innerWidth > NAV_BREAKPOINT) closeMenu();
 });
 
 /* -----------------------------------------------
@@ -125,6 +169,8 @@ const translations = {
     cart_checkout_empty: "Tu carrito está vacío",
     footer_desc: "El marketplace universitario de<br>David, Chiriquí.",
     footer_platform: "Plataforma",
+    footer_study: "Material de Estudio",
+    footer_menu: "Menu",
     footer_marketplace: "Marketplace",
     footer_kits: "Kits de Inicio",
     footer_support: "Soporte",
@@ -191,7 +237,8 @@ const translations = {
     footer_desc: "The university marketplace of<br>David, Chiriquí.",
     footer_platform: "Platform",
     footer_marketplace: "Marketplace",
-    footer_kits: "Starter Kits",
+    footer_study: "Study Material",
+    footer_menu: "Menu",
     footer_support: "Support",
     footer_faq: "Help / FAQ",
     footer_contact: "Contact Us",
@@ -254,6 +301,46 @@ function getAllBooks() {
 }
 
 /* -----------------------------------------------
+   PORTADAS — utilidades
+   Las imágenes viven en la carpeta "IMG Books" y sus nombres
+   tienen espacios y acentos, así que hay que codificarlos antes
+   de ponerlos en el src (un espacio suelto rompe la ruta).
+   Además, si el archivo tiene otra extensión (.png, .avif, .webp…)
+   se prueban las demás automáticamente antes de mostrar el
+   placeholder gris.
+----------------------------------------------- */
+const IMG_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
+
+// Convierte "IMG Books/Álgebra Lineal.jpg" -> ruta válida para el src
+function bookImgSrc(path) {
+  if (!path) return '';
+  if (/^(data:|blob:|https?:)/i.test(path)) return path; // portadas subidas por usuarios
+  return encodeURI(path);
+}
+
+// Prueba la siguiente extensión posible. Devuelve true si aún queda
+// algo por intentar, false si ya no hay más opciones.
+function tryNextExt(imgEl) {
+  const original = imgEl.dataset.origSrc || '';
+  if (!original || /^(data:|blob:|https?:)/i.test(original)) return false;
+
+  const base = original.replace(/\.[a-z0-9]+$/i, '');
+  let i = Number(imgEl.dataset.extTry || 0);
+
+  while (i < IMG_EXTS.length) {
+    const candidate = base + IMG_EXTS[i];
+    i++;
+    if (candidate.toLowerCase() !== original.toLowerCase()) {
+      imgEl.dataset.extTry = i;
+      imgEl.src = bookImgSrc(candidate);
+      return true;
+    }
+  }
+  imgEl.dataset.extTry = i;
+  return false;
+}
+
+/* -----------------------------------------------
    CATÁLOGO DE LIBROS
    -> "image" es la ruta donde debes colocar tu archivo.
       Mientras el archivo no exista, se muestra un
@@ -268,7 +355,7 @@ const books = [
     category: "medicine",
     tag: { es: "Anatomía", en: "Anatomy" },
     title: { es: "Mini Netter Atlas de Anatomía Humana 8", en: "Mini Netter Atlas of Human Anatomy 8" },
-    image: "IMG/books/anatomia-mini-netter.jpg",
+    image: "IMG Books/Mini netter de anatomia.jpg",
     price: 28,
     seller: "Ariadna Gómez",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -283,7 +370,7 @@ const books = [
     category: "medicine",
     tag: { es: "Anatomía", en: "Anatomy" },
     title: { es: "Anatomía Humana", en: "Human Anatomy" },
-    image: "IMG/books/anatomia-humana.jpg",
+    image: "IMG Books/anatomia humana.jpg",
     price: 32,
     seller: "Carlos Aizprúa",
     condition: { es: "Como nuevo", en: "Like new" },
@@ -298,7 +385,7 @@ const books = [
     category: "medicine",
     tag: { es: "Anatomía", en: "Anatomy" },
     title: { es: "Netter Atlas de Anatomía Humana 8", en: "Netter Atlas of Human Anatomy 8" },
-    image: "IMG/books/netter-atlas-8.jpg",
+    image: "IMG Books/mini netter.jpg",
     price: 45,
     seller: "Fernanda Ruiz",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -313,7 +400,7 @@ const books = [
     category: "medicine",
     tag: { es: "Anatomía", en: "Anatomy" },
     title: { es: "El Gran Libro del Cuerpo Humano", en: "The Big Book of the Human Body" },
-    image: "IMG/books/gran-libro-cuerpo-humano.jpg",
+    image: "IMG Books/El gran libro del cuerpo humano.jpg",
     price: 22,
     seller: "Isaac Delgado",
     condition: { es: "Usado - buen estado", en: "Used - good condition" },
@@ -328,7 +415,7 @@ const books = [
     category: "medicine",
     tag: { es: "Anatomía", en: "Anatomy" },
     title: { es: "Atlas de Anatomía Humana", en: "Atlas of Human Anatomy" },
-    image: "IMG/books/atlas-anatomia-humana.jpg",
+    image: "IMG Books/atlas de anatomia.jpg",
     price: 38,
     seller: "Melissa Ortega",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -345,7 +432,7 @@ const books = [
     category: "medicine",
     tag: { es: "Pediatría", en: "Pediatrics" },
     title: { es: "Manual de Diagnóstico y Terapéutica en Pediatría", en: "Manual of Pediatric Diagnosis and Therapy" },
-    image: "IMG/books/manual-diagnostico-pediatria.jpg",
+    image: "IMG Books/Manual de Diagnóstico y Terapéutica en Pediatría.jpg",
     price: 24,
     seller: "Diego Herrera",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -355,66 +442,6 @@ const books = [
       en: "Quick-reference manual used during pediatric rotations. A few pencil annotations."
     }
   },
-  {
-    id: "med-ped-2",
-    category: "medicine",
-    tag: { es: "Pediatría", en: "Pediatrics" },
-    title: { es: "Tratado de Pediatría", en: "Treatise on Pediatrics" },
-    image: "IMG/books/tratado-pediatria.jpg",
-    price: 40,
-    seller: "Valeria Sánchez",
-    condition: { es: "Como nuevo", en: "Like new" },
-    location: { es: "USMA - David", en: "USMA - David" },
-    description: {
-      es: "Tratado completo de pediatría, edición reciente. Ideal para estudiantes de últimos años.",
-      en: "Complete pediatrics treatise, recent edition. Ideal for senior-year students."
-    }
-  },
-  {
-    id: "med-ped-3",
-    category: "medicine",
-    tag: { es: "Pediatría", en: "Pediatrics" },
-    title: { es: "Pediatría — Revisión Integral", en: "Pediatrics — Comprehensive Review" },
-    image: "IMG/books/pediatria-revision-integral.jpg",
-    price: 27,
-    seller: "Ricardo Núñez",
-    condition: { es: "Usado - buen estado", en: "Used - good condition" },
-    location: { es: "ISAE - David", en: "ISAE - David" },
-    description: {
-      es: "Guía de repaso integral, muy útil antes de exámenes. Portada con leve desgaste.",
-      en: "Comprehensive review guide, very useful before exams. Cover slightly worn."
-    }
-  },
-  {
-    id: "med-ped-4",
-    category: "medicine",
-    tag: { es: "Pediatría", en: "Pediatrics" },
-    title: { es: "Nelson — Tratado de Pediatría", en: "Nelson — Textbook of Pediatrics" },
-    image: "IMG/books/nelson-tratado-pediatria.jpg",
-    price: 55,
-    seller: "Andrea Castillo",
-    condition: { es: "Buen estado", en: "Good condition" },
-    location: { es: "UTP - David", en: "UTP - David" },
-    description: {
-      es: "El clásico Nelson de pediatría, referencia obligada en la carrera. Sin páginas faltantes.",
-      en: "The classic Nelson pediatrics textbook, a must-have reference. No missing pages."
-    }
-  },
-  {
-    id: "med-ped-5",
-    category: "medicine",
-    tag: { es: "Pediatría", en: "Pediatrics" },
-    title: { es: "Urgencias en Pediatría", en: "Pediatric Emergencies" },
-    image: "IMG/books/urgencias-pediatria.jpg",
-    price: 19,
-    seller: "Gabriel Espino",
-    condition: { es: "Buen estado", en: "Good condition" },
-    location: { es: "UNACHI - David", en: "UNACHI - David" },
-    description: {
-      es: "Guía práctica de bolsillo para el manejo de urgencias pediátricas.",
-      en: "Practical pocket guide for handling pediatric emergencies."
-    }
-  },
 
   // ---- INGENIERÍA EN SISTEMAS ----
   {
@@ -422,7 +449,7 @@ const books = [
     category: "systems",
     tag: { es: "Programación", en: "Programming" },
     title: { es: "Estructuras de Datos y Algoritmos", en: "Data Structures and Algorithms" },
-    image: "IMG/books/estructuras-datos-algoritmos.jpg",
+    image: "IMG Books/Estructuras de Datos y Algoritmos.jpg",
     price: 26,
     seller: "Kevin Batista",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -437,7 +464,7 @@ const books = [
     category: "systems",
     tag: { es: "Bases de Datos", en: "Databases" },
     title: { es: "Fundamentos de Bases de Datos", en: "Database Fundamentals" },
-    image: "IMG/books/fundamentos-bases-datos.jpg",
+    image: "IMG Books/Fundamentos de Bases de Datos.jpg",
     price: 30,
     seller: "Natalia Prado",
     condition: { es: "Como nuevo", en: "Like new" },
@@ -452,7 +479,7 @@ const books = [
     category: "systems",
     tag: { es: "Redes", en: "Networking" },
     title: { es: "Redes de Computadoras", en: "Computer Networking" },
-    image: "IMG/books/redes-computadoras.jpg",
+    image: "IMG Books/Redes de Computadoras.jpg",
     price: 33,
     seller: "Josué Miranda",
     condition: { es: "Usado - buen estado", en: "Used - good condition" },
@@ -463,13 +490,59 @@ const books = [
     }
   },
 
+  {
+    id: "sys-4",
+    category: "systems",
+    tag: { es: "Ingeniería de Software", en: "Software Engineering" },
+    title: { es: "Ingeniería de Software", en: "Software Engineering" },
+    image: "IMG Books/ingenieria de software.jpg",
+    price: 31,
+    seller: "Adrián Samudio",
+    condition: { es: "Como nuevo", en: "Like new" },
+    location: { es: "UTP - David", en: "UTP - David" },
+    description: {
+      es: "Cubre ciclo de vida del software, metodologías ágiles y documentación de proyectos.",
+      en: "Covers the software life cycle, agile methodologies and project documentation."
+    }
+  },
+  {
+    id: "sys-5",
+    category: "systems",
+    tag: { es: "Sistemas Operativos", en: "Operating Systems" },
+    title: { es: "Sistemas Operativos Modernos", en: "Modern Operating Systems" },
+    image: "IMG Books/Sistemas Operativos Modernos.jpg",
+    price: 29,
+    seller: "Luis Caballero",
+    condition: { es: "Buen estado", en: "Good condition" },
+    location: { es: "UNACHI - David", en: "UNACHI - David" },
+    description: {
+      es: "Texto clásico sobre procesos, memoria y sistemas de archivos. Sin subrayados.",
+      en: "Classic textbook on processes, memory and file systems. No highlighting."
+    }
+  },
+  {
+    id: "sys-6",
+    category: "systems",
+    tag: { es: "Ciberseguridad", en: "Cybersecurity" },
+    title: { es: "Introducción a la Ciberseguridad", en: "Introduction to Cybersecurity" },
+    image: "IMG Books/Introducción a la Ciberseguridad.jpg",
+    price: 27,
+    seller: "Daniela Pittí",
+    condition: { es: "Usado - buen estado", en: "Used - good condition" },
+    location: { es: "ISAE - David", en: "ISAE - David" },
+    description: {
+      es: "Fundamentos de criptografía, redes seguras y análisis de vulnerabilidades.",
+      en: "Fundamentals of cryptography, secure networks and vulnerability analysis."
+    }
+  },
+
   // ---- ENFERMERÍA ----
   {
     id: "nurs-1",
     category: "nursing",
     tag: { es: "Fundamentos", en: "Fundamentals" },
     title: { es: "Fundamentos de Enfermería", en: "Fundamentals of Nursing" },
-    image: "IMG/books/fundamentos-enfermeria.jpg",
+    image: "IMG Books/Fundamentos de Enfermería.jpg",
     price: 29,
     seller: "Yolanda Pinzón",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -484,7 +557,7 @@ const books = [
     category: "nursing",
     tag: { es: "Farmacología", en: "Pharmacology" },
     title: { es: "Farmacología para Enfermería", en: "Pharmacology for Nursing" },
-    image: "IMG/books/farmacologia-enfermeria.jpg",
+    image: "IMG Books/Farmacología para Enfermería.jpg",
     price: 25,
     seller: "Brenda Solís",
     condition: { es: "Como nuevo", en: "Like new" },
@@ -499,7 +572,7 @@ const books = [
     category: "nursing",
     tag: { es: "Cuidados Críticos", en: "Critical Care" },
     title: { es: "Enfermería en Cuidados Críticos", en: "Critical Care Nursing" },
-    image: "IMG/books/enfermeria-cuidados-criticos.jpg",
+    image: "IMG Books/Enfermería en cuidados críticos.jpg",
     price: 34,
     seller: "Eduardo Vásquez",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -510,13 +583,59 @@ const books = [
     }
   },
 
+  {
+    id: "nurs-4",
+    category: "nursing",
+    tag: { es: "Anatomía", en: "Anatomy" },
+    title: { es: "Anatomía y Fisiología para Enfermería", en: "Anatomy and Physiology for Nursing" },
+    image: "IMG Books/Anatomía y Fisiología para Enfermería.jpg",
+    price: 30,
+    seller: "Katherine Arauz",
+    condition: { es: "Buen estado", en: "Good condition" },
+    location: { es: "UNACHI - David", en: "UNACHI - David" },
+    description: {
+      es: "Texto con láminas a color de todos los sistemas del cuerpo. Muy usado en primer año.",
+      en: "Textbook with color plates of every body system. Widely used in first year."
+    }
+  },
+  {
+    id: "nurs-5",
+    category: "nursing",
+    tag: { es: "Materno-Infantil", en: "Maternal and Child" },
+    title: { es: "Enfermería Materno-Infantil", en: "Maternal and Child Nursing" },
+    image: "IMG Books/Enfermería Materno-Infantil.jpg",
+    price: 26,
+    seller: "Marisol Espinosa",
+    condition: { es: "Como nuevo", en: "Like new" },
+    location: { es: "USMA - David", en: "USMA - David" },
+    description: {
+      es: "Cubre embarazo, parto y cuidados del recién nacido. Prácticamente sin uso.",
+      en: "Covers pregnancy, delivery and newborn care. Barely used."
+    }
+  },
+  {
+    id: "nurs-6",
+    category: "nursing",
+    tag: { es: "Salud Pública", en: "Public Health" },
+    title: { es: "Enfermería Comunitaria y Salud Pública", en: "Community Nursing and Public Health" },
+    image: "IMG Books/Enfermería Comunitaria y Salud Pública.jpg",
+    price: 23,
+    seller: "Héctor Villarreal",
+    condition: { es: "Usado - buen estado", en: "Used - good condition" },
+    location: { es: "ISAE - David", en: "ISAE - David" },
+    description: {
+      es: "Guía para giras comunitarias y programas de promoción de la salud.",
+      en: "Guide for community outreach and health promotion programs."
+    }
+  },
+
   // ---- MATEMÁTICAS ----
   {
     id: "math-1",
     category: "math",
     tag: { es: "Cálculo", en: "Calculus" },
     title: { es: "Cálculo de una Variable", en: "Single Variable Calculus" },
-    image: "IMG/books/calculo-una-variable.jpg",
+    image: "IMG Books/Cálculo de una Variable.jpg",
     price: 20,
     seller: "Ana Batista",
     condition: { es: "Usado - buen estado", en: "Used - good condition" },
@@ -531,7 +650,7 @@ const books = [
     category: "math",
     tag: { es: "Álgebra Lineal", en: "Linear Algebra" },
     title: { es: "Álgebra Lineal y sus Aplicaciones", en: "Linear Algebra and Its Applications" },
-    image: "IMG/books/algebra-lineal.jpg",
+    image: "IMG Books/Álgebra Lineal y sus Aplicaciones.jpg",
     price: 23,
     seller: "Manuel Torres",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -546,7 +665,7 @@ const books = [
     category: "math",
     tag: { es: "Estadística", en: "Statistics" },
     title: { es: "Probabilidad y Estadística", en: "Probability and Statistics" },
-    image: "IMG/books/probabilidad-estadistica.jpg",
+    image: "IMG Books/Probabilidad y Estadística.jpg",
     price: 21,
     seller: "Lourdes Jaén",
     condition: { es: "Como nuevo", en: "Like new" },
@@ -557,13 +676,59 @@ const books = [
     }
   },
 
+  {
+    id: "math-4",
+    category: "math",
+    tag: { es: "Cálculo", en: "Calculus" },
+    title: { es: "Cálculo Multivariable", en: "Multivariable Calculus" },
+    image: "IMG Books/Cálculo Multivariable.jpg",
+    price: 25,
+    seller: "Jorge Aparicio",
+    condition: { es: "Buen estado", en: "Good condition" },
+    location: { es: "UTP - David", en: "UTP - David" },
+    description: {
+      es: "Continuación de cálculo I, con integrales dobles, triples y campos vectoriales.",
+      en: "Follow-up to Calculus I, with double and triple integrals and vector fields."
+    }
+  },
+  {
+    id: "math-5",
+    category: "math",
+    tag: { es: "Matemática Discreta", en: "Discrete Mathematics" },
+    title: { es: "Matemática Discreta y Lógica", en: "Discrete Mathematics and Logic" },
+    image: "IMG Books/Matemática discreta y lógica matemática.jpg",
+    price: 22,
+    seller: "Karina Beitía",
+    condition: { es: "Como nuevo", en: "Like new" },
+    location: { es: "UTP - David", en: "UTP - David" },
+    description: {
+      es: "Lógica, conjuntos, grafos y combinatoria. Base para ingeniería en sistemas.",
+      en: "Logic, sets, graphs and combinatorics. Foundation for systems engineering."
+    }
+  },
+  {
+    id: "math-6",
+    category: "math",
+    tag: { es: "Ecuaciones Diferenciales", en: "Differential Equations" },
+    title: { es: "Ecuaciones Diferenciales Ordinarias", en: "Ordinary Differential Equations" },
+    image: "IMG Books/Ecuaciones Diferenciales Ordinarias.jpg",
+    price: 24,
+    seller: "Omar Serrano",
+    condition: { es: "Usado - buen estado", en: "Used - good condition" },
+    location: { es: "UNACHI - David", en: "UNACHI - David" },
+    description: {
+      es: "Métodos de solución paso a paso y aplicaciones físicas. Algunas notas a lápiz.",
+      en: "Step-by-step solution methods and physical applications. Some pencil notes."
+    }
+  },
+
   // ---- BIOLOGÍA ----
   {
     id: "bio-1",
     category: "biology",
     tag: { es: "Genética", en: "Genetics" },
     title: { es: "Genética Moderna", en: "Modern Genetics" },
-    image: "IMG/books/genetica-moderna.jpg",
+    image: "IMG Books/Genética Moderna.jpg",
     price: 27,
     seller: "Ivonne Castañeda",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -578,7 +743,7 @@ const books = [
     category: "biology",
     tag: { es: "Biología Celular", en: "Cell Biology" },
     title: { es: "Biología Celular y Molecular", en: "Cell and Molecular Biology" },
-    image: "IMG/books/biologia-celular-molecular.jpg",
+    image: "IMG Books/Biología Celular y Molecular.jpg",
     price: 31,
     seller: "Pablo Concepción",
     condition: { es: "Usado - buen estado", en: "Used - good condition" },
@@ -593,7 +758,7 @@ const books = [
     category: "biology",
     tag: { es: "Ecología", en: "Ecology" },
     title: { es: "Fundamentos de Ecología", en: "Fundamentals of Ecology" },
-    image: "IMG/books/fundamentos-ecologia.jpg",
+    image: "IMG Books/Fundamentos de Ecología.jpg",
     price: 18,
     seller: "Camila Rodríguez",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -604,13 +769,59 @@ const books = [
     }
   },
 
+  {
+    id: "bio-4",
+    category: "biology",
+    tag: { es: "Microbiología", en: "Microbiology" },
+    title: { es: "Microbiología General", en: "General Microbiology" },
+    image: "IMG Books/Microbiología General.jpg",
+    price: 29,
+    seller: "Yaritza Montenegro",
+    condition: { es: "Buen estado", en: "Good condition" },
+    location: { es: "UNACHI - David", en: "UNACHI - David" },
+    description: {
+      es: "Bacterias, virus y hongos con prácticas de laboratorio ilustradas.",
+      en: "Bacteria, viruses and fungi with illustrated lab practicals."
+    }
+  },
+  {
+    id: "bio-5",
+    category: "biology",
+    tag: { es: "Botánica", en: "Botany" },
+    title: { es: "Botánica y Fisiología Vegetal", en: "Botany and Plant Physiology" },
+    image: "IMG Books/Botánica y de Fisiología Vegetal.jpg",
+    price: 24,
+    seller: "Luis Enrique Ríos",
+    condition: { es: "Como nuevo", en: "Like new" },
+    location: { es: "UTP - David", en: "UTP - David" },
+    description: {
+      es: "Estructura y funcionamiento de las plantas, con claves de identificación.",
+      en: "Plant structure and function, with identification keys."
+    }
+  },
+  {
+    id: "bio-6",
+    category: "biology",
+    tag: { es: "Zoología", en: "Zoology" },
+    title: { es: "Zoología de Vertebrados", en: "Vertebrate Zoology" },
+    image: "IMG Books/Zoología de Vertebrados.jpg",
+    price: 26,
+    seller: "Nelva Araúz",
+    condition: { es: "Usado - buen estado", en: "Used - good condition" },
+    location: { es: "USMA - David", en: "USMA - David" },
+    description: {
+      es: "Clasificación y anatomía comparada de vertebrados, con ejemplos de fauna panameña.",
+      en: "Classification and comparative anatomy of vertebrates, with Panamanian fauna examples."
+    }
+  },
+
   // ---- ARQUITECTURA ----
   {
     id: "arch-1",
     category: "architecture",
     tag: { es: "Diseño", en: "Design" },
     title: { es: "Fundamentos del Diseño Arquitectónico", en: "Fundamentals of Architectural Design" },
-    image: "IMG/books/diseno-arquitectonico.jpg",
+    image: "IMG Books/Fundamentos del Diseño Arquitectónico.jpg",
     price: 36,
     seller: "Rodrigo Him",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -625,7 +836,7 @@ const books = [
     category: "architecture",
     tag: { es: "Historia", en: "History" },
     title: { es: "Historia de la Arquitectura", en: "History of Architecture" },
-    image: "IMG/books/historia-arquitectura.jpg",
+    image: "IMG Books/Historia de la Arquitectura.jpg",
     price: 28,
     seller: "Sofía Guardia",
     condition: { es: "Como nuevo", en: "Like new" },
@@ -640,7 +851,7 @@ const books = [
     category: "architecture",
     tag: { es: "Estructuras", en: "Structures" },
     title: { es: "Análisis Estructural Básico", en: "Basic Structural Analysis" },
-    image: "IMG/books/analisis-estructural.jpg",
+    image: "IMG Books/Análisis Estructural Básico.jpg",
     price: 33,
     seller: "Emilio Barrios",
     condition: { es: "Usado - buen estado", en: "Used - good condition" },
@@ -651,13 +862,59 @@ const books = [
     }
   },
 
+  {
+    id: "arch-4",
+    category: "architecture",
+    tag: { es: "Dibujo Técnico", en: "Technical Drawing" },
+    title: { es: "Dibujo Técnico Arquitectónico", en: "Architectural Technical Drawing" },
+    image: "IMG Books/Dibujo Técnico Arquitectónico.jpg",
+    price: 30,
+    seller: "Marcos Vega",
+    condition: { es: "Buen estado", en: "Good condition" },
+    location: { es: "USMA - David", en: "USMA - David" },
+    description: {
+      es: "Normas de acotado, escalas y representación de planos. Incluye ejercicios.",
+      en: "Dimensioning standards, scales and blueprint representation. Includes exercises."
+    }
+  },
+  {
+    id: "arch-5",
+    category: "architecture",
+    tag: { es: "Urbanismo", en: "Urban Planning" },
+    title: { es: "Urbanismo y Diseño de Ciudades", en: "Urban Planning and City Design" },
+    image: "IMG Books/Urbanismo y Diseño de Ciudades.jpg",
+    price: 34,
+    seller: "Paola Chen",
+    condition: { es: "Como nuevo", en: "Like new" },
+    location: { es: "USMA - David", en: "USMA - David" },
+    description: {
+      es: "Teoría y casos de planificación urbana, con ejemplos latinoamericanos.",
+      en: "Urban planning theory and cases, with Latin American examples."
+    }
+  },
+  {
+    id: "arch-6",
+    category: "architecture",
+    tag: { es: "Construcción", en: "Construction" },
+    title: { es: "Materiales y Técnicas de Construcción", en: "Construction Materials and Techniques" },
+    image: "IMG Books/Materiales y Procedimientos de Construcción.jpg",
+    price: 32,
+    seller: "Iván Rodríguez",
+    condition: { es: "Usado - buen estado", en: "Used - good condition" },
+    location: { es: "UTP - David", en: "UTP - David" },
+    description: {
+      es: "Concreto, acero y madera: propiedades, usos y detalles constructivos.",
+      en: "Concrete, steel and wood: properties, uses and construction details."
+    }
+  },
+
   // ---- FÍSICA ----
   {
     id: "phy-1",
     category: "physics",
     tag: { es: "Mecánica", en: "Mechanics" },
     title: { es: "Física I — Mecánica Clásica", en: "Physics I — Classical Mechanics" },
-    image: "IMG/books/fisica-mecanica-clasica.jpg",
+    image: "IMG Books/Física I — Mecánica Clásica.jpg",
     price: 24,
     seller: "Rubén Concepción",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -672,7 +929,7 @@ const books = [
     category: "physics",
     tag: { es: "Electromagnetismo", en: "Electromagnetism" },
     title: { es: "Electricidad y Magnetismo", en: "Electricity and Magnetism" },
-    image: "IMG/books/electricidad-magnetismo.jpg",
+    image: "IMG Books/Electricidad y Magnetismo.jpg",
     price: 27,
     seller: "Génesis Rodríguez",
     condition: { es: "Buen estado", en: "Good condition" },
@@ -687,7 +944,7 @@ const books = [
     category: "physics",
     tag: { es: "Termodinámica", en: "Thermodynamics" },
     title: { es: "Introducción a la Termodinámica", en: "Introduction to Thermodynamics" },
-    image: "IMG/books/introduccion-termodinamica.jpg",
+    image: "IMG Books/Introducción a la Termodinámica.avif",
     price: 22,
     seller: "Alejandro Quintero",
     condition: { es: "Como nuevo", en: "Like new" },
@@ -695,6 +952,51 @@ const books = [
     description: {
       es: "Cubre las leyes de la termodinámica con ejemplos aplicados a la ingeniería.",
       en: "Covers the laws of thermodynamics with examples applied to engineering."
+    }
+  },
+  {
+    id: "phy-4",
+    category: "physics",
+    tag: { es: "Física Moderna", en: "Modern Physics" },
+    title: { es: "Física Moderna", en: "Modern Physics" },
+    image: "IMG Books/Física Moderna.jpg",
+    price: 28,
+    seller: "Fátima Gonzáles",
+    condition: { es: "Buen estado", en: "Good condition" },
+    location: { es: "UNACHI - David", en: "UNACHI - David" },
+    description: {
+      es: "Relatividad, física cuántica y estructura atómica explicadas paso a paso.",
+      en: "Relativity, quantum physics and atomic structure explained step by step."
+    }
+  },
+  {
+    id: "phy-5",
+    category: "physics",
+    tag: { es: "Óptica", en: "Optics" },
+    title: { es: "Ondas, Sonido y Óptica", en: "Waves, Sound and Optics" },
+    image: "IMG Books/Ondas, Sonido y Óptica.jpg",
+    price: 23,
+    seller: "Carlos Bethancourt",
+    condition: { es: "Como nuevo", en: "Like new" },
+    location: { es: "UTP - David", en: "UTP - David" },
+    description: {
+      es: "Movimiento ondulatorio, acústica y óptica geométrica con problemas resueltos.",
+      en: "Wave motion, acoustics and geometric optics with solved problems."
+    }
+  },
+  {
+    id: "phy-6",
+    category: "physics",
+    tag: { es: "Fluidos", en: "Fluid Mechanics" },
+    title: { es: "Mecánica de Fluidos Aplicada", en: "Applied Fluid Mechanics" },
+    image: "IMG Books/Mecánica de Fluidos Aplicada.jpg",
+    price: 26,
+    seller: "Rosa Miranda",
+    condition: { es: "Usado - buen estado", en: "Used - good condition" },
+    location: { es: "ISAE - David", en: "ISAE - David" },
+    description: {
+      es: "Hidrostática, hidrodinámica y aplicaciones a ingeniería civil.",
+      en: "Hydrostatics, hydrodynamics and civil engineering applications."
     }
   }
 ];
@@ -807,8 +1109,9 @@ function renderBooks() {
       card.innerHTML = `
         ${isMine ? `<span class="card-mine-badge">${translations[currentLang].card_mine_badge}</span>` : ''}
         <div class="book-cover">
-          <img src="${book.image}" alt="${book.title[currentLang]}" loading="lazy"
-               onerror="this.parentElement.classList.add('img-missing')">
+          <img src="${bookImgSrc(book.image)}" alt="${book.title[currentLang]}" loading="lazy"
+               data-orig-src="${book.image}"
+               onerror="if(!tryNextExt(this)) this.parentElement.classList.add('img-missing')">
           <div class="img-placeholder">
             <i class="fa-solid fa-image"></i>
             <span>${book.image}</span>
@@ -927,11 +1230,16 @@ function openModal(book) {
   currentModalBook = book;
 
   bookModalImg.style.display = '';
-  bookModalImg.src = book.image;
+  bookModalImg.dataset.origSrc = book.image || '';
+  bookModalImg.dataset.extTry = 0;
+  bookModalImg.src = bookImgSrc(book.image);
   bookModalImg.alt = book.title[currentLang];
-  // Si la portada aún no existe, ocultamos la imagen y dejamos la
-  // caja blanca (mismo tratamiento sobrio que el modal del marketplace).
-  bookModalImg.onerror = () => { bookModalImg.style.display = 'none'; };
+  // Si la portada aún no existe (después de probar las otras
+  // extensiones), ocultamos la imagen y dejamos la caja blanca
+  // (mismo tratamiento sobrio que el modal del marketplace).
+  bookModalImg.onerror = () => {
+    if (!tryNextExt(bookModalImg)) bookModalImg.style.display = 'none';
+  };
 
   bookModalTag.textContent = book.tag[currentLang];
   bookModalTitle.textContent = book.title[currentLang];
@@ -1172,7 +1480,7 @@ function renderCart({ pulse = false } = {}) {
       const row = document.createElement('div');
       row.className = 'cart-item';
       row.innerHTML = `
-        <div class="cart-item-img"><img src="${info.image}" alt="${info.title}" onerror="this.style.opacity=0"></div>
+        <div class="cart-item-img"><img src="${bookImgSrc(info.image)}" alt="${info.title}" data-orig-src="${info.image}" onerror="if(!tryNextExt(this)) this.style.opacity=0"></div>
         <div class="cart-item-info">
           <span class="cart-item-name">${info.title}</span>
           <span class="cart-item-price">${formatPrice(info.price * item.qty)}</span>

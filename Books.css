@@ -1,10 +1,5 @@
 /* =====================================================
    NOESIS — books.css
-   Estilos propios de la página Books.
-   Usa las mismas variables definidas en index.css
-   (--green-dark, --green-mid, --green-pastel, --yellow,
-   --cream, --font-title, --font-body, --radius-*, --shadow*)
-   para mantener el mismo lenguaje visual del sitio.
 ===================================================== */
 
 /* ==========================
@@ -108,6 +103,7 @@ body{
     align-items:center;
     justify-content:center;
     transition:.3s;
+    flex-shrink:0; /* que los círculos no se aplasten cuando el espacio aprieta */
 }
 
 .nav-icon-btn:hover{
@@ -115,18 +111,24 @@ body{
     background:rgba(255,255,255,.28);
 }
 
-/* ==========================
-   HAMBURGUESA (menú móvil)
-========================== */
+/* =====================================================
+   HAMBURGUESA (menú móvil) 
+===================================================== */
 
 .hamburger{
     display:none;
     flex-direction:column;
+    justify-content:center;
+    align-items:center;
     gap:5px;
+    width:44px;   /* objetivo táctil mínimo recomendado (44x44) */
+    height:44px;
     background:none;
     border:none;
     cursor:pointer;
     padding:6px;
+    flex-shrink:0;
+    z-index:1201; /* por encima del panel para poder cerrarlo tocando la X */
 }
 
 .hamburger span{
@@ -144,28 +146,71 @@ body{
 
 .hamburger.active span:nth-child(2){
     opacity:0;
+    transform:scaleX(0);
 }
 
 .hamburger.active span:nth-child(3){
     transform:translateY(-7px) rotate(-45deg);
 }
 
-@media (max-width:768px){
+/* Fondo oscuro detrás del panel — lo inyecta el JS (ver Books.js),
+   así que basta con darle estilo aquí por su clase. */
+.nav-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(20,32,26,.45);
+    backdrop-filter:blur(2px);
+    z-index:999; /* justo debajo del navbar (1000) y del panel (1200) */
+    opacity:0;
+    transition:opacity .3s ease;
+}
+
+.nav-overlay.open{
+    display:block;
+    opacity:1;
+}
+
+/* -----------------------------------------------------
+   Nav break, botones no se amontonen, lo normal es 1024px
+----------------------------------------------------- */
+@media (max-width:1024px){
     .nav-links{
-        display:none;
-        position:absolute;
-        top:100%;
+        display:flex;
+        position:fixed;
+        top:var(--navbar-h, 70px);
         left:0;
         right:0;
-        background:rgba(53,91,76,.97);
+        bottom:0;
+        z-index:1200;
+        background:rgba(29,48,40,.98);
         flex-direction:column;
         align-items:stretch;
-        padding:25px;
-        gap:8px;
+        padding:25px clamp(20px, 6vw, 40px);
+        gap:10px;
+        overflow-y:auto;         /* si hay muchos enlaces, el panel scrollea, no la página */
+        -webkit-overflow-scrolling:touch;
+
+        /* Oculto y deslizado hacia arriba por defecto; .open lo revela */
+        transform:translateY(-12px);
+        opacity:0;
+        visibility:hidden;
+        pointer-events:none;
+        transition:opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
     }
 
     .nav-links.open{
-        display:flex;
+        transform:translateY(0);
+        opacity:1;
+        visibility:visible;
+        pointer-events:auto;
+        transition:opacity .28s ease, transform .28s ease, visibility 0s linear 0s;
+    }
+
+    .nav-link{
+        text-align:center;
+        padding:14px 22px;
+        font-size:.85rem;
     }
 
     .hamburger{
@@ -178,10 +223,41 @@ body{
     }
 }
 
+/* ---- Tablet / celular grande: la fila de iconos empieza a apretar ---- */
+@media (max-width:640px){
+    .navbar{ padding:12px 18px; }
+    .navbar.scrolled{ padding:9px 18px; }
+    .nav-inner{ gap:10px; }
+    .nav-icons{ gap:6px; }
+    .nav-icon-btn{ width:38px; height:38px; }
+}
+
+/* ---- Celular estándar ---- */
+@media (max-width:480px){
+    .nav-logo{ font-size:1.6rem; }
+    .nav-icons{ gap:4px; }
+    .nav-icon-btn{ width:35px; height:35px; }
+    .hamburger{ width:38px; height:38px; }
+}
+
+/* ---- Celular muy angosto (SE, gamas bajas, ~320-360px) ----
+    */
+@media (max-width:360px){
+    .nav-logo{ font-size:1.35rem; }
+    .lang-btn{ padding:0 8px; }
+    #langCurrent{ display:none; } /* deja solo el ícono del globo */
+    .nav-icon-btn{ width:32px; height:32px; }
+    .hamburger{ width:34px; height:34px; }
+}
+
+/* Bloquea el scroll del body mientras el panel está abierto
+   (la clase la pone/quita el JS en <body>). */
+body.nav-open{
+    overflow:hidden;
+}
+
 /* ==========================
    SELECTOR DE IDIOMA (ES / EN)
-   (igual que marketplace.css — antes faltaba por completo,
-   por eso el dropdown se veía "abierto" en línea)
 ========================== */
 
 .lang-switcher{
@@ -250,9 +326,7 @@ body{
     background:var(--green-pastel);
 }
 :root{
-    /* Mismos valores exactos que marketplace.css para que ambas
-       páginas compartan idéntica paleta (antes el amarillo y el
-       crema de Books eran más dorados/cálidos y se notaba el salto). */
+
     --green-dark:#355B4C;
     --green-mid:#7DAF9C;
     --green-pastel:#C8E9D7;
@@ -307,21 +381,11 @@ body{
     grid-template-columns:260px minmax(0,1fr);
     gap:36px;
     align-items:flex-start;
-    /* Antes todo el bloque subía con translateY(-46px) y por eso el
-       sidebar de categorías quedaba encima del hero verde.
-       Ahora solo el buscador sube (ver .books-main), y el sidebar
-       arranca ya dentro del área crema. */
     padding-top:34px;
 }
 
-/* Solo la columna de resultados sube para que el buscador siga
-   "flotando" sobre el borde del hero. */
 .books-main{
     margin-top:-80px;
-    /* Clave para el scroll horizontal: sin esto, la columna del grid
-       crece hasta caber todas las tarjetas y el que se desplaza es
-       toda la página (por eso la fila se salía de la pantalla y la
-       flecha quedaba fuera de vista). */
     min-width:0;
 }
 
@@ -375,36 +439,59 @@ body{
    BUSCADOR
 ========================== */
 
+/* El buscador vive dentro de .books-main (la columna de la derecha),
+   así que por defecto quedaba corrido hacia la derecha respecto al
+   título del hero. Se le da un ancho medio y se desplaza hacia la
+   izquierda exactamente la mitad de lo que ocupan el sidebar (260px)
+   y su separación (36px) => 148px. Así queda centrado con el título. */
 .books-search-wrap{
     display:flex;
     align-items:center;
-    gap:14px;
+
+    /* Separación entre la lupa y el texto */
+    gap:12px;
+
+    /* ===== LARGO DE LA BARRA ===== */
+    width:100%;
+    max-width:680px;
+
+    /* ===== GROSOR DE LA BARRA =====*/
+    padding:17px 26px;
+
+    margin:0 auto 34px;
+
+    /* ===== POSICIÓN HORIZONTAL ===== */
+    transform:translateX(-148px);
+
     background:var(--white);
     border:1px solid rgba(53,91,76,.18);
-    border-radius:50px;
-    padding:16px 26px;
-    margin-bottom:34px;
+    border-radius:50px;   /* 50px = puntas totalmente redondas */
     box-shadow:var(--shadow-soft);
-    transition:.3s ease;
+    transition:.3s ease;  /* suaviza el borde verde al hacer clic */
 }
 
+/* Halo verde cuando el usuario hace clic dentro de la barra */
 .books-search-wrap:focus-within{
     border-color:var(--green-mid);
     box-shadow:0 0 0 4px rgba(125,175,156,.20);
 }
 
+/* Lupa. Súbele el font-size si agrandas mucho el padding de arriba */
 .books-search-wrap i{
     color:var(--green-mid);
-    font-size:1.1rem;
+    font-size:1.05rem;
 }
 
 .books-search-wrap input{
+    /* flex:1 hace que el campo ocupe todo el espacio sobrante;
+       min-width:0 evita que el placeholder largo estire la barra */
     flex:1;
+    min-width:0;
     border:none;
     outline:none;
     background:none;
     font-family:var(--font-body);
-    font-size:1rem;
+    font-size:.98rem;
     color:var(--text);
 }
 
@@ -451,8 +538,6 @@ body{
    GRID DE LIBROS
 ========================== */
 
-/* Fila horizontal tipo Netflix: las tarjetas se corren hacia la
-   derecha en lugar de bajar de línea. */
 .books-row-wrap{
     position:relative;
     min-width:0;
@@ -599,10 +684,6 @@ body{
     display:block;
 }
 
-/* Placeholder mostrado mientras no exista la imagen real.
-   Solo hay que colocar el archivo en la ruta indicada en
-   cada objeto de "books" dentro de books.js y esto
-   desaparece automáticamente. */
 .book-cover.img-missing img{
     display:none;
 }
@@ -735,10 +816,6 @@ body{
 
 /* ==========================================
    MODAL DE DETALLES
-   Estructura y estilos tomados de marketplace.css para que
-   la ventana de detalles de Books se vea igual que la del
-   marketplace (encabezado con ícono + título, condición,
-   precio, imagen, vendedor y botones de acción).
 ========================================== */
 
 .modal{
@@ -766,7 +843,9 @@ body{
     background:var(--cream);
     border:3px solid var(--green-mid);
     border-radius:24px;
-    padding:35px;
+    /* Margen interno de la tarjeta. Bajarlo de 35 a 28 acorta el modal
+       arriba y abajo sin apretar el contenido. */
+    padding:28px 32px;
     position:relative;
     text-align:left;
     animation:modalShow .3s cubic-bezier(.22,1,.36,1);
@@ -808,7 +887,7 @@ body{
     display:flex;
     align-items:center;
     gap:16px;
-    margin-bottom:14px;
+    margin-bottom:10px;
     padding-right:40px;
     animation: fadeInUp .35s ease both;
 }
@@ -843,7 +922,7 @@ body{
     font-weight:600;
     padding:6px 16px;
     border-radius:50px;
-    margin-bottom:14px;
+    margin-bottom:10px;   /* espacio bajo la etiqueta de estado */
     animation: fadeInUp .35s ease .05s both;
 }
 
@@ -857,47 +936,96 @@ body{
     font-weight:700;
     padding:8px 26px;
     border-radius:50px;
-    margin-bottom:24px;
+    margin-bottom:18px;   /* espacio entre el precio y el cuerpo del modal */
     animation: fadeInUp .35s ease .1s both;
 }
 
 /* ---- Cuerpo: imagen a la izquierda, info a la derecha ---- */
+/* "stretch" hace que la columna de la portada crezca hasta la misma
+   altura que la columna de información (descripción + vendedor +
+   botones), para que las portadas verticales se vean completas. */
 .modal-body{
     display:grid;
+
+    /* ===== ANCHO DEL CUADRO DE LA PORTADA =====
+       260px = columna de la imagen · 1fr = todo lo demás para el texto. */
     grid-template-columns: 260px 1fr;
     gap:28px;
-    align-items:start;
+
+    /* "stretch" es lo que hace que el cuadro blanco baje hasta el final:
+       la columna de la imagen crece hasta igualar la altura de la columna
+       de información (descripción + vendedor + botones).
+       Si lo cambias a "start", el cuadro vuelve a quedar cortito arriba. */
+    align-items:stretch;
 }
 
 .modal-image-col{
     display:flex;
     flex-direction:column;
     gap:14px;
+    /* OJO: aquí NO va min-height:100%. En un grid esa altura en % se
+       retroalimenta con la altura de la fila y termina estirando el
+       cuadro más abajo que los botones (queda un hueco vacío).
+       El align-items:stretch del .modal-body ya iguala las columnas. */
     animation: fadeInUp .4s ease .05s both;
 }
 
+/* Cuadro donde se ve la portada.
+   El cuadro toma la proporción de una portada de libro (3/4) y la
+   imagen lo llena por completo, así no quedan franjas blancas
+   alrededor y tampoco se deforma. */
 .modal-image{
+    flex:0 0 auto;     /* ya no se estira: su alto lo define la proporción */
+    width:100%;
+
+    /* ===== PROPORCIÓN DEL CUADRO =====
+       3/4 es la proporción típica de una portada. Si tus fotos son
+       más alargadas, prueba 2/3; si son más cuadradas, 4/5. */
+    aspect-ratio:3/4;
+
+    /* Techo por si el modal queda muy alto en pantallas grandes */
+    max-height:620px;
+
     background:var(--white);
     border:2px solid var(--green-pastel);
     border-radius:18px;
-    padding:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:200px;
-    overflow:hidden;
+    padding:0;         /* sin margen interno: la portada llega al borde */
+    overflow:hidden;   /* recorta las esquinas junto al border-radius */
+    display:block;
 }
 
 .modal-image img{
-    max-width:220px;
-    max-height:260px;
-    width:auto;
-    height:auto;
-    object-fit:contain;
+    width:100%;
+    height:100%;
+
+    /* "cover" = la portada llena todo el cuadro sin deformarse
+       (recorta unos milímetros de los bordes si la foto no es 3/4).
+       Si prefieres ver la portada completa aunque queden franjas
+       blancas, cambia esta línea por object-fit:contain. */
+    object-fit:cover;
+    object-position:center;
+
     display:block;
-    margin:0 auto;
-    border-radius:8px;
 }
+
+/* ---- ALTERNATIVA SIN RECORTE ----
+   Si en algún libro no quieres que se recorte nada, quita el comentario
+   de este bloque: el cuadro se encoge hasta el tamaño exacto de la
+   portada, así el borde la abraza y tampoco queda espacio blanco.
+
+.modal-image{
+    aspect-ratio:auto;
+    width:fit-content;
+    max-width:100%;
+    margin-inline:auto;
+}
+.modal-image img{
+    width:auto;
+    height:100%;
+    max-height:620px;
+    object-fit:contain;
+}
+*/
 
 /* ---- Columna de información ---- */
 .modal-info{
@@ -920,12 +1048,12 @@ body{
     font-family:var(--font-body);
     font-size:15px;
     line-height:1.7;
-    margin-bottom:20px;
+    margin-bottom:16px;
 }
 
 /* ---- Vendedor (nombre, materia y ubicación) ---- */
 .modal-seller-box{
-    margin-bottom:22px;
+    margin-bottom:18px;   /* separación entre la caja del vendedor y los botones */
 }
 
 .modal-seller{
@@ -979,6 +1107,8 @@ body{
     display:flex;
     gap:14px;
     flex-wrap:wrap;
+    /* Van pegados debajo de la caja del vendedor. Si algún día quieres
+       que bajen hasta el fondo de la columna, agrega margin-top:auto. */
 }
 
 .modal-btn,
@@ -1034,13 +1164,13 @@ body{
     40%{ transform:scale(.93); }
     100%{ transform:scale(1); }
 }
-
-/* ---- Toast dentro del modal (Añadido al carrito) ---- */
+ 
 .toast{
-    position:absolute;
-    bottom:-56px;
+    position:fixed;
+    bottom:32px;
     left:50%;
     transform:translateX(-50%) translateY(10px);
+    z-index:10001;   /* por encima del modal (9999) */
     background:var(--green-dark);
     color:var(--yellow);
     padding:10px 22px;
@@ -1062,7 +1192,8 @@ body{
 /* ---- Responsive: apilar imagen e información en pantallas chicas ---- */
 @media (max-width: 640px){
     .modal-body{ grid-template-columns: 1fr; }
-    .modal-image img{ max-width:180px; max-height:200px; }
+    /* Apilado en móvil: la portada se centra y no crece de más */
+    .modal-image{ max-width:260px; margin-inline:auto; }
 }
 
 /* ==========================
@@ -1215,6 +1346,12 @@ body{
     .books-main{
         margin-top:0;
     }
+    /* En móvil/tablet el sidebar pasa a estar arriba (fila de botones),
+       así que ya no hay nada a la izquierda que compensar: se anula el
+       translateX(-148px) y la barra se centra sola con margin:0 auto. */
+    .books-search-wrap{
+        transform:none;
+    }
     .books-sidebar{
         position:static;
         flex-direction:row;
@@ -1259,10 +1396,7 @@ body{
     z-index:10000;
 }
 
-/* IMPORTANTE: la posición (left/top) la actualiza books.js cada frame
-   con requestAnimationFrame, así que NO debe llevar transition o el
-   seguidor "arrastra" y se ve con lag. Solo animamos tamaño/opacidad
-   (para el efecto de agrandado al pasar sobre enlaces y tarjetas). */
+
 .cursor-follower{
     width:32px;
     height:32px;
@@ -1274,9 +1408,6 @@ body{
 
 /* ==========================
    CARRITO (dropdown en la navbar)
-   Estilos idénticos a marketplace.css. Comparte la clave
-   "noesis_cart" en localStorage, así lo que se agrega en el
-   marketplace también aparece aquí (y viceversa).
 ========================== */
 
 .cart-switcher{

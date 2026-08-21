@@ -3,6 +3,153 @@
    Extiende index.css (que ya carga esta página).
 ===================================================== */
 
+/* =====================================================
+   HAMBURGUESA (menú móvil) — BLOQUE REUTILIZABLE
+   Esta página no traía su propio CSS para el menú móvil
+   (dependía por completo de index.css). Se repite aquí el
+   mismo bloque que Books.css para que se comporte igual en
+   todas las páginas y no dependa de qué reglas tenga
+   index.css — al cargar comunidad.css DESPUÉS de index.css,
+   esto pisa cualquier definición vieja de .hamburger /
+   .nav-links que hubiera ahí.
+   Solo necesita que existan #navbar, #hamburger y #navLinks
+   en el HTML (ya existen) — el overlay se crea solo desde JS.
+===================================================== */
+
+.nav-icon-btn{
+    flex-shrink:0; /* que los círculos no se aplasten cuando el espacio aprieta */
+}
+
+.hamburger{
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:5px;
+    width:44px;   /* objetivo táctil mínimo recomendado (44x44) */
+    height:44px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:6px;
+    flex-shrink:0;
+    z-index:1201; /* por encima del panel para poder cerrarlo tocando la X */
+}
+
+.hamburger span{
+    display:block;
+    width:24px;
+    height:2px;
+    background:#fff;
+    border-radius:2px;
+    transition:.35s ease;
+}
+
+.hamburger.active span:nth-child(1){
+    transform:translateY(7px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2){
+    opacity:0;
+    transform:scaleX(0);
+}
+
+.hamburger.active span:nth-child(3){
+    transform:translateY(-7px) rotate(-45deg);
+}
+
+/* Fondo oscuro detrás del panel — lo inyecta comunidad.js */
+.nav-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(20,32,26,.45);
+    backdrop-filter:blur(2px);
+    z-index:999; /* debajo del navbar (1000) y del panel (1200) */
+    opacity:0;
+    transition:opacity .3s ease;
+}
+
+.nav-overlay.open{
+    display:block;
+    opacity:1;
+}
+
+/* Un solo breakpoint (1024px) para tablets y celulares, igual
+   que en Books.css, así no queda un rango raro entre 768-1024
+   donde los 5 enlaces del menú se amontonan en tablets. */
+@media (max-width:1024px){
+    .nav-links{
+        display:flex;
+        position:fixed;
+        top:var(--navbar-h, 70px);
+        left:0;
+        right:0;
+        bottom:0;
+        z-index:1200;
+        background:rgba(29,48,40,.98);
+        flex-direction:column;
+        align-items:stretch;
+        padding:25px clamp(20px, 6vw, 40px);
+        gap:10px;
+        overflow-y:auto;
+        -webkit-overflow-scrolling:touch;
+
+        transform:translateY(-12px);
+        opacity:0;
+        visibility:hidden;
+        pointer-events:none;
+        transition:opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
+    }
+
+    .nav-links.open{
+        transform:translateY(0);
+        opacity:1;
+        visibility:visible;
+        pointer-events:auto;
+        transition:opacity .28s ease, transform .28s ease, visibility 0s linear 0s;
+    }
+
+    .nav-link{
+        text-align:center;
+        padding:14px 22px;
+        font-size:.85rem;
+    }
+
+    .hamburger{
+        display:flex;
+    }
+
+    .lang-dropdown{
+        right:0;
+        left:auto;
+    }
+}
+
+@media (max-width:640px){
+    .nav-icons{ gap:6px; }
+    .nav-icon-btn{ width:38px; height:38px; }
+}
+
+@media (max-width:480px){
+    .nav-logo{ font-size:1.6rem; }
+    .nav-icons{ gap:4px; }
+    .nav-icon-btn{ width:35px; height:35px; }
+    .hamburger{ width:38px; height:38px; }
+}
+
+@media (max-width:360px){
+    .nav-logo{ font-size:1.35rem; }
+    .lang-btn{ padding:0 8px; }
+    #langCurrent{ display:none; }
+    .nav-icon-btn{ width:32px; height:32px; }
+    .hamburger{ width:34px; height:34px; }
+}
+
+body.nav-open{
+    overflow:hidden;
+}
+
 /* ---- Base del modal (index.css no lo tiene) ---- */
 /* ---------------------------------------------------
    BASE DEL MODAL — estilos explícitos para evitar
@@ -396,10 +543,25 @@
     border:3px solid var(--green-pastel);
 }
 
+/* ---- Foto real del tutor (carpeta "IMG Community") ----
+   Cuando el tutor tiene foto, el JS le pone la clase "has-photo":
+   la imagen llena todo el círculo y se esconde el ícono de usuario. */
+.tutor-card-avatar.has-photo{
+    align-items:center;   /* el ícono va abajo, la foto va centrada */
+    background:var(--green-pastel);
+}
+
+.tutor-card-avatar.has-photo i{
+    display:none;
+}
+
 .tutor-card-avatar img{
-    width:90%;
-    height:90%;
+    width:100%;
+    height:100%;
+    /* "cover" recorta lo que sobre para llenar el círculo sin deformar
+       la cara. Si prefieres ver la foto completa, usa "contain". */
     object-fit:cover;
+    object-position:center top;   /* prioriza la cara al recortar */
     border-radius:50%;
 }
 
@@ -686,6 +848,27 @@
     display:none; /* oculto porque usamos el paisaje decorativo */
 }
 
+/* ---- Foto real del tutor dentro del modal ----
+   Con "has-photo" se apaga el paisaje decorativo (la nubecita y la
+   colina verde de los ::before/::after) para que no tape la foto. */
+.tutor-detail-avatar.has-photo{
+    align-items:center;
+    background:var(--green-pastel);
+}
+
+.tutor-detail-avatar.has-photo::before,
+.tutor-detail-avatar.has-photo::after{
+    display:none;
+}
+
+.tutor-detail-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center top;
+    border-radius:50%;
+}
+
 .tutor-fav-btn{
     position:absolute;
     top:32px;
@@ -786,8 +969,10 @@
 .tutor-detail-right{
     padding:36px 35px 28px 20px;
     border-left:2px solid rgba(53,91,76,.10);
-    overflow-y:auto;
-    max-height:520px;
+    /* SIN scroll propio. Antes tenía overflow-y:auto + max-height:520px,
+       y como .tutor-modal-content también desplaza, salían DOS barras a
+       la derecha. Ahora la columna crece completa y todo se mueve con la
+       única barra de la tarjeta. */
 }
 
 .tutor-detail-section{
@@ -909,12 +1094,28 @@
 
 /* Barra inferior del modal */
 .tutor-detail-footer{
+    /* Sticky: al quitarle el scroll a la columna derecha, esta barra se
+       iría hacia abajo con el contenido. Pegada al fondo de la tarjeta,
+       el precio y los botones quedan siempre a la vista mientras lees. */
+    position:sticky;
+    bottom:0;
+    z-index:2;
+
     display:flex;
     align-items:center;
     justify-content:space-between;
     padding:20px 32px;
-    background:linear-gradient(180deg, var(--green-pastel) 0%, rgba(53,91,76,.18) 100%);
-    border-top:1px solid rgba(53,91,76,.12);
+    /* Colores SÓLIDOS. El degradado anterior terminaba en
+       rgba(53,91,76,.18), o sea 18% de opacidad: al quedar la barra
+       pegada al fondo se transparentaba y se leían las reseñas por
+       debajo. Estos dos tonos son el mismo resultado visual pero sin
+       transparencia (#DBDECE = ese verde translúcido ya mezclado con
+       el crema del modal). */
+    background:linear-gradient(180deg, #C8E9D7 0%, #DBDECE 100%);
+    border-top:1px solid rgba(53,91,76,.18);
+    /* Sombra hacia arriba: separa la barra del contenido que pasa
+       por detrás al desplazar. */
+    box-shadow:0 -6px 16px rgba(53,91,76,.12);
     flex-wrap:wrap;
     gap:14px;
 }

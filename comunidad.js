@@ -43,6 +43,7 @@ const translations = {
     book_class: "Reservar clase", send_message: "Enviar mensaje", or_label: "o",
     footer_desc: "El marketplace universitario de<br>David, Chiriquí.",
     footer_platform: "Plataforma", footer_marketplace: "Marketplace",
+    footer_study: "Material de Estudio", footer_books: "Libros",
     footer_support: "Soporte", footer_faq: "Ayuda / FAQ",
     footer_contact: "Contáctanos", footer_terms: "Términos de uso",
     footer_follow: "Síguenos",
@@ -102,7 +103,9 @@ const translations = {
     price_per_hour: "Price (per hour)", secure_payment: "Secure Payment",
     book_class: "Book a Class", send_message: "Send a Message", or_label: "or",
     footer_desc: "The university marketplace of<br>David, Chiriquí.",
-    footer_platform: "Platform", footer_marketplace: "Marketplace",
+    footer_platform: "Platform", 
+    footer_study: "Study Material",
+    footer_books: "Books",
     footer_support: "Support", footer_faq: "Help / FAQ",
     footer_contact: "Contact Us", footer_terms: "Terms of Use",
     footer_follow: "Follow Us",
@@ -133,9 +136,15 @@ let currentLang = localStorage.getItem('noesis_lang') || 'es';
 // -----------------------------------------------
 // CATÁLOGO DE TUTORES (datos de ejemplo)
 // -----------------------------------------------
+/* NOTA sobre las fotos:
+   El campo "photo" apunta a los archivos de la carpeta "IMG Community".
+   Los espacios del nombre van escritos como %20 para que el navegador
+   encuentre el archivo (ej. "miss milenys.jpg" -> "miss%20milenys.jpg").
+   Los tutores sin "photo" siguen mostrando el ícono de usuario. */
 const tutors = [
   {
     id: "t1", name: "Milenys Gonzalez",
+    photo: "IMG%20Community/miss%20milenys.jpg",
     category: "psychology",
     subject: { es: "Psicología", en: "Psychology" },
     rating: 4.9, reviews: 129, price: 10,
@@ -153,6 +162,7 @@ const tutors = [
   },
   {
     id: "t2", name: "Carlos Samudio",
+    photo: "IMG%20Community/Mrs%20carlos.jpg",
     category: "systems",
     subject: { es: "Tecnología de la Información", en: "Information Technology" },
     rating: 4.9, reviews: 128, price: 12,
@@ -187,6 +197,7 @@ const tutors = [
   },
   {
     id: "t4", name: "Soleid Del Cid",
+    photo: "IMG%20Community/Ms%20Soleid.jpg",
     category: "english",
     subject: { es: "Inglés", en: "English" },
     rating: 4.9, reviews: 126, price: 12,
@@ -204,6 +215,7 @@ const tutors = [
   },
   {
     id: "t5", name: "Richard Montenegro",
+    photo: "IMG%20Community/Mrs%20Richard.jpg",
     category: "english",
     subject: { es: "Inglés", en: "English" },
     rating: 4.9, reviews: 127, price: 8,
@@ -221,6 +233,7 @@ const tutors = [
   },
   {
     id: "t6", name: "María José Pinto",
+    photo: "IMG%20Community/Maria.jpg",
     category: "biology",
     subject: { es: "Biología", en: "Biology" },
     rating: 4.8, reviews: 95, price: 10,
@@ -238,6 +251,7 @@ const tutors = [
   },
   {
     id: "t7", name: "Andrés Ríos",
+    photo: "IMG%20Community/Andres.jpg",
     category: "math",
     subject: { es: "Matemáticas", en: "Mathematics" },
     rating: 4.7, reviews: 112, price: 10,
@@ -255,6 +269,7 @@ const tutors = [
   },
   {
     id: "t8", name: "Valeria Gómez",
+    photo: "IMG%20Community/Valeria%20Gomez.jpg",
     category: "chemistry",
     subject: { es: "Química", en: "Chemistry" },
     rating: 4.8, reviews: 88, price: 12,
@@ -272,6 +287,7 @@ const tutors = [
   },
   {
     id: "t9", name: "Diego Fernández",
+    photo: "IMG%20Community/Diego%20Fernandez.jpg",
     category: "physics",
     subject: { es: "Física", en: "Physics" },
     rating: 4.6, reviews: 74, price: 10,
@@ -289,6 +305,7 @@ const tutors = [
   },
   {
     id: "t10", name: "Ana Lucía Herrera",
+    photo: "IMG%20Community/Ana%20Lucia.jpg",
     category: "economics",
     subject: { es: "Economía", en: "Economics" },
     rating: 4.8, reviews: 103, price: 14,
@@ -509,6 +526,23 @@ function getFilteredTutors() {
 // -----------------------------------------------
 // RENDERIZADO
 // -----------------------------------------------
+
+/* Devuelve el círculo del avatar. Si el tutor tiene "photo" se pinta la
+   imagen y se le agrega la clase "has-photo" (el CSS oculta el fondo
+   decorativo). Si el archivo no existe, el onerror quita la clase y
+   vuelve a dejar el ícono de usuario, así nunca queda un hueco roto. */
+function avatarHTML(t, baseClass) {
+  if (t.photo) {
+    return `
+      <div class="${baseClass} has-photo">
+        <img src="${t.photo}" alt="${t.name}" loading="lazy"
+             onerror="this.parentElement.classList.remove('has-photo'); this.remove();">
+        <i class="fa-solid fa-user"></i>
+      </div>`;
+  }
+  return `<div class="${baseClass}"><i class="fa-solid fa-user"></i></div>`;
+}
+
 function renderTutors() {
   const filtered = getFilteredTutors();
   tutorGrid.innerHTML = '';
@@ -526,7 +560,7 @@ function renderTutors() {
           <i class="fa-solid fa-heart"></i>
         </button>
       </div>
-      <div class="tutor-card-avatar"><i class="fa-solid fa-user"></i></div>
+      ${avatarHTML(t, 'tutor-card-avatar')}
       <span class="tutor-card-name">${t.name}</span>
       <span class="tutor-card-subject">${t.subject[currentLang]}</span>
       <div class="tutor-card-rating">
@@ -590,7 +624,14 @@ function openTutorModal(t) {
 
     // Datos básicos (con null-check en cada uno)
     const avatar = el('tutorDetailAvatar');
-    if (avatar) avatar.innerHTML = '';
+    if (avatar) {
+      // Misma lógica que en las tarjetas: foto si existe, si no el paisaje
+      avatar.classList.toggle('has-photo', !!t.photo);
+      avatar.innerHTML = t.photo
+        ? `<img src="${t.photo}" alt="${t.name}"
+                onerror="this.parentElement.classList.remove('has-photo'); this.remove();">`
+        : '';
+    }
 
     const nameEl = el('tutorDetailName');
     if (nameEl) nameEl.textContent = t.name;
@@ -883,26 +924,62 @@ interactives.forEach(el => {
 });
 
 // -----------------------------------------------
-// NAVBAR SCROLL + HAMBURGER
+// NAVBAR SCROLL + HAMBURGUESA — BLOQUE REUTILIZABLE
+// (idéntico al de Books.js; funciona en monitor, tablet
+// y celular con el CSS de arriba. Solo necesita
+// #navbar, #hamburger y #navLinks en el HTML.)
 // -----------------------------------------------
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
+const NAV_BREAKPOINT = 1024; // debe coincidir con el @media del CSS
 
 window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 40);
+  syncNavbarHeight();
 });
 
+const navOverlay = document.createElement('div');
+navOverlay.className = 'nav-overlay';
+navOverlay.id = 'navOverlay';
+document.body.appendChild(navOverlay);
+
+function syncNavbarHeight() {
+  document.documentElement.style.setProperty('--navbar-h', navbar.offsetHeight + 'px');
+}
+syncNavbarHeight();
+window.addEventListener('resize', syncNavbarHeight);
+
+function openMenu() {
+  hamburger.classList.add('active');
+  navLinks.classList.add('open');
+  navOverlay.classList.add('open');
+  hamburger.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('nav-open');
+}
+
+function closeMenu() {
+  hamburger.classList.remove('active');
+  navLinks.classList.remove('open');
+  navOverlay.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('nav-open');
+}
+
 hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('active');
-  navLinks.classList.toggle('open');
+  const isOpen = navLinks.classList.contains('open');
+  isOpen ? closeMenu() : openMenu();
 });
 
 document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    hamburger.classList.remove('active');
-    navLinks.classList.remove('open');
-  });
+  link.addEventListener('click', closeMenu);
+});
+navOverlay.addEventListener('click', closeMenu);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMenu();
+});
+window.addEventListener('resize', () => {
+  if (window.innerWidth > NAV_BREAKPOINT) closeMenu();
 });
 
 // -----------------------------------------------

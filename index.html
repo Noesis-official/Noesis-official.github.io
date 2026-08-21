@@ -74,7 +74,7 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 <a aria-label="User" class="nav-icon-btn" href="login.html" id="userNavBtn">
 <svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
 </a>
-<button aria-label="Menu" class="hamburger" id="hamburger">
+<button aria-label="Menu" aria-expanded="false" aria-controls="navLinks" class="hamburger" id="hamburger">
 <span></span>
 <span></span>
 <span></span>
@@ -84,8 +84,12 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 </nav>
 <section class="hero">
 <div class="hero-image-wrap">
-<video autoplay="" class="hero.img" loop="" muted="" playsinline="">
-<source src="VID/Noesis- intro interfaz.mp4" type="video/mp4"/>
+<!-- Video de introducción del hero: cambia según el idioma activo.
+     ES: usa el archivo indicado en data-video-es.
+     EN: coloca aquí tu video en inglés (mismo tamaño/proporción)
+         y reemplaza la ruta de data-video-en por su nombre real. -->
+<video autoplay="" class="hero.img" loop="" muted="" playsinline="" id="heroVideo" data-video-es="VID/Noesis- intro interfaz EN.mp4" data-video-en="VID/Noesis- intro interfaz.mp4">
+<source id="heroVideoSource" src="VID/Noesis- intro interfaz.mp4" type="video/mp4"/>
 </video>
 <div class="hero-overlay"></div>
 </div>
@@ -325,8 +329,8 @@ CURSOR PERSONALIZADO (punto que sigue al mouse)
 <h4 data-i18n="footer_platform">Plataforma</h4>
 <ul>
 <li><a data-i18n="footer_marketplace" href="marketplace.html">Marketplace</a></li>
-<li><a data-i18n="footer_exchanges" href="#intercambios">Intercambios</a></li>
-<li><a data-i18n="footer_kits" href="#kits">Kits de Inicio</a></li>
+<li><a data-i18n="footer_material" href="study.html">Material de Estudio</a></li>
+<li><a data-i18n="footer_books" href="Books.html">Libros</a></li>
 </ul>
 </div>
 <div class="footer-links">

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Noesis - Market Place</title>
+  <link rel="icon" type="image/png" href="IMG/favicon.png"/>
   <link rel="stylesheet" href="marketplace.css" />
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -18,7 +19,7 @@
 <div class="cursor-follower" id="cursorFollower"></div>
 
   <!-- NAVBAR -->
-<header class="navbar">
+<header class="navbar" id="navbar">
     <div class="nav-inner">
 
         <div class="nav-logo">
@@ -89,7 +90,7 @@
             </a>
 
             <!-- Botón hamburguesa (menú móvil) -->
-            <button class="hamburger" id="hamburger" aria-label="Menú">
+            <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false" aria-controls="navLinks">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -339,7 +340,7 @@
 </div>
 
 <!-- =============================================
-     FOOTER — mismo diseño que index.html/Books.html
+     FOOTER 
 ============================================= -->
 <footer class="footer">
 <div class="footer-inner">
@@ -352,9 +353,9 @@
 <div class="footer-links">
 <h4 data-i18n="footer_platform">Plataforma</h4>
 <ul>
-<li><a data-i18n="footer_marketplace" href="marketplace.html">Marketplace</a></li>
-<li><a data-i18n="nav_books" href="books.html">Books</a></li>
-<li><a data-i18n="footer_kits" href="#">Kits de Inicio</a></li>
+<li><a data-i18n="footer_marketplace" href="menu.html">Menu</a></li>
+<li><a data-i18n="footer_study" href="study.html">Material de Estudio</a></li>
+<li><a data-i18n="footer_books" href="Books.html">Libros</a></li>
 </ul>
 </div>
 <div class="footer-links">

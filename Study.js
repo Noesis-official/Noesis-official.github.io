@@ -1,9 +1,5 @@
 // ============================================================
-//  NOESIS – Study Material  |  study-material.js
-//  Misma lógica que marketplace.js (tarjetas, búsqueda, filtros,
-//  modal, carrito, idioma, cursor) adaptada a "kits de estudio":
-//  cada kit tiene una lista de contenido ("incluye"), categoría,
-//  condición, fecha de publicación y vendedor estudiante.
+//  NOESIS – Study Material  |  
 // ============================================================
 
 // -----------------------------------------------
@@ -25,14 +21,14 @@ const conditionLabels = {
 
 // -----------------------------------------------
 // KITS DE ESTUDIO (catálogo de ejemplo)
-// 📷 AGREGAR IMÁGENES AQUÍ: reemplaza `image`/`gallery` con las
+//  AGREGAR IMÁGENES AQUÍ: reemplaza `image`/`gallery` con las
 // fotos reales de cada kit cuando las tengas.
 // -----------------------------------------------
 const products = [
   {
     name: { es: "Kit de inicio - Ingeniería Química", en: "Chemical Engineering Entry Kit" },
-    image: "IMG/kit-quimica.png",
-    gallery: ["IMG/kit-quimica-1.png", "IMG/kit-quimica-2.png", "IMG/kit-quimica-3.png", "IMG/kit-quimica-4.png"],
+    image: "IMG Study/kit de quimica.png",
+    gallery: ["IMG Study/kit de quimica.png"],
     price: 120,
     condition: "excellent",
     category: "ingenieria",
@@ -45,8 +41,8 @@ const products = [
   },
   {
     name: { es: "Kit de inicio - Arquitectura", en: "Architecture Entry Kit" },
-    image: "IMG/kit-arquitectura.png",
-    gallery: ["IMG/kit-arquitectura-1.png", "IMG/kit-arquitectura-2.png", "IMG/kit-arquitectura-3.png", "IMG/kit-arquitectura-4.png"],
+    image: "IMG Study/kit arquitectura.png",
+    gallery: ["IMG Study/kit arquitectura.png"],
     price: 95,
     condition: "new",
     category: "arquitectura",
@@ -212,7 +208,6 @@ const translations = {
     footer_desc: "El marketplace universitario de<br>David, Chiriquí.",
     footer_platform: "Plataforma",
     footer_marketplace: "Marketplace",
-    footer_kits: "Kits de Inicio",
     footer_support: "Soporte",
     footer_faq: "Ayuda / FAQ",
     footer_contact: "Contáctanos",
@@ -278,8 +273,9 @@ const translations = {
     cart_checkout_empty: "Your cart is empty",
     footer_desc: "The university marketplace of<br>David, Chiriquí.",
     footer_platform: "Platform",
+    footer_menu: "Menu",
     footer_marketplace: "Marketplace",
-    footer_kits: "Starter Kits",
+    footer_books: "Books",
     footer_support: "Support",
     footer_faq: "Help / FAQ",
     footer_contact: "Contact Us",
@@ -343,10 +339,20 @@ function renderProducts(entries, { animate = true } = {}) {
     const seller = product.seller;
     const isMine = currentUser && product.ownerEmail === currentUser.email;
 
+    // Si la imagen no existe se muestra un recuadro con la ruta que el
+    // navegador intentó cargar (no aplica a fotos subidas por el usuario,
+    // que son data URLs muy largas).
+    const imgHint = (product.image && product.image.startsWith('data:')) ? '' : (product.image || '');
+
     card.innerHTML = `
 ${isMine ? `<span class="card-mine-badge">${translations[lang].card_mine_badge}</span>` : ''}
 <div class="card-icon-wrap kit-cover">
-    <img src="${product.image}" alt="${displayName}">
+    <img src="${product.image}" alt="${displayName}" loading="lazy"
+         onerror="this.parentElement.classList.add('img-missing')">
+    <div class="img-placeholder">
+      <i class="fa-solid fa-image"></i>
+      <span>${imgHint}</span>
+    </div>
 </div>
     <span class="card-name">${displayName}</span>
     ${seller ? `
@@ -1352,29 +1358,67 @@ setLanguage(savedLang);
 // NAVBAR: sombra al hacer scroll
 // -----------------------------------------------
 const navbar = document.querySelector('.navbar');
+
+// El panel del menú móvil es "position:fixed" y necesita saber la
+// altura real del navbar (cambia un poco al hacer scroll y entre
+// pantallas) para no taparlo. La guardamos en una variable CSS.
+function syncNavbarHeight() {
+  if (!navbar) return;
+  document.documentElement.style.setProperty('--navbar-h', navbar.offsetHeight + 'px');
+}
+syncNavbarHeight();
+window.addEventListener('resize', syncNavbarHeight);
+
 if (navbar) {
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 10);
+    syncNavbarHeight();
   });
 }
 
 // -----------------------------------------------
-// MENÚ HAMBURGUESA (móvil)
+// MENÚ HAMBURGUESA (móvil) 
 // -----------------------------------------------
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
+const NAV_BREAKPOINT = 1024; // debe coincidir con el @media del CSS
 
 if (hamburger && navLinks) {
+  const navOverlay = document.createElement('div');
+  navOverlay.className = 'nav-overlay';
+  navOverlay.id = 'navOverlay';
+  document.body.appendChild(navOverlay);
+
+  function openMenu() {
+    hamburger.classList.add('active');
+    navLinks.classList.add('open');
+    navOverlay.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('nav-open');
+  }
+
+  function closeMenu() {
+    hamburger.classList.remove('active');
+    navLinks.classList.remove('open');
+    navOverlay.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('nav-open');
+  }
+
   hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navLinks.classList.toggle('open');
+    const isOpen = navLinks.classList.contains('open');
+    isOpen ? closeMenu() : openMenu();
   });
 
   document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('active');
-      navLinks.classList.remove('open');
-    });
+    link.addEventListener('click', closeMenu);
+  });
+  navOverlay.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMenu();
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > NAV_BREAKPOINT) closeMenu();
   });
 }
 
