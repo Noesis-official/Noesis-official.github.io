@@ -7,8 +7,9 @@
 // -----------------------------------------------
 const translations = {
   es: {
-    nav_menu: "MENU", nav_market: "MARKETPLACE", nav_community: "COMUNIDAD",
-    nav_books: "LIBROS",
+    nav_menu: "MENÚ", nav_market: "MARKETPLACE", nav_Material: "MATERIAL DE ESTUDIO",
+    nav_community: "COMUNIDAD", nav_books: "LIBROS",
+    footer_material: "Material de Estudio", footer_books: "Libros",
     search_tutors: "Buscar tutores...",
     notif_classes: "¡No olvides tus clases programadas!",
     cat_all: "Todas", cat_physics: "Física", cat_chemistry: "Química",
@@ -43,7 +44,6 @@ const translations = {
     book_class: "Reservar clase", send_message: "Enviar mensaje", or_label: "o",
     footer_desc: "El marketplace universitario de<br>David, Chiriquí.",
     footer_platform: "Plataforma", footer_marketplace: "Marketplace",
-    footer_study: "Material de Estudio", footer_books: "Libros",
     footer_support: "Soporte", footer_faq: "Ayuda / FAQ",
     footer_contact: "Contáctanos", footer_terms: "Términos de uso",
     footer_follow: "Síguenos",
@@ -68,8 +68,9 @@ const translations = {
     request_success: "¡Solicitud publicada! Los tutores disponibles podrán contactarte. 🎉"
   },
   en: {
-    nav_menu: "MENU", nav_market: "MARKETPLACE", nav_community: "COMMUNITY",
-    nav_books: "BOOKS",
+    nav_menu: "MENU", nav_market: "MARKETPLACE", nav_Material: "STUDY MATERIAL",
+    nav_community: "COMMUNITY", nav_books: "BOOKS",
+    footer_material: "Study Material", footer_books: "Books",
     search_tutors: "Search tutors...",
     notif_classes: "Don't forget your scheduled classes!",
     cat_all: "All", cat_physics: "Physics", cat_chemistry: "Chemistry",
@@ -103,9 +104,7 @@ const translations = {
     price_per_hour: "Price (per hour)", secure_payment: "Secure Payment",
     book_class: "Book a Class", send_message: "Send a Message", or_label: "or",
     footer_desc: "The university marketplace of<br>David, Chiriquí.",
-    footer_platform: "Platform", 
-    footer_study: "Study Material",
-    footer_books: "Books",
+    footer_platform: "Platform", footer_marketplace: "Marketplace",
     footer_support: "Support", footer_faq: "Help / FAQ",
     footer_contact: "Contact Us", footer_terms: "Terms of Use",
     footer_follow: "Follow Us",

@@ -30,7 +30,9 @@
 
   const bubble = widget.querySelector('.mascot-widget-bubble');
 
-  // Actualiza el texto de la burbuja 
+  // Actualiza el texto de la burbuja (y el aria-label) según el
+  // idioma actual. Se llama al crear el widget y cada vez que el
+  // idioma cambia mientras el widget ya está en pantalla.
   function refreshLanguage() {
     const text = BUBBLE_TEXT[getCurrentLang()] || BUBBLE_TEXT.es;
     bubble.textContent = text;
@@ -40,7 +42,13 @@
   refreshLanguage();
   document.body.appendChild(widget);
 
-  // El selector de idioma de cada página
+  // El selector de idioma de cada página (index.js, marketplace.js,
+  // Books.js, etc.) no avisa con un evento propio cuando cambia el
+  // idioma — solo actualiza localStorage y el DOM de esa página.
+  // Por eso escuchamos el clic en los botones ES/EN directamente
+  // (delegado en document, funciona sin importar en qué página
+  // esté el widget) y también el evento "storage", por si el
+  // idioma se cambia desde otra pestaña abierta del sitio.
   document.addEventListener('click', (e) => {
     const langOption = e.target.closest('.lang-option[data-lang]');
     if (langOption) {

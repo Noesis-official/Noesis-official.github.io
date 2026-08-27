@@ -1,5 +1,10 @@
 /* =====================================================
    NOESIS — books.css
+   Estilos propios de la página Books.
+   Usa las mismas variables definidas en index.css
+   (--green-dark, --green-mid, --green-pastel, --yellow,
+   --cream, --font-title, --font-body, --radius-*, --shadow*)
+   para mantener el mismo lenguaje visual del sitio.
 ===================================================== */
 
 /* ==========================
@@ -112,7 +117,12 @@ body{
 }
 
 /* =====================================================
-   HAMBURGUESA (menú móvil) 
+   HAMBURGUESA (menú móvil) — BLOQUE REUTILIZABLE
+   Copia este bloque completo (CSS + el JS de más abajo)
+   tal cual en cualquier otra página que use la misma
+   estructura de navbar: #navbar, #hamburger, #navLinks.
+   No necesitas tocar el HTML: el overlay que oscurece el
+   fondo se crea solo desde JS.
 ===================================================== */
 
 .hamburger{
@@ -161,7 +171,7 @@ body{
     inset:0;
     background:rgba(20,32,26,.45);
     backdrop-filter:blur(2px);
-    z-index:999; /* justo debajo del navbar (1000) y del panel (1200) */
+    z-index:9999;
     opacity:0;
     transition:opacity .3s ease;
 }
@@ -172,9 +182,22 @@ body{
 }
 
 /* -----------------------------------------------------
-   Nav break, botones no se amontonen, lo normal es 1024px
+   >>> A partir de aquí, TODO lo de "menú de hamburguesa"
+   vive detrás de un único breakpoint (--nav-break) para
+   que tablets, celulares y monitores angostos se
+   comporten igual y no haya un rango raro entre 768 y
+   1024px donde los 5 botones del menú se amontonan.
+   1024px cubre tablets en vertical (iPad, etc.). Si algún
+   día agregas más enlaces al nav y vuelve a apretar en
+   monitores normales, solo sube este número.
 ----------------------------------------------------- */
 @media (max-width:1024px){
+    .navbar{
+        backdrop-filter:none;
+        -webkit-backdrop-filter:none;
+        background:rgba(53,91,76,.94);
+    }
+
     .nav-links{
         display:flex;
         position:fixed;
@@ -185,6 +208,7 @@ body{
         z-index:1200;
         background:rgba(29,48,40,.98);
         flex-direction:column;
+        flex-wrap:nowrap;
         align-items:stretch;
         padding:25px clamp(20px, 6vw, 40px);
         gap:10px;
@@ -196,7 +220,6 @@ body{
         opacity:0;
         visibility:hidden;
         pointer-events:none;
-        transition:opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
     }
 
     .nav-links.open{
@@ -241,7 +264,9 @@ body{
 }
 
 /* ---- Celular muy angosto (SE, gamas bajas, ~320-360px) ----
-    */
+   Con logo + selector de idioma + Vender + carrito + usuario +
+   hamburguesa, a este ancho toca esconder el texto/ícono menos
+   esenciales para que nada se encime. */
 @media (max-width:360px){
     .nav-logo{ font-size:1.35rem; }
     .lang-btn{ padding:0 8px; }
@@ -256,8 +281,17 @@ body.nav-open{
     overflow:hidden;
 }
 
+body.nav-open .navbar{
+    z-index:10000;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    background:rgba(53,91,76,.98);
+}
+
 /* ==========================
    SELECTOR DE IDIOMA (ES / EN)
+   (igual que marketplace.css — antes faltaba por completo,
+   por eso el dropdown se veía "abierto" en línea)
 ========================== */
 
 .lang-switcher{
@@ -326,7 +360,9 @@ body.nav-open{
     background:var(--green-pastel);
 }
 :root{
-
+    /* Mismos valores exactos que marketplace.css para que ambas
+       páginas compartan idéntica paleta (antes el amarillo y el
+       crema de Books eran más dorados/cálidos y se notaba el salto). */
     --green-dark:#355B4C;
     --green-mid:#7DAF9C;
     --green-pastel:#C8E9D7;
@@ -381,11 +417,21 @@ body.nav-open{
     grid-template-columns:260px minmax(0,1fr);
     gap:36px;
     align-items:flex-start;
+    /* Antes todo el bloque subía con translateY(-46px) y por eso el
+       sidebar de categorías quedaba encima del hero verde.
+       Ahora solo el buscador sube (ver .books-main), y el sidebar
+       arranca ya dentro del área crema. */
     padding-top:34px;
 }
 
+/* Solo la columna de resultados sube para que el buscador siga
+   "flotando" sobre el borde del hero. */
 .books-main{
     margin-top:-80px;
+    /* Clave para el scroll horizontal: sin esto, la columna del grid
+       crece hasta caber todas las tarjetas y el que se desplaza es
+       toda la página (por eso la fila se salía de la pantalla y la
+       flecha quedaba fuera de vista). */
     min-width:0;
 }
 
@@ -451,16 +497,28 @@ body.nav-open{
     /* Separación entre la lupa y el texto */
     gap:12px;
 
-    /* ===== LARGO DE LA BARRA ===== */
+    /* ===== LARGO DE LA BARRA =====
+       Este es el valor que hay que tocar para alargarla o acortarla.
+       Referencias: 560px = corta · 680px = actual · 780px = bien larga.
+       (width:100% solo evita que se pase de ancho en pantallas chicas) */
     width:100%;
     max-width:680px;
 
-    /* ===== GROSOR DE LA BARRA =====*/
+    /* ===== GROSOR DE LA BARRA =====
+       Primer valor = alto (arriba/abajo) · segundo = espacio a los lados.
+       Referencias de alto: 13px = delgada · 17px = actual · 22px = gruesa. */
     padding:17px 26px;
 
+    /* margin: "auto" a los lados la centra dentro de su columna;
+       34px es el espacio hacia la primera fila de libros. */
     margin:0 auto 34px;
 
-    /* ===== POSICIÓN HORIZONTAL ===== */
+    /* ===== POSICIÓN HORIZONTAL =====
+       El buscador vive en .books-main (la columna derecha), así que sin
+       esto quedaría corrido a la derecha respecto al título del hero.
+       -148px = la mitad del sidebar (260px) + su separación (36px).
+       Si algún día cambias el ancho del sidebar, recalcula: -(ancho+gap)/2.
+       NO depende del max-width: la barra sigue centrada aunque la alargues. */
     transform:translateX(-148px);
 
     background:var(--white);
@@ -538,6 +596,8 @@ body.nav-open{
    GRID DE LIBROS
 ========================== */
 
+/* Fila horizontal tipo Netflix: las tarjetas se corren hacia la
+   derecha en lugar de bajar de línea. */
 .books-row-wrap{
     position:relative;
     min-width:0;
@@ -684,6 +744,10 @@ body.nav-open{
     display:block;
 }
 
+/* Placeholder mostrado mientras no exista la imagen real.
+   Solo hay que colocar el archivo en la ruta indicada en
+   cada objeto de "books" dentro de books.js y esto
+   desaparece automáticamente. */
 .book-cover.img-missing img{
     display:none;
 }
@@ -816,6 +880,10 @@ body.nav-open{
 
 /* ==========================================
    MODAL DE DETALLES
+   Estructura y estilos tomados de marketplace.css para que
+   la ventana de detalles de Books se vea igual que la del
+   marketplace (encabezado con ícono + título, condición,
+   precio, imagen, vendedor y botones de acción).
 ========================================== */
 
 .modal{
@@ -1164,7 +1232,15 @@ body.nav-open{
     40%{ transform:scale(.93); }
     100%{ transform:scale(1); }
 }
- 
+
+/* ---- Toast dentro del modal (Añadido al carrito) ---- */
+/* ---- Toast dentro del modal (Añadido al carrito) ----
+   IMPORTANTE: va "fixed", no "absolute". Antes estaba absolute con
+   bottom:-56px dentro de .modal-content, y como esa tarjeta tiene
+   overflow-y:auto, el navegador contaba esos 56px + el alto del aviso
+   como área desplazable: por eso quedaba un hueco vacío al final del
+   modal aunque no hubiera contenido. Fixed lo saca de esa cuenta y el
+   aviso igual se ve flotando sobre la tarjeta. */
 .toast{
     position:fixed;
     bottom:32px;
@@ -1396,7 +1472,10 @@ body.nav-open{
     z-index:10000;
 }
 
-
+/* IMPORTANTE: la posición (left/top) la actualiza books.js cada frame
+   con requestAnimationFrame, así que NO debe llevar transition o el
+   seguidor "arrastra" y se ve con lag. Solo animamos tamaño/opacidad
+   (para el efecto de agrandado al pasar sobre enlaces y tarjetas). */
 .cursor-follower{
     width:32px;
     height:32px;
@@ -1408,6 +1487,9 @@ body.nav-open{
 
 /* ==========================
    CARRITO (dropdown en la navbar)
+   Estilos idénticos a marketplace.css. Comparte la clave
+   "noesis_cart" en localStorage, así lo que se agrega en el
+   marketplace también aparece aquí (y viceversa).
 ========================== */
 
 .cart-switcher{

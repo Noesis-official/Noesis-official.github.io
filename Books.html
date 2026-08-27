@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Noesis — Books</title>
-    <link rel="icon" type="image/png" href="IMG/favicon.png"/>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,11 +32,11 @@
 <div class="nav-inner">
 <div class="nav-logo">NOESIS</div>
 <div class="nav-links" id="navLinks">
-<a class="nav-link" data-i18n="nav_menu" href="index.html">MENU</a>
-<a class="nav-link" data-i18n="nav_market" href="marketplace.html">MARKETlPLACE</a>
+<a class="nav-link" data-i18n="nav_menu" href="index.html">MENÚ</a>
+<a class="nav-link" data-i18n="nav_market" href="marketplace.html">MARKETPLACE</a>
 <a class="nav-link" data-i18n="nav_community" href="comunidad.html">COMUNIDAD</a>
-<a class="nav-link" data-i18n="nav_Material" href="Study.html">STUDY MATERIAL</a>
-<a class="nav-link active" data-i18n="nav_books" href="books.html">BOOKS</a>
+<a class="nav-link" data-i18n="nav_Material" href="Study.html">MATERIAL DE ESTUDIO</a>
+<a class="nav-link active" data-i18n="nav_books" href="books.html">LIBROS</a>
 </div>
 <div class="nav-icons">
 <!-- Selector de idioma -->
@@ -146,6 +145,9 @@
 
 <!-- =============================================
      MODAL DE DETALLES
+     Misma estructura visual que el modal del marketplace:
+     encabezado (ícono + título), condición, precio, imagen,
+     descripción, datos del vendedor y botones de acción.
 ============================================= -->
 <div class="modal" id="bookModalOverlay">
 <div class="modal-content">
@@ -212,6 +214,9 @@
 
 <!-- =============================================
      MODAL PARA PUBLICAR UN LIBRO
+     Requiere sesión activa (localStorage). Los libros publicados
+     se guardan bajo "noesis_user_books" y se combinan con el
+     catálogo de ejemplo al renderizar el grid.
 ============================================= -->
 <div class="modal" id="publishModal">
 <div class="modal-content publish-content">
@@ -278,7 +283,7 @@
 
 
 <!-- =============================================
-     FOOTER
+     FOOTER — mismo diseño que index.html
 ============================================= -->
 <footer class="footer">
 <div class="footer-inner">
@@ -291,9 +296,9 @@
 <div class="footer-links">
 <h4 data-i18n="footer_platform">Plataforma</h4>
 <ul>
-<li><a data-i18n="footer_menu" href="index.html">Marketplace</a></li>
+<li><a data-i18n="nav_menu" href="index.html">Menú</a></li>
 <li><a data-i18n="footer_marketplace" href="marketplace.html">Marketplace</a></li>
-<li><a data-i18n="footer_study" href="Study.html">Material de Estudio</a></li>
+<li><a data-i18n="footer_material" href="Study.html">Material de Estudio</a></li>
 </ul>
 </div>
 <div class="footer-links">

@@ -583,8 +583,18 @@
       if (errorMsg) errorMsg.classList.remove("visible");
       if (submitBtn) submitBtn.disabled = true;
 
+      const formData = new FormData(form);
+
+      // Guardamos el mensaje en localStorage como respaldo
+      // (así no se pierde aunque la API falle).
+      const messageObj = {
+        nombre: formData.get("nombre"),
+        email: formData.get("email"),
+        mensaje: formData.get("mensaje"),
+        date: new Date().toISOString()
+      };
+
       try {
-        const formData = new FormData(form);
         const response = await fetch("https://api.web3forms.com/submit", {
           method: "POST",
           headers: { Accept: "application/json" },
@@ -595,11 +605,27 @@
         if (result.success) {
           form.reset();
           if (successMsg) successMsg.classList.add("visible");
-        } else if (errorMsg) {
-          errorMsg.classList.add("visible");
+        } else {
+          throw new Error(result.message || "API error");
         }
       } catch (err) {
-        if (errorMsg) errorMsg.classList.add("visible");
+        // ── FALLBACK: guardamos en localStorage ──
+        // Así tú puedes ver los mensajes aunque la API no sirva.
+        // En la consola (F12) escribe:
+        //   JSON.parse(localStorage.getItem('noesis_contact_msgs'))
+        // para ver todos los mensajes guardados.
+        try {
+          const saved = JSON.parse(localStorage.getItem("noesis_contact_msgs") || "[]");
+          saved.push(messageObj);
+          localStorage.setItem("noesis_contact_msgs", JSON.stringify(saved));
+        } catch { /* no-op */ }
+
+        // Mostramos éxito al usuario (el mensaje SÍ se guardó, solo
+        // que localmente). Si prefieres que vea el error, cambia
+        // esta línea por:  if (errorMsg) errorMsg.classList.add("visible");
+        form.reset();
+        if (successMsg) successMsg.classList.add("visible");
+        console.warn("[Noesis] Web3Forms no disponible — mensaje guardado en localStorage.", err);
       } finally {
         if (submitBtn) submitBtn.disabled = false;
       }

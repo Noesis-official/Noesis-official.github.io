@@ -65,7 +65,7 @@
     inset:0;
     background:rgba(20,32,26,.45);
     backdrop-filter:blur(2px);
-    z-index:999; /* debajo del navbar (1000) y del panel (1200) */
+    z-index:9999;
     opacity:0;
     transition:opacity .3s ease;
 }
@@ -79,6 +79,12 @@
    que en Books.css, así no queda un rango raro entre 768-1024
    donde los 5 enlaces del menú se amontonan en tablets. */
 @media (max-width:1024px){
+    .navbar{
+        backdrop-filter:none;
+        -webkit-backdrop-filter:none;
+        background:rgba(53,91,76,.94);
+    }
+
     .nav-links{
         display:flex;
         position:fixed;
@@ -89,6 +95,7 @@
         z-index:1200;
         background:rgba(29,48,40,.98);
         flex-direction:column;
+        flex-wrap:nowrap;
         align-items:stretch;
         padding:25px clamp(20px, 6vw, 40px);
         gap:10px;
@@ -99,7 +106,6 @@
         opacity:0;
         visibility:hidden;
         pointer-events:none;
-        transition:opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
     }
 
     .nav-links.open{
@@ -148,6 +154,13 @@
 
 body.nav-open{
     overflow:hidden;
+}
+
+body.nav-open .navbar{
+    z-index:10000;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    background:rgba(53,91,76,.98);
 }
 
 /* ---- Base del modal (index.css no lo tiene) ---- */

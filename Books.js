@@ -6,6 +6,13 @@
 
 /* =====================================================
    NAVBAR / HAMBURGUESA — BLOQUE REUTILIZABLE
+   Funciona en monitores, tablets y celulares con un solo
+   breakpoint (1024px, definido en el CSS junto a .nav-links).
+   Para usarlo en otra página: copia este bloque completo tal
+   cual, junto con el CSS de "HAMBURGUESA" en Books.css. Solo
+   necesita que existan #navbar, #hamburger y #navLinks en el
+   HTML — el resto (overlay, bloqueo de scroll, cierres) lo
+   arma este script solo.
 ----------------------------------------------- */
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
@@ -114,10 +121,13 @@ document.addEventListener('mouseout', (e) => {
 ----------------------------------------------- */
 const translations = {
   es: {
-    nav_menu: "MENU",
+    nav_menu: "MENÚ",
     nav_market: "MARKETPLACE",
+    nav_Material: "MATERIAL DE ESTUDIO",
     nav_community: "COMUNIDAD",
     nav_books: "LIBROS",
+    footer_material: "Material de Estudio",
+    footer_books: "Libros",
     books_hero_title: "Explora nuestra biblioteca",
     books_hero_text: "Libros de texto y guías compartidos por estudiantes de David, Chiriquí.",
     search_placeholder: "Busca un libro, autor o materia...",
@@ -169,8 +179,6 @@ const translations = {
     cart_checkout_empty: "Tu carrito está vacío",
     footer_desc: "El marketplace universitario de<br>David, Chiriquí.",
     footer_platform: "Plataforma",
-    footer_study: "Material de Estudio",
-    footer_menu: "Menu",
     footer_marketplace: "Marketplace",
     footer_kits: "Kits de Inicio",
     footer_support: "Soporte",
@@ -183,8 +191,11 @@ const translations = {
   en: {
     nav_menu: "MENU",
     nav_market: "MARKETPLACE",
+    nav_Material: "STUDY MATERIAL",
     nav_community: "COMMUNITY",
     nav_books: "BOOKS",
+    footer_material: "Study Material",
+    footer_books: "Books",
     books_hero_title: "Explore our library",
     books_hero_text: "Textbooks and guides shared by students in David, Chiriquí.",
     search_placeholder: "Search a book, author or subject...",
@@ -237,8 +248,7 @@ const translations = {
     footer_desc: "The university marketplace of<br>David, Chiriquí.",
     footer_platform: "Platform",
     footer_marketplace: "Marketplace",
-    footer_study: "Study Material",
-    footer_menu: "Menu",
+    footer_kits: "Starter Kits",
     footer_support: "Support",
     footer_faq: "Help / FAQ",
     footer_contact: "Contact Us",

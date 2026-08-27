@@ -385,7 +385,7 @@ body.page-leaving{
     inset:0;
     background:rgba(20,32,26,.45);
     backdrop-filter:blur(2px);
-    z-index:999; /* debajo del navbar (1000) y del panel (1200) */
+    z-index:9999;
     opacity:0;
     transition:opacity .3s ease;
 }
@@ -397,6 +397,18 @@ body.page-leaving{
 
 body.nav-open{
     overflow:hidden;
+}
+
+/* Cuando el menú móvil está abierto, el navbar necesita un z-index
+   muy alto para que su stacking context (que contiene al panel
+   .nav-links position:fixed) quede por encima de TODAS las
+   secciones de contenido (hero, services, etc.) que puedan tener
+   position:relative y crear sus propios stacking contexts. */
+body.nav-open .navbar{
+    z-index:10000;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    background:rgba(53,91,76,.98);
 }
 
 /* ==========================
@@ -678,6 +690,7 @@ body.nav-open{
 .offer{
     position: relative;
 
+    background-color: var(--green-pastel);
     background-image: url("IMG/Offers.png");
     background-size: cover;
     background-position: center;
@@ -693,6 +706,7 @@ body.nav-open{
     max-width:950px;
 
     margin:auto;
+    margin-bottom:-55px;
 
     transform:translateY(-55px);
 
@@ -807,6 +821,7 @@ body.nav-open{
     position:relative;
 
     overflow:hidden;
+    background-color: var(--cream);
     background-image: url("IMG/Services.png");
     background-size: cover;
     background-position: center;
@@ -1965,6 +1980,15 @@ a{
    monitores normales, sube este número. */
 @media (max-width:1024px){
 
+    /* En móvil quitamos backdrop-filter del navbar para que no cree
+       un containing block que atrape al panel .nav-links (position:fixed).
+       El fondo sólido (.scrolled o el base) compensa visualmente. */
+    .navbar{
+        backdrop-filter:none;
+        -webkit-backdrop-filter:none;
+        background:rgba(53,91,76,.94);
+    }
+
     .nav-links{
         display:flex;
         position:fixed;
@@ -1975,6 +1999,7 @@ a{
         z-index:1200;
         background:rgba(29,48,40,.98);
         flex-direction:column;
+        flex-wrap:nowrap;        /* pisa el wrap de la regla base — sin esto los enlaces parpadean en fila horizontal al abrir por primera vez */
         align-items:stretch;
         padding:25px clamp(20px, 6vw, 40px);
         gap:10px;
@@ -1985,7 +2010,11 @@ a{
         opacity:0;
         visibility:hidden;
         pointer-events:none;
-        transition:opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
+        /* SIN transition aquí: así al cargar la página no se ve un
+           flash del panel animándose a hidden. La transición solo
+           vive en .nav-links.open (abrir) y se hereda al quitar
+           .open (cerrar), porque el navegador ejecuta la transición
+           declarada en el estado de SALIDA, no el de llegada. */
     }
 
     .nav-links.open{
@@ -1993,6 +2022,12 @@ a{
         opacity:1;
         visibility:visible;
         pointer-events:auto;
+        /* La transición vive aquí: al AÑADIR .open el browser la
+           lee y anima la apertura; al QUITAR .open el browser
+           ejecuta la transición que estaba vigente justo antes de
+           quitarla, así que el cierre también anima (no es
+           instantáneo). Resultado: apertura y cierre suaves, pero
+           sin flash en la primera carga de la página. */
         transition:opacity .28s ease, transform .28s ease, visibility 0s linear 0s;
     }
 

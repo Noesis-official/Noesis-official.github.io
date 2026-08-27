@@ -1,5 +1,9 @@
 // ============================================================
-//  NOESIS – Study Material  |  
+//  NOESIS – Study Material  |  study-material.js
+//  Misma lógica que marketplace.js (tarjetas, búsqueda, filtros,
+//  modal, carrito, idioma, cursor) adaptada a "kits de estudio":
+//  cada kit tiene una lista de contenido ("incluye"), categoría,
+//  condición, fecha de publicación y vendedor estudiante.
 // ============================================================
 
 // -----------------------------------------------
@@ -21,14 +25,14 @@ const conditionLabels = {
 
 // -----------------------------------------------
 // KITS DE ESTUDIO (catálogo de ejemplo)
-//  AGREGAR IMÁGENES AQUÍ: reemplaza `image`/`gallery` con las
+// 📷 AGREGAR IMÁGENES AQUÍ: reemplaza `image`/`gallery` con las
 // fotos reales de cada kit cuando las tengas.
 // -----------------------------------------------
 const products = [
   {
     name: { es: "Kit de inicio - Ingeniería Química", en: "Chemical Engineering Entry Kit" },
     image: "IMG Study/kit de quimica.png",
-    gallery: ["IMG Study/kit de quimica.png"],
+    gallery: ["IMG%20Study/Ingenieria%20Quimica.png"],
     price: 120,
     condition: "excellent",
     category: "ingenieria",
@@ -41,8 +45,8 @@ const products = [
   },
   {
     name: { es: "Kit de inicio - Arquitectura", en: "Architecture Entry Kit" },
-    image: "IMG Study/kit arquitectura.png",
-    gallery: ["IMG Study/kit arquitectura.png"],
+    image: "IMG Study/kit de arquitectura.png",
+    gallery: ["IMG%20Study/Arquitectura.png"],
     price: 95,
     condition: "new",
     category: "arquitectura",
@@ -55,7 +59,7 @@ const products = [
   },
   {
     name: { es: "Kit de inicio - Ingeniería en Sistemas", en: "Systems Engineering Entry Kit" },
-    image: "IMG/kit-sistemas.png",
+    image: "IMG Study/kit de sistemas.png",
     gallery: ["IMG/kit-sistemas-1.png", "IMG/kit-sistemas-2.png", "IMG/kit-sistemas-3.png", "IMG/kit-sistemas-4.png"],
     price: 150,
     condition: "used",
@@ -69,7 +73,7 @@ const products = [
   },
   {
     name: { es: "Kit de inicio - Medicina", en: "Medical Entry Kit" },
-    image: "IMG/kit-medicina.png",
+    image: "IMG Study/kit de medicina.png",
     gallery: ["IMG/kit-medicina-1.png", "IMG/kit-medicina-2.png", "IMG/kit-medicina-3.png", "IMG/kit-medicina-4.png"],
     price: 110,
     condition: "new",
@@ -83,7 +87,7 @@ const products = [
   },
   {
     name: { es: "Kit de inicio - Enfermería", en: "Nursing Entry Kit" },
-    image: "IMG/kit-enfermeria.png",
+    image: "IMG Study/kit de enfermeria.png",
     gallery: ["IMG/kit-enfermeria-1.png", "IMG/kit-enfermeria-2.png", "IMG/kit-enfermeria-3.png", "IMG/kit-enfermeria-4.png"],
     price: 90,
     condition: "new",
@@ -97,7 +101,7 @@ const products = [
   },
   {
     name: { es: "Kit de inicio - Derecho", en: "Law Entry Kit" },
-    image: "IMG/kit-derecho.png",
+    image: "IMG Study/kit de derecho.png",
     gallery: ["IMG/kit-derecho-1.png", "IMG/kit-derecho-2.png", "IMG/kit-derecho-3.png", "IMG/kit-derecho-4.png"],
     price: 130,
     condition: "used",
@@ -150,11 +154,14 @@ function getAllProducts() {
 // -----------------------------------------------
 const translations = {
   es: {
-    nav_menu: "MENU",
+    nav_menu: "MENÚ",
     nav_market: "MARKETPLACE",
-    nav_study: "STUDY MATERIAL",
+    nav_study: "MATERIAL DE ESTUDIO",
+    nav_Material: "MATERIAL DE ESTUDIO",
     nav_community: "COMUNIDAD",
     nav_books: "LIBROS",
+    footer_material: "Material de Estudio",
+    footer_books: "Libros",
     search_placeholder_study: "Buscar kits de estudio...",
     details_btn: "Detalles",
     modal_default_title: "Nombre del kit",
@@ -208,6 +215,7 @@ const translations = {
     footer_desc: "El marketplace universitario de<br>David, Chiriquí.",
     footer_platform: "Plataforma",
     footer_marketplace: "Marketplace",
+    footer_kits: "Kits de Inicio",
     footer_support: "Soporte",
     footer_faq: "Ayuda / FAQ",
     footer_contact: "Contáctanos",
@@ -219,8 +227,11 @@ const translations = {
     nav_menu: "MENU",
     nav_market: "MARKETPLACE",
     nav_study: "STUDY MATERIAL",
+    nav_Material: "STUDY MATERIAL",
     nav_community: "COMMUNITY",
     nav_books: "BOOKS",
+    footer_material: "Study Material",
+    footer_books: "Books",
     search_placeholder_study: "Search study kits...",
     details_btn: "Details",
     modal_default_title: "Kit name",
@@ -273,9 +284,8 @@ const translations = {
     cart_checkout_empty: "Your cart is empty",
     footer_desc: "The university marketplace of<br>David, Chiriquí.",
     footer_platform: "Platform",
-    footer_menu: "Menu",
     footer_marketplace: "Marketplace",
-    footer_books: "Books",
+    footer_kits: "Starter Kits",
     footer_support: "Support",
     footer_faq: "Help / FAQ",
     footer_contact: "Contact Us",
@@ -1377,7 +1387,11 @@ if (navbar) {
 }
 
 // -----------------------------------------------
-// MENÚ HAMBURGUESA (móvil) 
+// MENÚ HAMBURGUESA (móvil) — BLOQUE REUTILIZABLE
+// (idéntico al de Books.js / comunidad.js / index.js /
+// marketplace.js; funciona en monitor, tablet y celular
+// con el CSS heredado de marketplace.css. Solo necesita
+// #navbar, #hamburger y #navLinks.)
 // -----------------------------------------------
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');

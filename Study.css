@@ -7,12 +7,6 @@
    footer, modales) definidos en marketplace.css.
    ========================================================== */
 
-/* ---- Link activo del navbar: resalta en amarillo la página
-   actual ("STUDY MATERIAL"), igual que en el resto del sitio ---- */
-.nav-link.active {
-    color: var(--yellow);
-}
-
 /* ---- Tarjeta de kit: reutiliza .card, solo ajustamos la imagen
    para que se vea como foto de portada en vez de ícono ---- */
 .card-icon-wrap.kit-cover {
