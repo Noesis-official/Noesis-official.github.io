@@ -294,6 +294,7 @@
 
     const wasPlaying = !video.paused;
     source.setAttribute("src", newSrc);
+    source.setAttribute("type", "video/webm");
     video.load();
     if (wasPlaying) {
       video.play().catch(() => {
