@@ -197,11 +197,55 @@
 @media (max-width: 640px) {
     .kit-modal-content {
         width: 100%;
+        padding: 20px 16px;
+        border-radius: 18px;
     }
-    .kit-modal-body {
-        grid-template-columns: 1fr;
+    .kit-modal-content .modal-header {
+        padding-right: 28px;
+    }
+    .kit-modal-image {
+        min-height: 160px;
+        border-radius: 14px;
+    }
+    .kit-modal-image img {
+        max-height: 200px;
+    }
+    .kit-modal-content .modal-title {
+        font-size: 1.2rem;
+    }
+    .modal-seller-line {
+        font-size: .75rem;
     }
     .kit-price-row {
         flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
     }
+    .kit-modal-body {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+    .kit-info-row {
+        padding: 10px 12px;
+    }
+    .includes-list li {
+        font-size: .85rem;
+    }
+    .modal-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .modal-actions .modal-btn,
+    .modal-actions .modal-btn-outline,
+    .modal-actions .modal-btn-danger {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Evitar scroll horizontal en toda la página
+   (el modal con backdrop-filter puede generar un shift
+   de la scrollbar al abrirse/cerrarse) */
+html {
+    overflow-x: hidden;
 }
