@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noesis — Comunidad</title>
-    <link rel="icon" type="image/png" href="IMG/favicon.png"/>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap">
@@ -29,7 +29,7 @@
 <a class="nav-link" data-i18n="nav_market" href="marketplace.html">MARKETPLACE</a>
 <a class="nav-link active" data-i18n="nav_community" href="comunidad.html">COMUNIDAD</a>
 <a class="nav-link" data-i18n="nav_Material" href="Study.html">MATERIAL DE ESTUDIO</a>
-<a class="nav-link" data-i18n="nav_books" href="Books.html">LIBROS</a>
+<a class="nav-link" data-i18n="nav_books" href="books.html">LIBROS</a>
 </div>
 <div class="nav-icons">
 <!-- Idioma -->
@@ -116,6 +116,21 @@
 </button>
 </div>
 </div>
+
+<!-- Solicitudes de estudiantes: solo visible si el usuario con
+     sesión activa es un tutor (comunidad.js la muestra/oculta) -->
+<section class="comm-requests-section" id="studentRequestsSection">
+<div class="comm-requests-inner">
+<h2 class="comm-section-title" data-i18n="student_requests_title">Solicitudes de estudiantes</h2>
+<div class="comm-requests-list" id="studentRequestsList">
+<!-- Generado por comunidad.js -->
+</div>
+<div class="comm-requests-empty" id="studentRequestsEmpty">
+<i class="fa-regular fa-comment-dots"></i>
+<p data-i18n="no_student_requests">Todavía no hay solicitudes publicadas por estudiantes.</p>
+</div>
+</div>
+</section>
 
 <!-- CONTENIDO: sidebar filtros + grid de tutores -->
 <main class="comm-main">
@@ -355,9 +370,9 @@
 <div class="footer-social">
 <h4 data-i18n="footer_follow">Síguenos</h4>
 <div class="social-icons">
-<a href="https://instagram.com"><img alt="Instagram" src="IMG/instagram.webp"/></a>
-<a href="https://facebook.com"><img alt="Facebook" src="IMG/Facebook.png"/></a>
-<a href="https://wa.me/50760000000"><img alt="WhatsApp" src="IMG/WhatsApp.png"/></a>
+<a href="https://instagram.com"><img alt="Instagram" src="img/instagram.webp"/></a>
+<a href="https://facebook.com"><img alt="Facebook" src="img/Facebook.png"/></a>
+<a href="https://wa.me/50760000000"><img alt="WhatsApp" src="img/WhatsApp.png"/></a>
 </div>
 </div>
 </div>

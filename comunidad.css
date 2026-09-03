@@ -348,6 +348,139 @@ body.nav-open .navbar{
     border-color:var(--green-dark);
 }
 
+/* ---- Solicitudes de estudiantes (solo visible para tutores) ---- */
+.comm-requests-section{
+    display:none;
+    padding:10px 40px 0;
+}
+
+.comm-requests-section.show{
+    display:block;
+}
+
+.comm-requests-inner{
+    max-width:1300px;
+    margin:auto;
+}
+
+.comm-requests-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:18px;
+}
+
+.request-card{
+    background:var(--white);
+    border:2px solid var(--green-pastel);
+    border-radius:18px;
+    padding:20px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    transition:.25s;
+}
+
+.request-card:hover{
+    border-color:var(--green-mid);
+    box-shadow:0 10px 26px rgba(53,91,76,.12);
+}
+
+.request-card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.request-card-subject{
+    font-family:var(--font-title);
+    font-size:1.15rem;
+    font-weight:700;
+    color:var(--green-dark);
+}
+
+.request-card-budget{
+    flex-shrink:0;
+    background:var(--yellow);
+    color:var(--green-dark);
+    font-size:.78rem;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:50px;
+}
+
+.request-card-desc{
+    font-size:.88rem;
+    color:var(--text);
+    line-height:1.5;
+}
+
+.request-card-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    font-size:.78rem;
+    color:rgba(30,30,30,.65);
+}
+
+.request-card-meta span{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.request-card-contact-btn{
+    align-self:flex-start;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:4px;
+    background:var(--green-dark);
+    color:var(--yellow);
+    border:none;
+    border-radius:50px;
+    padding:9px 18px;
+    font-family:var(--font-body);
+    font-size:.8rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.request-card-contact-btn:hover{
+    background:#2a4a3c;
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(53,91,76,.25);
+}
+
+.comm-requests-empty{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:8px;
+    padding:30px 20px;
+    color:rgba(53,91,76,.6);
+}
+
+.comm-requests-empty.show{
+    display:flex;
+}
+
+.comm-requests-empty i{
+    font-size:1.8rem;
+    color:var(--green-mid);
+}
+
+.comm-requests-empty p{
+    font-size:.85rem;
+}
+
+@media(max-width:640px){
+    .comm-requests-section{ padding:10px 20px 0; }
+    .comm-requests-list{ grid-template-columns:1fr; }
+}
+
 /* ---- Layout principal: sidebar + resultados ---- */
 .comm-main{
     padding:10px 40px 50px;

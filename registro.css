@@ -235,6 +235,7 @@ a{ transition:.3s; }
     flex-direction:column;
     gap:7px;
     flex:1;
+    min-width:0;
 }
 
 .auth-field-row{
@@ -257,6 +258,8 @@ a{ transition:.3s; }
     border-radius:12px;
     padding:0 14px;
     transition:.3s;
+    min-width:0;
+    overflow:hidden;
 }
 
 .auth-input-wrap:focus-within{

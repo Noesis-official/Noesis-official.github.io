@@ -120,6 +120,12 @@
     grid-template-columns: 1fr 1fr;
 }
 
+/* Separación entre la última caja de datos (Vendedor estudiante)
+   y los botones de acción */
+.kit-modal-content .modal-actions {
+    margin-top: 24px;
+}
+
 /* ---- Lista "Incluye" ---- */
 .includes-list {
     list-style: none;
@@ -231,9 +237,20 @@
     .includes-list li {
         font-size: .85rem;
     }
-    .modal-actions {
+
+    /* Botones de acción: sticky al fondo del modal para que
+       siempre estén visibles sin tener que scrollear hasta abajo */
+    .kit-modal-content .modal-actions {
+        position: sticky;
+        bottom: 0;
         flex-direction: column;
         gap: 8px;
+        background: var(--cream);
+        padding: 14px 0 4px;
+        margin: 0 -16px -20px;
+        padding: 14px 16px 20px;
+        border-top: 1px solid var(--green-pastel);
+        z-index: 1;
     }
     .modal-actions .modal-btn,
     .modal-actions .modal-btn-outline,

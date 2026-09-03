@@ -29,7 +29,7 @@ body{
     backdrop-filter:blur(14px);
     background:rgba(53,91,76,.72);
     border-bottom:1px solid rgba(200,233,215,.18);
-    transition:all .35s cubic-bezier(.4,0,.2,1);
+    transition: padding .3s ease, background .3s ease, box-shadow .3s ease;
 }
 
 .navbar.scrolled{
@@ -58,6 +58,8 @@ body{
 .nav-links{
     display:flex;
     align-items:center;
+    justify-content:center;
+    flex:1;
     flex-wrap:wrap;
     gap:10px;
 }

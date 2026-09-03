@@ -171,7 +171,7 @@ body.page-leaving{
     border-bottom:
     1px solid rgba(200,233,215,.18);
 
-    transition:all var(--transition);
+    transition: padding .3s ease, background .3s ease, box-shadow .3s ease;
 
 }
 
@@ -221,6 +221,10 @@ body.page-leaving{
     display:flex;
 
     align-items:center;
+
+    justify-content:center;
+
+    flex:1;
 
     flex-wrap:wrap;
 

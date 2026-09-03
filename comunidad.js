@@ -65,7 +65,13 @@ const translations = {
     request_submit_btn: "Publicar solicitud",
     request_hint: "Simulado con localStorage — tu solicitud solo se guarda en este navegador.",
     request_err_required: "Por favor completa todos los campos.",
-    request_success: "¡Solicitud publicada! Los tutores disponibles podrán contactarte. 🎉"
+    request_success: "¡Solicitud publicada! Los tutores disponibles podrán contactarte. 🎉",
+    login_required_booking: "Inicia sesión para reservar una clase.",
+    login_required_request: "Inicia sesión para publicar una solicitud.",
+    student_requests_title: "Solicitudes de estudiantes",
+    no_student_requests: "Todavía no hay solicitudes publicadas por estudiantes.",
+    contact_student_btn: "Contactar estudiante",
+    requested_by: "Publicado por"
   },
   en: {
     nav_menu: "MENU", nav_market: "MARKETPLACE", nav_Material: "STUDY MATERIAL",
@@ -126,7 +132,13 @@ const translations = {
     request_submit_btn: "Post Request",
     request_hint: "Simulated with localStorage — your request is only saved on this browser.",
     request_err_required: "Please fill in all fields.",
-    request_success: "Request posted! Available tutors will reach out to you. 🎉"
+    request_success: "Request posted! Available tutors will reach out to you. 🎉",
+    login_required_booking: "Log in to book a class.",
+    login_required_request: "Log in to post a request.",
+    student_requests_title: "Student requests",
+    no_student_requests: "No student requests posted yet.",
+    contact_student_btn: "Contact student",
+    requested_by: "Posted by"
   }
 };
 
@@ -456,6 +468,60 @@ function saveRequests(list) {
   localStorage.setItem(REQUESTS_KEY, JSON.stringify(list));
 }
 
+// Muestra las solicitudes publicadas por estudiantes, pero solo si
+// el usuario con sesión activa es un tutor — así cada tutor puede
+// ver qué estudiantes necesitan ayuda y contactarlos directamente.
+function renderStudentRequests() {
+  const section = document.getElementById('studentRequestsSection');
+  const list = document.getElementById('studentRequestsList');
+  const empty = document.getElementById('studentRequestsEmpty');
+  if (!section || !list || !empty) return;
+
+  const user = getCurrentUser();
+  const isTutor = !!(user && user.role === 'tutor');
+
+  section.classList.toggle('show', isTutor);
+  if (!isTutor) return;
+
+  const requests = loadRequests().slice().reverse();
+
+  list.innerHTML = '';
+  empty.classList.toggle('show', requests.length === 0);
+
+  const timeLabels = {
+    morning: translations[currentLang].filter_time_morning,
+    afternoon: translations[currentLang].filter_time_afternoon,
+    evening: translations[currentLang].filter_time_evening
+  };
+
+  requests.forEach(req => {
+    const card = document.createElement('div');
+    card.className = 'request-card';
+    card.innerHTML = `
+      <div class="request-card-top">
+        <span class="request-card-subject">${req.subject}</span>
+        <span class="request-card-budget">B/. ${Number(req.budget).toFixed(0)}/h</span>
+      </div>
+      <p class="request-card-desc">${req.description}</p>
+      <div class="request-card-meta">
+        <span><i class="fa-regular fa-clock"></i> ${timeLabels[req.time] || req.time}</span>
+        <span><i class="fa-solid fa-user"></i> ${translations[currentLang].requested_by}: ${req.studentName || '—'}</span>
+      </div>
+      <button class="request-card-contact-btn" type="button">
+        <i class="fa-brands fa-whatsapp"></i> ${translations[currentLang].contact_student_btn}
+      </button>
+    `;
+    const contactBtn = card.querySelector('.request-card-contact-btn');
+    contactBtn.addEventListener('click', () => {
+      const msg = currentLang === 'es'
+        ? `Hola ${req.studentName || ''}, vi tu solicitud de "${req.subject}" en Noesis y puedo ayudarte.`
+        : `Hi ${req.studentName || ''}, I saw your "${req.subject}" request on Noesis and I can help.`;
+      window.open(`https://wa.me/50760000000?text=${encodeURIComponent(msg)}`, '_blank');
+    });
+    list.appendChild(card);
+  });
+}
+
 // -----------------------------------------------
 // ESTADO
 // -----------------------------------------------
@@ -753,6 +819,15 @@ document.getElementById('tutorFavBtn').addEventListener('click', () => {
 // Botones del modal
 document.getElementById('tutorBookBtn').addEventListener('click', () => {
   if (!currentTutor) return;
+
+  const user = getCurrentUser();
+  if (!user) {
+    showGlobalToast(translations[currentLang].login_required_booking);
+    closeTutorModal();
+    setTimeout(() => { window.location.href = 'login.html'; }, 900);
+    return;
+  }
+
   bookings.push({
     id: 'b_' + Date.now().toString(36),
     tutorId: currentTutor.id,
@@ -857,6 +932,7 @@ function setLanguage(lang) {
 
   document.documentElement.setAttribute('lang', lang);
   renderTutors();
+  renderStudentRequests();
 }
 
 // Idioma dropdown
@@ -984,6 +1060,17 @@ window.addEventListener('resize', () => {
 // -----------------------------------------------
 // SESIÓN (user icon)
 // -----------------------------------------------
+function getCurrentUser() {
+  try {
+    const session = JSON.parse(localStorage.getItem('noesis_session'));
+    if (!session || !session.email) return null;
+    const users = JSON.parse(localStorage.getItem('noesis_users')) || [];
+    return users.find(u => u.email === session.email) || null;
+  } catch {
+    return null;
+  }
+}
+
 (function syncUserNavIcon() {
   const userNavBtn = document.getElementById('userNavBtn');
   if (!userNavBtn) return;
@@ -1077,6 +1164,14 @@ const requestError = document.getElementById('requestError');
 
 function openRequestModal() {
   if (!requestModal) return;
+
+  const user = getCurrentUser();
+  if (!user) {
+    showGlobalToast(translations[currentLang].login_required_request);
+    setTimeout(() => { window.location.href = 'login.html'; }, 900);
+    return;
+  }
+
   requestForm.reset();
   requestError.classList.remove('visible');
   requestModal.classList.add('show');
@@ -1118,12 +1213,16 @@ if (requestForm) {
     }
 
     const requests = loadRequests();
+    const requestUser = getCurrentUser();
     requests.push({
       id: 'r_' + Date.now().toString(36),
       subject, description, budget, time,
+      studentName: requestUser ? requestUser.name : '',
+      studentEmail: requestUser ? requestUser.email : '',
       createdAt: new Date().toISOString()
     });
     saveRequests(requests);
+    renderStudentRequests();
 
     closeRequestModalFn();
     showGlobalToast(translations[currentLang].request_success);

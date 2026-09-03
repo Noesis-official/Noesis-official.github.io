@@ -101,7 +101,7 @@ body.page-leaving{
     backdrop-filter:blur(14px);
     -webkit-backdrop-filter:blur(14px);
     border-bottom:1px solid rgba(200,233,215,.18);
-    transition:.35s ease;
+    transition: padding .3s ease, background .3s ease, box-shadow .3s ease;
 }
 
 .navbar.scrolled{
@@ -131,6 +131,8 @@ body.page-leaving{
 .nav-links{
     display:flex;
     align-items:center;
+    justify-content:center;
+    flex:1;
     gap:8px;
     flex-wrap:wrap;
 }
