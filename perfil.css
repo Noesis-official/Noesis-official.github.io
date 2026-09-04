@@ -488,6 +488,31 @@ a{ text-decoration:none; transition:.3s; }
     width:100%;
 }
 
+/* ---- Foto de perfil del tutor ---- */
+.tutor-photo-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.tutor-photo-preview{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid var(--green-pastel);
+    background:var(--green-pastel);
+    flex-shrink:0;
+}
+
+.tutor-photo-preview.placeholder{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--green-dark);
+    font-size:1.3rem;
+}
+
 @media(max-width:600px){
     .profile-banner{ padding:36px 22px 28px; }
     .profile-details{ padding:26px 22px; }

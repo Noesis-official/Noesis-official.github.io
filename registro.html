@@ -17,7 +17,7 @@
   <!-- Video de fondo -->
 <div class="video-background">
     <video autoplay muted loop playsinline>
-        <source src="VID/Video-de-fondo-registro.webm" type="video/mp4">
+        <source src="VID/Video de fondo registro.mp4" type="video/mp4">
         Tu navegador no soporta videos HTML5.
     </video>
 </div>
@@ -134,6 +134,14 @@
           </div>
         </div>
 
+        <div class="auth-field">
+          <label for="registerPhone" data-i18n="field_phone">Número de contacto (WhatsApp)</label>
+          <div class="auth-input-wrap">
+            <i class="fa-brands fa-whatsapp"></i>
+            <input type="tel" id="registerPhone" name="registerPhone" placeholder="507 6000-0000">
+          </div>
+        </div>
+
         <!-- Campos exclusivos para tutores: solo se muestran si eligen "Soy tutor" -->
         <div class="tutor-fields" id="tutorFields">
           <div class="auth-field-row">
@@ -166,6 +174,11 @@
               <i class="fa-solid fa-comment"></i>
               <input type="text" id="registerBio" name="registerBio" placeholder="Ej. Estudiante de ingeniería, 2 años dando clases de física...">
             </div>
+          </div>
+          <div class="auth-field">
+            <label for="registerPhoto" data-i18n="field_tutor_photo">Foto de perfil</label>
+            <input type="file" id="registerPhoto" name="registerPhoto" accept="image/*" class="auth-file-input">
+            <img id="registerPhotoPreview" class="auth-photo-preview" alt="" style="display:none">
           </div>
         </div>
 

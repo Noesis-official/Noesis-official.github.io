@@ -48,6 +48,7 @@ const translations = {
     field_email: "Correo electrónico",
     field_university: "Universidad",
     field_location: "Ubicación",
+    field_phone: "Número de contacto (WhatsApp)",
     field_password: "Contraseña",
     field_password_confirm: "Confirmar contraseña",
     field_role: "¿Cómo quieres usar Noesis?",
@@ -58,6 +59,8 @@ const translations = {
     field_tutor_subject: "Materia principal",
     field_tutor_price: "Precio por hora (B/.)",
     field_tutor_bio: "Cuéntanos de ti como tutor",
+    field_tutor_phone: "Número de contacto (WhatsApp)",
+    field_tutor_photo: "Foto de perfil",
     cat_physics: "Física", cat_chemistry: "Química", cat_economics: "Economía",
     cat_biology: "Biología", cat_math: "Matemáticas", cat_english: "Inglés", cat_systems: "Sistemas",
     uni_placeholder: "Selecciona tu universidad",
@@ -82,6 +85,7 @@ const translations = {
     field_email: "Email",
     field_university: "University",
     field_location: "Location",
+    field_phone: "Contact number (WhatsApp)",
     field_password: "Password",
     field_password_confirm: "Confirm password",
     field_role: "How do you want to use Noesis?",
@@ -92,6 +96,8 @@ const translations = {
     field_tutor_subject: "Main subject",
     field_tutor_price: "Price per hour (B/.)",
     field_tutor_bio: "Tell us about yourself as a tutor",
+    field_tutor_phone: "Contact number (WhatsApp)",
+    field_tutor_photo: "Profile photo",
     cat_physics: "Physics", cat_chemistry: "Chemistry", cat_economics: "Economics",
     cat_biology: "Biology", cat_math: "Mathematics", cat_english: "English", cat_systems: "Systems",
     uni_placeholder: "Select your university",
@@ -228,6 +234,28 @@ if (roleSelector) {
 }
 
 // -----------------------------------------------
+// VISTA PREVIA DE LA FOTO DE TUTOR
+// -----------------------------------------------
+const registerPhotoInput = document.getElementById('registerPhoto');
+const registerPhotoPreview = document.getElementById('registerPhotoPreview');
+
+if (registerPhotoInput && registerPhotoPreview) {
+  registerPhotoInput.addEventListener('change', () => {
+    const file = registerPhotoInput.files[0];
+    if (!file) {
+      registerPhotoPreview.style.display = 'none';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      registerPhotoPreview.src = reader.result;
+      registerPhotoPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// -----------------------------------------------
 // UTILIDAD: mostrar error + sacudir formulario
 // -----------------------------------------------
 function showFormError(form, errorBox, message) {
@@ -258,6 +286,7 @@ if (registerForm) {
     const email = registerForm.registerEmail.value.trim();
     const university = registerForm.registerUniversity.value;
     const location = registerForm.registerLocation.value.trim();
+    const phone = registerForm.registerPhone.value.trim();
     const password = registerForm.registerPassword.value;
     const password2 = registerForm.registerPassword2.value;
 
@@ -297,32 +326,53 @@ if (registerForm) {
       return;
     }
 
-    const users = getUsers();
-    const newUser = {
-      id: Date.now().toString(36),
-      name,
-      email,
-      password, // ⚠️ Solo simulado — nunca guardar contraseñas en texto plano en un sistema real
-      university,
-      location,
-      role, // "student" o "tutor"
-      createdAt: new Date().toISOString()
-    };
+    function finishRegistration(tutorPhoto) {
+      const users = getUsers();
+      const newUser = {
+        id: Date.now().toString(36),
+        name,
+        email,
+        password, // ⚠️ Solo simulado — nunca guardar contraseñas en texto plano en un sistema real
+        university,
+        location,
+        phone, // número de contacto (WhatsApp) — disponible para cualquier rol
+        role, // "student" o "tutor"
+        createdAt: new Date().toISOString()
+      };
 
-    // Si es tutor, guardamos también su información de tutoría —
-    // comunidad.js la lee para mostrarlo como tutor real en el listado.
-    if (role === 'tutor') {
-      newUser.tutorSubject = tutorSubject;
-      newUser.tutorPrice = tutorPrice;
-      newUser.tutorBio = tutorBio;
+      // Si es tutor, guardamos también su información de tutoría —
+      // comunidad.js la lee para mostrarlo como tutor real en el listado.
+      // tutorPhone se mantiene en espejo con "phone" para no romper el
+      // código existente que ya usa u.tutorPhone al mostrar tutores.
+      if (role === 'tutor') {
+        newUser.tutorSubject = tutorSubject;
+        newUser.tutorPrice = tutorPrice;
+        newUser.tutorBio = tutorBio;
+        newUser.tutorPhone = phone;
+        if (tutorPhoto) newUser.tutorPhoto = tutorPhoto;
+      }
+
+      users.push(newUser);
+      saveUsers(users);
+      setSession(newUser.email);
+
+      showToast(t('toast_account_created'));
+      setTimeout(() => { window.location.href = 'perfil.html'; }, 600);
     }
 
-    users.push(newUser);
-    saveUsers(users);
-    setSession(newUser.email);
+    // La foto es opcional y se lee de forma asíncrona (FileReader);
+    // si no se eligió ninguna, terminamos el registro de inmediato.
+    const photoInput = document.getElementById('registerPhoto');
+    const photoFile = (role === 'tutor' && photoInput && photoInput.files[0]) ? photoInput.files[0] : null;
 
-    showToast(t('toast_account_created'));
-    setTimeout(() => { window.location.href = 'perfil.html'; }, 600);
+    if (photoFile) {
+      const reader = new FileReader();
+      reader.onload = () => finishRegistration(reader.result);
+      reader.onerror = () => finishRegistration(null);
+      reader.readAsDataURL(photoFile);
+    } else {
+      finishRegistration(null);
+    }
   });
 }
 

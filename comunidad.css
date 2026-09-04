@@ -348,10 +348,18 @@ body.nav-open .navbar{
     border-color:var(--green-dark);
 }
 
+/* ---- request-subtitle (modal de solicitud) ---- */
+.request-subtitle{
+    font-size:.88rem;
+    color:rgba(30,30,30,.7);
+    line-height:1.6;
+    margin-bottom:16px;
+}
+
 /* ---- Solicitudes de estudiantes (solo visible para tutores) ---- */
 .comm-requests-section{
     display:none;
-    padding:10px 40px 0;
+    padding:10px 40px 40px;
 }
 
 .comm-requests-section.show{
@@ -477,7 +485,7 @@ body.nav-open .navbar{
 }
 
 @media(max-width:640px){
-    .comm-requests-section{ padding:10px 20px 0; }
+    .comm-requests-section{ padding:10px 20px 32px; }
     .comm-requests-list{ grid-template-columns:1fr; }
 }
 
@@ -1236,6 +1244,85 @@ body.nav-open .navbar{
     font-size:.84rem;
     line-height:1.7;
     color:var(--text);
+}
+
+/* ---- Formulario para dejar un comentario/reseña ---- */
+.tutor-review-form{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-top:16px;
+    padding:16px;
+    background:var(--green-pastel-soft, rgba(200,233,215,.35));
+    border:1.5px dashed rgba(53,91,76,.3);
+    border-radius:16px;
+}
+
+.tutor-review-form-stars{
+    display:flex;
+    gap:6px;
+}
+
+.star-input{
+    border:none;
+    background:none;
+    cursor:pointer;
+    padding:4px;
+    font-size:1.2rem;
+    color:rgba(53,91,76,.25);
+    transition:.15s;
+}
+
+.star-input:hover,
+.star-input.hover{
+    color:#f0c040;
+}
+
+.star-input.selected{
+    color:#f0c040;
+}
+
+.tutor-review-form textarea{
+    width:100%;
+    border:1px solid rgba(53,91,76,.25);
+    border-radius:12px;
+    padding:12px 14px;
+    font-family:var(--font-body);
+    font-size:.86rem;
+    color:var(--text);
+    background:rgba(255,255,255,.85);
+    outline:none;
+    resize:vertical;
+    transition:.25s;
+}
+
+.tutor-review-form textarea:focus{
+    border-color:var(--green-dark);
+    background:white;
+    box-shadow:0 0 0 3px rgba(53,91,76,.12);
+}
+
+.tutor-review-submit-btn{
+    align-self:flex-start;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--green-dark);
+    color:var(--yellow);
+    border:none;
+    border-radius:50px;
+    padding:10px 20px;
+    font-family:var(--font-body);
+    font-size:.82rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.tutor-review-submit-btn:hover{
+    background:#2a4a3c;
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(53,91,76,.25);
 }
 
 /* Barra inferior del modal */

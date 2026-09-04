@@ -88,6 +88,15 @@
       </h3>
 
       <div class="tutor-profile-card" id="tutorProfileView">
+        <div class="tutor-photo-row">
+          <img class="tutor-photo-preview" id="tutorProfilePhotoPreview" src="" alt="" style="display:none">
+          <div class="tutor-photo-preview placeholder" id="tutorProfilePhotoPlaceholder">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div>
+            <span class="detail-label" data-i18n="field_tutor_photo">Foto de perfil</span>
+          </div>
+        </div>
         <div class="tutor-profile-row">
           <span class="detail-label" data-i18n="field_tutor_subject">Materia principal</span>
           <span class="detail-value" id="tutorProfileSubject">—</span>
@@ -95,6 +104,10 @@
         <div class="tutor-profile-row">
           <span class="detail-label" data-i18n="field_tutor_price">Precio por hora (B/.)</span>
           <span class="detail-value" id="tutorProfilePrice">—</span>
+        </div>
+        <div class="tutor-profile-row">
+          <span class="detail-label" data-i18n="field_tutor_phone">Número de contacto</span>
+          <span class="detail-value" id="tutorProfilePhone">—</span>
         </div>
         <div class="tutor-profile-row tutor-profile-bio">
           <span class="detail-label" data-i18n="field_tutor_bio">Cuéntanos de ti como tutor</span>
@@ -112,6 +125,16 @@
 
       <!-- Formulario de edición (oculto hasta que se pulse "Editar") -->
       <form class="tutor-profile-form" id="tutorProfileForm">
+        <div class="auth-field">
+          <label for="editTutorPhoto" data-i18n="field_tutor_photo">Foto de perfil</label>
+          <div class="tutor-photo-row">
+            <img class="tutor-photo-preview" id="editTutorPhotoPreview" src="" alt="" style="display:none">
+            <div class="tutor-photo-preview placeholder" id="editTutorPhotoPlaceholder">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <input type="file" id="editTutorPhoto" name="editTutorPhoto" accept="image/*">
+          </div>
+        </div>
         <div class="auth-field-row">
           <div class="auth-field">
             <label for="editTutorSubject" data-i18n="field_tutor_subject">Materia principal</label>
@@ -134,6 +157,13 @@
               <i class="fa-solid fa-sack-dollar"></i>
               <input type="number" id="editTutorPrice" name="editTutorPrice" min="5" step="1">
             </div>
+          </div>
+        </div>
+        <div class="auth-field">
+          <label for="editTutorPhone" data-i18n="field_tutor_phone">Número de contacto (WhatsApp)</label>
+          <div class="auth-input-wrap">
+            <i class="fa-brands fa-whatsapp"></i>
+            <input type="tel" id="editTutorPhone" name="editTutorPhone" placeholder="507 6000-0000">
           </div>
         </div>
         <div class="auth-field">

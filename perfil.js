@@ -33,6 +33,8 @@ const translations = {
     field_tutor_subject: "Materia principal",
     field_tutor_price: "Precio por hora (B/.)",
     field_tutor_bio: "Cuéntanos de ti como tutor",
+    field_tutor_photo: "Foto de perfil",
+    field_tutor_phone: "Número de contacto",
     edit_tutor_profile: "Editar",
     view_in_community: "Ver en la comunidad",
     save_changes: "Guardar cambios",
@@ -66,6 +68,8 @@ const translations = {
     field_tutor_subject: "Main subject",
     field_tutor_price: "Price per hour (B/.)",
     field_tutor_bio: "Tell us about yourself as a tutor",
+    field_tutor_photo: "Profile photo",
+    field_tutor_phone: "Contact number",
     edit_tutor_profile: "Edit",
     view_in_community: "View in community",
     save_changes: "Save changes",
@@ -154,7 +158,21 @@ function populateTutorProfileView() {
   const subjectLabel = CATEGORY_LABELS[user.tutorSubject] ? CATEGORY_LABELS[user.tutorSubject][lang] : (user.tutorSubject || '—');
   document.getElementById('tutorProfileSubject').textContent = subjectLabel;
   document.getElementById('tutorProfilePrice').textContent = `B/. ${Number(user.tutorPrice || 0).toFixed(2)}`;
+  document.getElementById('tutorProfilePhone').textContent = user.tutorPhone || '—';
   document.getElementById('tutorProfileBio').textContent = user.tutorBio || '—';
+
+  const photoPreview = document.getElementById('tutorProfilePhotoPreview');
+  const photoPlaceholder = document.getElementById('tutorProfilePhotoPlaceholder');
+  if (photoPreview && photoPlaceholder) {
+    if (user.tutorPhoto) {
+      photoPreview.src = user.tutorPhoto;
+      photoPreview.style.display = 'block';
+      photoPlaceholder.style.display = 'none';
+    } else {
+      photoPreview.style.display = 'none';
+      photoPlaceholder.style.display = 'flex';
+    }
+  }
 }
 
 function initTutorProfile() {
@@ -173,13 +191,31 @@ function initTutorProfile() {
   const form = document.getElementById('tutorProfileForm');
   const editBtn = document.getElementById('editTutorProfileBtn');
   const cancelBtn = document.getElementById('cancelEditTutorBtn');
+  const editPhotoInput = document.getElementById('editTutorPhoto');
+  const editPhotoPreview = document.getElementById('editTutorPhotoPreview');
+  const editPhotoPlaceholder = document.getElementById('editTutorPhotoPlaceholder');
+
+  function showEditPhoto(src) {
+    if (!editPhotoPreview || !editPhotoPlaceholder) return;
+    if (src) {
+      editPhotoPreview.src = src;
+      editPhotoPreview.style.display = 'block';
+      editPhotoPlaceholder.style.display = 'none';
+    } else {
+      editPhotoPreview.style.display = 'none';
+      editPhotoPlaceholder.style.display = 'flex';
+    }
+  }
 
   // Estos listeners se adjuntan UNA sola vez (initTutorProfile solo
   // se llama una vez al cargar la página).
   editBtn.addEventListener('click', () => {
     document.getElementById('editTutorSubject').value = user.tutorSubject || 'physics';
     document.getElementById('editTutorPrice').value = user.tutorPrice || '';
+    document.getElementById('editTutorPhone').value = user.tutorPhone || '';
     document.getElementById('editTutorBio').value = user.tutorBio || '';
+    if (editPhotoInput) editPhotoInput.value = '';
+    showEditPhoto(user.tutorPhoto || null);
     viewBox.style.display = 'none';
     form.classList.add('show');
   });
@@ -189,30 +225,65 @@ function initTutorProfile() {
     viewBox.style.display = 'flex';
   });
 
+  // Vista previa al elegir una foto nueva en el formulario de edición
+  if (editPhotoInput) {
+    editPhotoInput.addEventListener('change', () => {
+      const file = editPhotoInput.files[0];
+      if (!file) {
+        showEditPhoto(user.tutorPhoto || null);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => showEditPhoto(reader.result);
+      reader.readAsDataURL(file);
+    });
+  }
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const newSubject = document.getElementById('editTutorSubject').value;
     const newPrice = parseFloat(document.getElementById('editTutorPrice').value);
+    const newPhone = document.getElementById('editTutorPhone').value.trim();
     const newBio = document.getElementById('editTutorBio').value.trim();
 
     if (!newSubject || isNaN(newPrice) || newPrice <= 0 || !newBio) return;
 
-    const users = getUsers();
-    const idx = users.findIndex(u => u.email === user.email);
-    if (idx !== -1) {
-      users[idx].tutorSubject = newSubject;
-      users[idx].tutorPrice = newPrice;
-      users[idx].tutorBio = newBio;
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-      user.tutorSubject = newSubject;
-      user.tutorPrice = newPrice;
-      user.tutorBio = newBio;
+    function finishSave(newPhoto) {
+      const users = getUsers();
+      const idx = users.findIndex(u => u.email === user.email);
+      if (idx !== -1) {
+        users[idx].tutorSubject = newSubject;
+        users[idx].tutorPrice = newPrice;
+        users[idx].tutorPhone = newPhone;
+        users[idx].phone = newPhone;
+        users[idx].tutorBio = newBio;
+        if (newPhoto) users[idx].tutorPhoto = newPhoto;
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        user.tutorSubject = newSubject;
+        user.tutorPrice = newPrice;
+        user.tutorPhone = newPhone;
+        user.phone = newPhone;
+        user.tutorBio = newBio;
+        if (newPhoto) user.tutorPhoto = newPhoto;
+      }
+
+      form.classList.remove('show');
+      viewBox.style.display = 'flex';
+      showProfileToast(translations[lang].toast_tutor_updated);
+      populateTutorProfileView();
     }
 
-    form.classList.remove('show');
-    viewBox.style.display = 'flex';
-    showProfileToast(translations[lang].toast_tutor_updated);
-    populateTutorProfileView();
+    // La foto solo se vuelve a leer si se eligió un archivo nuevo;
+    // si no, se conserva la que ya tenía guardada.
+    const photoFile = editPhotoInput && editPhotoInput.files[0] ? editPhotoInput.files[0] : null;
+    if (photoFile) {
+      const reader = new FileReader();
+      reader.onload = () => finishSave(reader.result);
+      reader.onerror = () => finishSave(null);
+      reader.readAsDataURL(photoFile);
+    } else {
+      finishSave(null);
+    }
   });
 }
 

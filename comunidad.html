@@ -117,21 +117,6 @@
 </div>
 </div>
 
-<!-- Solicitudes de estudiantes: solo visible si el usuario con
-     sesión activa es un tutor (comunidad.js la muestra/oculta) -->
-<section class="comm-requests-section" id="studentRequestsSection">
-<div class="comm-requests-inner">
-<h2 class="comm-section-title" data-i18n="student_requests_title">Solicitudes de estudiantes</h2>
-<div class="comm-requests-list" id="studentRequestsList">
-<!-- Generado por comunidad.js -->
-</div>
-<div class="comm-requests-empty" id="studentRequestsEmpty">
-<i class="fa-regular fa-comment-dots"></i>
-<p data-i18n="no_student_requests">Todavía no hay solicitudes publicadas por estudiantes.</p>
-</div>
-</div>
-</section>
-
 <!-- CONTENIDO: sidebar filtros + grid de tutores -->
 <main class="comm-main">
 <div class="comm-shell">
@@ -194,6 +179,21 @@
 
 </div>
 </main>
+
+<!-- Solicitudes de estudiantes: solo visible si el usuario con
+     sesión activa es un tutor (comunidad.js la muestra/oculta) -->
+<section class="comm-requests-section" id="studentRequestsSection">
+<div class="comm-requests-inner">
+<h2 class="comm-section-title" data-i18n="student_requests_title">Solicitudes de estudiantes</h2>
+<div class="comm-requests-list" id="studentRequestsList">
+<!-- Generado por comunidad.js -->
+</div>
+<div class="comm-requests-empty" id="studentRequestsEmpty">
+<i class="fa-regular fa-comment-dots"></i>
+<p data-i18n="no_student_requests">Todavía no hay solicitudes publicadas por estudiantes.</p>
+</div>
+</div>
+</section>
 
 <!-- BANNER CTA -->
 <section class="comm-cta">
@@ -268,6 +268,22 @@
 <span class="tutor-reviews-link" id="tutorReviewsLink"></span>
 </h3>
 <div class="tutor-reviews-list" id="tutorReviewsList"></div>
+
+<!-- Formulario para que un estudiante deje un comentario/reseña -->
+<form class="tutor-review-form" id="tutorReviewForm">
+<div class="tutor-review-form-stars" id="tutorReviewStars">
+<button type="button" class="star-input" data-value="1"><i class="fa-solid fa-star"></i></button>
+<button type="button" class="star-input" data-value="2"><i class="fa-solid fa-star"></i></button>
+<button type="button" class="star-input" data-value="3"><i class="fa-solid fa-star"></i></button>
+<button type="button" class="star-input" data-value="4"><i class="fa-solid fa-star"></i></button>
+<button type="button" class="star-input" data-value="5"><i class="fa-solid fa-star"></i></button>
+</div>
+<textarea id="tutorReviewText" rows="2" data-i18n-placeholder="review_placeholder" placeholder="Escribe un comentario sobre este tutor..." required></textarea>
+<button type="submit" class="tutor-review-submit-btn">
+<i class="fa-solid fa-paper-plane"></i>
+<span data-i18n="review_submit_btn">Publicar comentario</span>
+</button>
+</form>
 </div>
 </div>
 
@@ -292,7 +308,9 @@
 </div>
 </div>
 
-<!-- MODAL: PUBLICAR SOLICITUD -->
+</div>
+
+<!-- MODAL: PUBLICAR SOLICITUD (solo visible para estudiantes, oculto para tutores por JS) -->
 <div class="modal" id="requestModal">
 <div class="modal-content publish-content">
 <span class="close" id="closeRequestModal">&times;</span>

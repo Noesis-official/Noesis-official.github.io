@@ -71,7 +71,12 @@ const translations = {
     student_requests_title: "Solicitudes de estudiantes",
     no_student_requests: "Todavía no hay solicitudes publicadas por estudiantes.",
     contact_student_btn: "Contactar estudiante",
-    requested_by: "Publicado por"
+    requested_by: "Publicado por",
+    review_placeholder: "Escribe un comentario sobre este tutor...",
+    review_submit_btn: "Publicar comentario",
+    review_login_required: "Inicia sesión para dejar un comentario.",
+    review_success: "¡Comentario publicado!",
+    review_empty: "Escribe un comentario antes de publicar."
   },
   en: {
     nav_menu: "MENU", nav_market: "MARKETPLACE", nav_Material: "STUDY MATERIAL",
@@ -138,7 +143,12 @@ const translations = {
     student_requests_title: "Student requests",
     no_student_requests: "No student requests posted yet.",
     contact_student_btn: "Contact student",
-    requested_by: "Posted by"
+    requested_by: "Posted by",
+    review_placeholder: "Write a comment about this tutor...",
+    review_submit_btn: "Post comment",
+    review_login_required: "Log in to leave a comment.",
+    review_success: "Comment posted!",
+    review_empty: "Write a comment before posting."
   }
 };
 
@@ -384,6 +394,8 @@ function getRegisteredTutors() {
         tags: { es: ['Nuevo en Noesis'], en: ['New on Noesis'] },
         subjects: { es: [subjectLabel.es], en: [subjectLabel.en] },
         reviewsList: [],
+        photo: u.tutorPhoto || null,
+        phone: u.tutorPhone || null,
         isNewTutor: true
       };
     });
@@ -449,78 +461,6 @@ function saveBookings(list) {
 }
 
 let bookings = loadBookings();
-
-// -----------------------------------------------
-// SOLICITUDES PUBLICADAS ("Publicar solicitud")
-// -----------------------------------------------
-const REQUESTS_KEY = 'noesis_tutor_requests';
-
-function loadRequests() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(REQUESTS_KEY));
-    return Array.isArray(stored) ? stored : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveRequests(list) {
-  localStorage.setItem(REQUESTS_KEY, JSON.stringify(list));
-}
-
-// Muestra las solicitudes publicadas por estudiantes, pero solo si
-// el usuario con sesión activa es un tutor — así cada tutor puede
-// ver qué estudiantes necesitan ayuda y contactarlos directamente.
-function renderStudentRequests() {
-  const section = document.getElementById('studentRequestsSection');
-  const list = document.getElementById('studentRequestsList');
-  const empty = document.getElementById('studentRequestsEmpty');
-  if (!section || !list || !empty) return;
-
-  const user = getCurrentUser();
-  const isTutor = !!(user && user.role === 'tutor');
-
-  section.classList.toggle('show', isTutor);
-  if (!isTutor) return;
-
-  const requests = loadRequests().slice().reverse();
-
-  list.innerHTML = '';
-  empty.classList.toggle('show', requests.length === 0);
-
-  const timeLabels = {
-    morning: translations[currentLang].filter_time_morning,
-    afternoon: translations[currentLang].filter_time_afternoon,
-    evening: translations[currentLang].filter_time_evening
-  };
-
-  requests.forEach(req => {
-    const card = document.createElement('div');
-    card.className = 'request-card';
-    card.innerHTML = `
-      <div class="request-card-top">
-        <span class="request-card-subject">${req.subject}</span>
-        <span class="request-card-budget">B/. ${Number(req.budget).toFixed(0)}/h</span>
-      </div>
-      <p class="request-card-desc">${req.description}</p>
-      <div class="request-card-meta">
-        <span><i class="fa-regular fa-clock"></i> ${timeLabels[req.time] || req.time}</span>
-        <span><i class="fa-solid fa-user"></i> ${translations[currentLang].requested_by}: ${req.studentName || '—'}</span>
-      </div>
-      <button class="request-card-contact-btn" type="button">
-        <i class="fa-brands fa-whatsapp"></i> ${translations[currentLang].contact_student_btn}
-      </button>
-    `;
-    const contactBtn = card.querySelector('.request-card-contact-btn');
-    contactBtn.addEventListener('click', () => {
-      const msg = currentLang === 'es'
-        ? `Hola ${req.studentName || ''}, vi tu solicitud de "${req.subject}" en Noesis y puedo ayudarte.`
-        : `Hi ${req.studentName || ''}, I saw your "${req.subject}" request on Noesis and I can help.`;
-      window.open(`https://wa.me/50760000000?text=${encodeURIComponent(msg)}`, '_blank');
-    });
-    list.appendChild(card);
-  });
-}
 
 // -----------------------------------------------
 // ESTADO
@@ -631,7 +571,7 @@ function renderTutors() {
       <div class="tutor-card-rating">
         <i class="fa-solid fa-star"></i> ${t.rating}
       </div>
-      <span class="tutor-card-reviews">(${t.reviews} ${currentLang === 'es' ? 'Reseñas' : 'Reviews'})</span>
+      <span class="tutor-card-reviews">(${getTotalReviews(t)} ${currentLang === 'es' ? 'Reseñas' : 'Reviews'})</span>
       <button class="tutor-card-btn" type="button">${translations[currentLang].details_btn}</button>
       <button class="tutor-card-quick-contact" type="button">
         <i class="fa-brands fa-whatsapp"></i> ${translations[currentLang].contact_btn}
@@ -669,12 +609,19 @@ function renderTutors() {
   tutorGrid.style.display = filtered.length === 0 ? 'none' : '';
 }
 
-// Abre WhatsApp con un mensaje prellenado para contactar al tutor
+// Abre WhatsApp con un mensaje prellenado para contactar al tutor.
+// Usa el número propio del tutor si lo configuró en su perfil;
+// si no, cae al número genérico de Noesis.
+function sanitizePhone(phone) {
+  const digits = String(phone || '').replace(/[^\d]/g, '');
+  return digits || '50760000000';
+}
+
 function contactTutorWhatsApp(t) {
   const msg = currentLang === 'es'
     ? `Hola ${t.name}, me interesa tomar clases contigo en Noesis.`
     : `Hi ${t.name}, I'm interested in taking classes with you on Noesis.`;
-  window.open(`https://wa.me/50760000000?text=${encodeURIComponent(msg)}`, '_blank');
+  window.open(`https://wa.me/${sanitizePhone(t.phone)}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 // -----------------------------------------------
@@ -708,7 +655,7 @@ function openTutorModal(t) {
     if (ratingEl) ratingEl.textContent = t.rating;
 
     const revCountEl = el('tutorDetailReviewsCount');
-    if (revCountEl) revCountEl.textContent = `(${t.reviews} ${currentLang === 'es' ? 'Reseñas' : 'Reviews'})`;
+    if (revCountEl) revCountEl.textContent = `(${getTotalReviews(t)} ${currentLang === 'es' ? 'Reseñas' : 'Reviews'})`;
 
     const bioEl = el('tutorDetailBio');
     if (bioEl) bioEl.textContent = t.bio[currentLang] || '';
@@ -717,7 +664,7 @@ function openTutorModal(t) {
     if (priceEl) priceEl.textContent = formatPrice(t.price);
 
     const revLinkEl = el('tutorReviewsLink');
-    if (revLinkEl) revLinkEl.textContent = `${translations[currentLang].view_all} (${t.reviews})`;
+    if (revLinkEl) revLinkEl.textContent = `${translations[currentLang].view_all} (${getTotalReviews(t)})`;
 
     // Favorito (sincronizado con la tarjeta y persistido)
     const favBtn = el('tutorFavBtn');
@@ -770,6 +717,7 @@ function openTutorModal(t) {
     const reviewsList = el('tutorReviewsList');
     if (reviewsList) {
       reviewsList.innerHTML = '';
+      // Reseñas de ejemplo (vienen con el catálogo)
       (t.reviewsList || []).forEach(r => {
         const card = document.createElement('div');
         card.className = 'tutor-review-card';
@@ -788,9 +736,46 @@ function openTutorModal(t) {
         `;
         reviewsList.appendChild(card);
       });
+
+      // Reseñas publicadas por estudiantes reales (guardadas en localStorage)
+      getUserReviewsFor(t.id).forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'tutor-review-card';
+        const starsHTML = Array.from({ length: 5 }, (_, i) =>
+          `<i class="fa-solid fa-star" style="opacity:${i < r.rating ? 1 : .3}"></i>`
+        ).join('');
+        card.innerHTML = `
+          <div class="tutor-review-header">
+            <div class="review-avatar">${(r.name || '?').charAt(0)}</div>
+            <div>
+              <div class="review-name">${r.name || '—'}</div>
+              <div class="review-stars">${starsHTML}</div>
+            </div>
+          </div>
+          <p class="review-text">${r.text}</p>
+        `;
+        reviewsList.appendChild(card);
+      });
     }
   } catch (err) {
     console.error('Error populating tutor modal:', err);
+  }
+
+  // Resetear el formulario de reseñas para este tutor
+  const reviewForm = document.getElementById('tutorReviewForm');
+  const reviewTextarea = document.getElementById('tutorReviewText');
+  if (reviewForm) reviewForm.reset();
+  if (reviewTextarea) reviewTextarea.value = '';
+  reviewSelectedRating = 5;
+  const starBtns = document.querySelectorAll('#tutorReviewStars .star-input');
+  starBtns.forEach(btn => btn.classList.toggle('selected', parseInt(btn.dataset.value) <= 5));
+
+  // Un tutor no puede comentarse a sí mismo: si el usuario logueado
+  // es justo el tutor que se está viendo, ocultamos el formulario.
+  if (reviewForm) {
+    const viewer = getCurrentUser();
+    const isOwnProfile = !!(viewer && t.id === 'user_' + viewer.email);
+    reviewForm.style.display = isOwnProfile ? 'none' : '';
   }
 
   // Mostrar el modal DESPUÉS de poblar todo el contenido
@@ -1154,13 +1139,91 @@ if (commNotifBtn && commNotifDropdown) {
 updateNotifBadge();
 
 // -----------------------------------------------
-// MODAL "PUBLICAR SOLICITUD"
+// SOLICITUDES PUBLICADAS ("Publicar solicitud")
+// Solo disponible para estudiantes — los tutores no ven el botón.
 // -----------------------------------------------
+const REQUESTS_KEY = 'noesis_tutor_requests';
+
+function loadRequests() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(REQUESTS_KEY));
+    return Array.isArray(stored) ? stored : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRequests(list) {
+  localStorage.setItem(REQUESTS_KEY, JSON.stringify(list));
+}
+
+// Muestra las solicitudes publicadas por estudiantes, pero solo si
+// el usuario con sesión activa es un tutor — así cada tutor puede
+// ver qué estudiantes necesitan ayuda y contactarlos directamente.
+function renderStudentRequests() {
+  const section = document.getElementById('studentRequestsSection');
+  const list = document.getElementById('studentRequestsList');
+  const empty = document.getElementById('studentRequestsEmpty');
+  if (!section || !list || !empty) return;
+
+  const user = getCurrentUser();
+  const isTutor = !!(user && user.role === 'tutor');
+
+  section.classList.toggle('show', isTutor);
+  if (!isTutor) return;
+
+  const requests = loadRequests().slice().reverse();
+
+  list.innerHTML = '';
+  empty.classList.toggle('show', requests.length === 0);
+
+  const timeLabels = {
+    morning: translations[currentLang].filter_time_morning,
+    afternoon: translations[currentLang].filter_time_afternoon,
+    evening: translations[currentLang].filter_time_evening
+  };
+
+  requests.forEach(req => {
+    const card = document.createElement('div');
+    card.className = 'request-card';
+    card.innerHTML = `
+      <div class="request-card-top">
+        <span class="request-card-subject">${req.subject}</span>
+        <span class="request-card-budget">B/. ${Number(req.budget).toFixed(0)}/h</span>
+      </div>
+      <p class="request-card-desc">${req.description}</p>
+      <div class="request-card-meta">
+        <span><i class="fa-regular fa-clock"></i> ${timeLabels[req.time] || req.time}</span>
+        <span><i class="fa-solid fa-user"></i> ${translations[currentLang].requested_by}: ${req.studentName || '—'}</span>
+      </div>
+      <button class="request-card-contact-btn" type="button">
+        <i class="fa-brands fa-whatsapp"></i> ${translations[currentLang].contact_student_btn}
+      </button>
+    `;
+    const contactBtn = card.querySelector('.request-card-contact-btn');
+    contactBtn.addEventListener('click', () => {
+      const msg = currentLang === 'es'
+        ? `Hola ${req.studentName || ''}, vi tu solicitud de "${req.subject}" en Noesis y puedo ayudarte.`
+        : `Hi ${req.studentName || ''}, I saw your "${req.subject}" request on Noesis and I can help.`;
+      window.open(`https://wa.me/${sanitizePhone(req.studentPhone)}?text=${encodeURIComponent(msg)}`, '_blank');
+    });
+    list.appendChild(card);
+  });
+}
+
 const postRequestBtn = document.getElementById('postRequestBtn');
 const requestModal = document.getElementById('requestModal');
 const closeRequestModal = document.getElementById('closeRequestModal');
 const requestForm = document.getElementById('requestForm');
 const requestError = document.getElementById('requestError');
+
+// Ocultar el botón y el banner CTA completo si es tutor
+(function hideRequestForTutors() {
+  const user = getCurrentUser();
+  if (user && user.role === 'tutor') {
+    if (postRequestBtn) postRequestBtn.style.display = 'none';
+  }
+})();
 
 function openRequestModal() {
   if (!requestModal) return;
@@ -1171,6 +1234,8 @@ function openRequestModal() {
     setTimeout(() => { window.location.href = 'login.html'; }, 900);
     return;
   }
+
+  if (user.role === 'tutor') return;
 
   requestForm.reset();
   requestError.classList.remove('visible');
@@ -1219,6 +1284,7 @@ if (requestForm) {
       subject, description, budget, time,
       studentName: requestUser ? requestUser.name : '',
       studentEmail: requestUser ? requestUser.email : '',
+      studentPhone: requestUser ? (requestUser.phone || '') : '',
       createdAt: new Date().toISOString()
     });
     saveRequests(requests);
@@ -1228,6 +1294,141 @@ if (requestForm) {
     showGlobalToast(translations[currentLang].request_success);
   });
 }
+
+// -----------------------------------------------
+// RESEÑAS DE ESTUDIANTES
+// Guardadas en localStorage bajo 'noesis_tutor_reviews'.
+// Estructura: [{ tutorId, name, rating, text, createdAt }]
+// -----------------------------------------------
+const REVIEWS_KEY = 'noesis_tutor_reviews';
+
+function loadUserReviews() {
+  try {
+    return JSON.parse(localStorage.getItem(REVIEWS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveUserReviews(list) {
+  localStorage.setItem(REVIEWS_KEY, JSON.stringify(list));
+}
+
+// Devuelve las reseñas guardadas por estudiantes para un tutor
+function getUserReviewsFor(tutorId) {
+  return loadUserReviews().filter(r => r.tutorId === tutorId);
+}
+
+// Total de reseñas a mostrar: las de ejemplo + las reales
+// publicadas por estudiantes desde el formulario de comentarios.
+function getTotalReviews(t) {
+  return (t.reviews || 0) + getUserReviewsFor(t.id).length;
+}
+
+// ---- Formulario de reseñas (dentro del modal del tutor) ----
+let reviewSelectedRating = 5;
+
+function initReviewForm() {
+  const form = document.getElementById('tutorReviewForm');
+  const starsContainer = document.getElementById('tutorReviewStars');
+  const textarea = document.getElementById('tutorReviewText');
+  if (!form || !starsContainer || !textarea) return;
+
+  // Hover / click en estrellas
+  const starBtns = starsContainer.querySelectorAll('.star-input');
+
+  function updateStarUI(value) {
+    starBtns.forEach(btn => {
+      const v = parseInt(btn.dataset.value);
+      btn.classList.toggle('selected', v <= value);
+    });
+  }
+
+  starBtns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      const v = parseInt(btn.dataset.value);
+      starBtns.forEach(b => b.classList.toggle('hover', parseInt(b.dataset.value) <= v));
+    });
+    btn.addEventListener('mouseleave', () => {
+      starBtns.forEach(b => b.classList.remove('hover'));
+    });
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      reviewSelectedRating = parseInt(btn.dataset.value);
+      updateStarUI(reviewSelectedRating);
+    });
+  });
+
+  updateStarUI(reviewSelectedRating);
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const user = getCurrentUser();
+    if (!user) {
+      showGlobalToast(translations[currentLang].review_login_required);
+      return;
+    }
+
+    if (!currentTutor) return;
+
+    // Seguro extra: un tutor no puede comentarse a sí mismo
+    if (currentTutor.id === 'user_' + user.email) return;
+
+    const text = textarea.value.trim();
+    if (!text) {
+      showGlobalToast(translations[currentLang].review_empty);
+      return;
+    }
+
+    const reviews = loadUserReviews();
+    reviews.push({
+      tutorId: currentTutor.id,
+      name: user.name,
+      rating: reviewSelectedRating,
+      text: text,
+      createdAt: new Date().toISOString()
+    });
+    saveUserReviews(reviews);
+
+    // Agregar la nueva reseña al DOM sin recargar el modal completo
+    const reviewsList = document.getElementById('tutorReviewsList');
+    if (reviewsList) {
+      const card = document.createElement('div');
+      card.className = 'tutor-review-card';
+      const starsHTML = Array.from({ length: 5 }, (_, i) =>
+        `<i class="fa-solid fa-star" style="opacity:${i < reviewSelectedRating ? 1 : .3}"></i>`
+      ).join('');
+      card.innerHTML = `
+        <div class="tutor-review-header">
+          <div class="review-avatar">${user.name.charAt(0)}</div>
+          <div>
+            <div class="review-name">${user.name}</div>
+            <div class="review-stars">${starsHTML}</div>
+          </div>
+        </div>
+        <p class="review-text">${text}</p>
+      `;
+      reviewsList.appendChild(card);
+    }
+
+    // Actualizar el contador de reseñas visible sin cerrar el modal
+    if (currentTutor) {
+      const total = getTotalReviews(currentTutor);
+      const revCountEl = document.getElementById('tutorDetailReviewsCount');
+      if (revCountEl) revCountEl.textContent = `(${total} ${currentLang === 'es' ? 'Reseñas' : 'Reviews'})`;
+      const revLinkEl = document.getElementById('tutorReviewsLink');
+      if (revLinkEl) revLinkEl.textContent = `${translations[currentLang].view_all} (${total})`;
+    }
+
+    textarea.value = '';
+    reviewSelectedRating = 5;
+    updateStarUI(5);
+    showGlobalToast(translations[currentLang].review_success);
+  });
+}
+
+initReviewForm();
 
 // -----------------------------------------------
 // INICIALIZACIÓN
