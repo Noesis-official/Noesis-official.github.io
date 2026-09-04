@@ -201,6 +201,7 @@ const tutors = [
   },
   {
     id: "t3", name: "Fanny Sánchez",
+    photo: "Miss Fanny.png",
     category: "engineering",
     subject: { es: "Ingeniería Industrial", en: "Industrial Engineering" },
     rating: 4.9, reviews: 189, price: 15,
